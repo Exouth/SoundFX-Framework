@@ -25,7 +25,7 @@ find_package(nlohmann_json CONFIG REQUIRED)
 
 # Automatically add all source and header files from src and include directories
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/*.cpp")
-file(GLOB_RECURSE HEADERS CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/include/*.h")
+file(GLOB_RECURSE HEADERS CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/include/*.h" "${CMAKE_SOURCE_DIR}/src/SoundFX/*.h")
 
 # Add the SKSE plugin target
 add_commonlibsse_plugin(${PROJECT_NAME} SOURCES ${SOURCES})
