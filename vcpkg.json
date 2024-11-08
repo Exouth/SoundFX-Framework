@@ -1,0 +1,25 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "name": "skyrim-soundfx-framework",
+  "version-string": "0.1.0",
+  "description": "Framework for creating custom sound and event-based SKSE plugins for Skyrim SE.",
+  "homepage": "https://github.com/Exouth/SoundFX-Framework",
+  "license": "Apache-2.0",
+  "maintainers": [
+    "Exouth"
+  ],
+  "features": {
+    "plugin": {
+      "description": "Enables core dependencies for the SKSE plugin",
+      "dependencies": [
+        "commonlibsse-ng",
+        "spdlog",
+        "nlohmann-json"
+      ]
+    }
+  },
+  "default-features": [
+    "plugin"
+  ],
+  "builtin-baseline": "a4275b7eee79fb24ec2e135481ef5fce8b41c339"
+}

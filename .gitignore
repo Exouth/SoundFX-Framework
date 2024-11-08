@@ -1,0 +1,49 @@
+# Visual Studio specific files
+.vscode/
+.vs/
+
+# Build directories
+build/
+out/
+Debug/
+Release/
+x64/
+bin/
+
+# Dist Directory
+dist/SKSE/Plugins/*.json
+dist/Sound/fx/*.wav
+
+# CMake generated files
+CMakeFiles/
+CMakeCache.txt
+
+# Precompiled headers and object files
+*.obj
+*.pch
+*.pdb
+*.idb
+*.ipdb
+*.iobj
+*.ilk
+*.aps
+*.ncb
+*.sdf
+*.opensdf
+*.tlog
+
+# Output and temporary files
+*.log
+*.tmp
+*.temp
+*.cache
+*.bak
+*.swp
+
+# vcpkg specific files
+vcpkg_installed/
+.vcpkg-root
+
+# C++ backup files
+*.orig
+*.rej
