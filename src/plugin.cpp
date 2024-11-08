@@ -1,4 +1,5 @@
 #include "SoundFX/Logger.h"
+#include "SoundFX/JSONLoader.h"
 
 SKSEPluginLoad(const SKSE::LoadInterface *skse) {
     Init(skse);
