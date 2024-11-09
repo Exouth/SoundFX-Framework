@@ -24,8 +24,8 @@ find_package(spdlog CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 
 # Automatically add all source and header files from src and include directories
-file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/*.cpp")
-file(GLOB_RECURSE HEADERS CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/include/*.h" "${CMAKE_SOURCE_DIR}/src/SoundFX/*.h")
+file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/*.cpp" "${CMAKE_SOURCE_DIR}/src/SoundFX/EventHandlers/*.cpp")
+file(GLOB_RECURSE HEADERS CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/include/*.h" "${CMAKE_SOURCE_DIR}/src/SoundFX/*.h" "${CMAKE_SOURCE_DIR}/src/SoundFX/EventHandlers/*.h")
 
 # Add the SKSE plugin target
 add_commonlibsse_plugin(${PROJECT_NAME} SOURCES ${SOURCES})
@@ -33,6 +33,7 @@ add_commonlibsse_plugin(${PROJECT_NAME} SOURCES ${SOURCES})
 # Include directories and precompiled headers
 target_include_directories(${PROJECT_NAME} PRIVATE include)
 target_precompile_headers(${PROJECT_NAME} PRIVATE include/PCH.h)
+target_include_directories(${PROJECT_NAME} PRIVATE include src/SoundFX)
 
 # Link dependencies
 target_link_libraries(${PROJECT_NAME} PRIVATE spdlog::spdlog nlohmann_json::nlohmann_json)

@@ -1,15 +1,29 @@
-#include "SoundFX/Logger.h"
+#include "SoundFX/EventHandlerManager.h"
 #include "SoundFX/JSONLoader.h"
+#include "SoundFX/Logger.h"
+
+void
+    OnSKSEMessage(SKSE::MessagingInterface::Message *msg) {
+    switch (msg->type) {
+    case SKSE::MessagingInterface::kNewGame:
+    case SKSE::MessagingInterface::kPostLoadGame:
+        {
+            auto                               &jsonLoader = SoundFX::JSONLoader::GetInstance();
+            static SoundFX::EventHandlerManager eventManager(jsonLoader);
+            eventManager.InitializeEventHandlers();
+            break;
+        }
+    }
+}
 
 SKSEPluginLoad(const SKSE::LoadInterface *skse) {
     Init(skse);
 
-    try {
-        SoundFX::Logger::Initialize();
-    } catch (const std::exception &e) {
-        SKSE::stl::report_and_fail(fmt::format("Failed to initialize logger: {}", e.what()));
-    }
+    SoundFX::Logger::Initialize();
 
+    SoundFX::JSONLoader::GetInstance().load();
+
+    SKSE::GetMessagingInterface()->RegisterListener(OnSKSEMessage);
     spdlog::info("Plugin loaded successfully");
 
     return true;
