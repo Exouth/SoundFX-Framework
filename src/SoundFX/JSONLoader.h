@@ -1,6 +1,5 @@
 #pragma once
 
-#include <memory>
 #include <nlohmann/json.hpp>
 #include <optional>
 #include <string>
@@ -26,7 +25,8 @@ namespace SoundFX {
     };
 
     struct ItemEvents {
-        std::string        formID;
+        std::string        editorID;
+        std::string        pluginName;
         std::vector<Event> events;
     };
 
@@ -45,9 +45,9 @@ namespace SoundFX {
       private:
         JSONLoader(const std::string &filePath);
         bool
-                       loadJSON();
-        std::string    filePath;
-        nlohmann::json jsonData;
+                                                                                     loadJSON();
+        std::string                                                                  filePath;
+        nlohmann::json                                                               jsonData;
         std::unordered_map<std::string, std::unordered_map<std::string, ItemEvents>> allItems;
         bool isLoaded = false;
 
