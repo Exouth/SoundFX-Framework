@@ -39,7 +39,6 @@ namespace SoundFX {
             }
 
             return true;
-
         } catch (const std::exception &e) {
             spdlog::error("Failed to parse JSON file: {}", e.what());
             return false;
@@ -58,11 +57,21 @@ namespace SoundFX {
         for (const auto &[itemName, itemData] : jsonData["events"][category].items()) {
             ItemEvents item;
 
-            if (itemData.contains("formID")) {
-                item.formID = itemData["formID"].get<std::string>();
+            if (itemData.contains("editorID")) {
+                item.editorID = itemData["editorID"].get<std::string>();
             } else {
-                spdlog::warn(
-                    "No formID for item '{}' in category '{}'. Skipping item.", itemName, category);
+                spdlog::warn("No editorID for item '{}' in category '{}'. Skipping item.",
+                             itemName,
+                             category);
+                continue;
+            }
+
+            if (itemData.contains("pluginName")) {
+                item.pluginName = itemData["pluginName"].get<std::string>();
+            } else {
+                spdlog::warn("No pluginName for item '{}' in category '{}'. Skipping item.",
+                             itemName,
+                             category);
                 continue;
             }
 
@@ -137,7 +146,7 @@ namespace SoundFX {
             return allItems.at(category);
         } else {
             spdlog::warn("Category '{}' not found. Returning empty map.", category);
-            return {};
+            return empty;
         }
     }
 
