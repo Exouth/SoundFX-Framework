@@ -1,6 +1,4 @@
 #include "EventHandlerManager.h"
-#include "Logger.h"
-#include <RE/Skyrim.h>
 
 namespace SoundFX {
 

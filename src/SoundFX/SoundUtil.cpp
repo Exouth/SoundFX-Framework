@@ -1,6 +1,5 @@
 #include "SoundUtil.h"
 #include "CustomSoundDescriptor.h"
-#include "spdlog/spdlog.h"
 
 namespace SoundFX {
 
