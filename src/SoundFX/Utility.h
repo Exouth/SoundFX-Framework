@@ -1,9 +1,5 @@
 #pragma once
 
-#include <RE/Skyrim.h>
-#include <string>
-#include <vector>
-
 namespace SoundFX {
 
     std::string

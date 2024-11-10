@@ -1,6 +1,5 @@
 #pragma once
 
-#include "RE/B/BSTEvent.h"
 #include "JSONLoader.h"
 
 namespace SoundFX {

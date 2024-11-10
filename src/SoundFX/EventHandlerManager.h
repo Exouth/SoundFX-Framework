@@ -2,7 +2,6 @@
 
 #include "EventHandlers/WeaponEventHandler.h"
 #include "JSONLoader.h"
-#include <memory>
 
 namespace SoundFX {
 

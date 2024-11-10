@@ -1,7 +1,4 @@
 #include "Utility.h"
-#include <RE/Skyrim.h>
-#include <spdlog/spdlog.h>
-#include <sstream>
 
 namespace SoundFX {
 

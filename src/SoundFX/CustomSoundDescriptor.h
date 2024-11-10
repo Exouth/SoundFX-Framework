@@ -1,8 +1,5 @@
 #pragma once
 
-#include "RE/B/BSSoundHandle.h"
-#include <string>
-
 namespace SoundFX {
 
     class CustomSoundDescriptor : public RE::BSISoundDescriptor {

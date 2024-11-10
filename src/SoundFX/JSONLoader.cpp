@@ -1,6 +1,4 @@
 #include "JSONLoader.h"
-#include <fstream>
-#include <spdlog/spdlog.h>
 
 namespace SoundFX {
 

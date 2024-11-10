@@ -1,7 +1,6 @@
 #pragma once
 
 #include "SoundUtil.h"
-#include <string>
 
 namespace SoundFX {
 

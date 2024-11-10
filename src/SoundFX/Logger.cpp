@@ -1,6 +1,4 @@
 #include "Logger.h"
-#include <spdlog/sinks/basic_file_sink.h>
-#include <spdlog/spdlog.h>
 
 #ifdef NDEBUG
 // File_Sink
