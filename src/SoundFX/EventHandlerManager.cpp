@@ -12,6 +12,7 @@ namespace SoundFX {
         weaponEventHandler = std::make_unique<WeaponEventHandler>(jsonLoader);
         RegisterEventHandler<RE::TESEquipEvent>(eventSource, weaponEventHandler.get());
         RegisterEventHandler<RE::TESContainerChangedEvent>(eventSource, weaponEventHandler.get());
+        RegisterEventHandler<RE::TESHitEvent>(eventSource, weaponEventHandler.get());
     }
 
     template <typename EventType, typename HandlerType>
