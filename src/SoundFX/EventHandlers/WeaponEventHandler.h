@@ -5,7 +5,7 @@
 namespace SoundFX {
 
     class WeaponEventHandler :
-        public RE::BSTEventSink<RE::TESActivateEvent>,
+        public RE::BSTEventSink<RE::TESContainerChangedEvent>,
         public RE::BSTEventSink<RE::TESEquipEvent>,
         public RE::BSTEventSink<RE::TESHitEvent> {
         JSONLoader &jsonLoader;
@@ -15,8 +15,8 @@ namespace SoundFX {
         }
 
         RE::BSEventNotifyControl
-            ProcessEvent(const RE::TESActivateEvent *event,
-                         RE::BSTEventSource<RE::TESActivateEvent> *);
+            ProcessEvent(const RE::TESContainerChangedEvent *event,
+                         RE::BSTEventSource<RE::TESContainerChangedEvent> *);
         RE::BSEventNotifyControl
             ProcessEvent(const RE::TESEquipEvent *event, RE::BSTEventSource<RE::TESEquipEvent> *);
         RE::BSEventNotifyControl
@@ -24,7 +24,7 @@ namespace SoundFX {
 
       private:
         RE::BSEventNotifyControl
-            ProcessActivateEvent(const RE::TESActivateEvent *event);
+            ProcessPickUpEvent(const RE::TESContainerChangedEvent *event);
         RE::BSEventNotifyControl
             ProcessEquipEvent(const RE::TESEquipEvent *event);
         RE::BSEventNotifyControl
