@@ -1,6 +1,7 @@
 #include "WeaponEventHandler.h"
-#include "SoundUtil.h"
 #include "JSONLoader.h"
+#include "SoundUtil.h"
+#include "Utility.h"
 
 namespace SoundFX {
 
@@ -22,18 +23,10 @@ namespace SoundFX {
         return ProcessHitEvent(event);
     }
 
-    std::string
-        FormIDToString(RE::FormID formID) {
-        std::stringstream stream;
-        stream << std::uppercase << std::setfill('0') << std::setw(8) << std::hex << formID;
-        return stream.str();
-    }
-
     RE::BSEventNotifyControl
         WeaponEventHandler::ProcessEquipEvent(const RE::TESEquipEvent *event) {
 
         if (event == nullptr || event->baseObject == 0) {
-            spdlog::warn("EquipEvent is null or has no baseObject.");
             return RE::BSEventNotifyControl::kContinue;
         }
 
@@ -45,8 +38,10 @@ namespace SoundFX {
 
         const auto &weapons = jsonLoader.getItems("weapons");
         for (const auto &[itemName, itemEvents] : weapons) {
-            std::string itemFormID = FormIDToString(item->GetFormID());
-            if (itemEvents.formID == itemFormID) {
+            const auto resolvedFormID = GetFormIDFromEditorIDAndPluginName(
+                itemEvents.editorID, itemEvents.pluginName);
+
+            if (resolvedFormID == item->formID) {
                 for (const auto &jsonEvent : itemEvents.events) {
                     if (jsonEvent.type == "Equip") {
                         float randomValue = static_cast<float>(rand()) / RAND_MAX;
@@ -54,9 +49,6 @@ namespace SoundFX {
                             spdlog::info("Playing Equip sound for weapon: {}",
                                          jsonEvent.soundEffect);
                             PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
-                        } else {
-                            spdlog::info("Equip event for weapon skipped based on chance: {}",
-                                         jsonEvent.chance);
                         }
                         return RE::BSEventNotifyControl::kContinue;
                     }
