@@ -11,17 +11,23 @@ namespace SoundFX {
 
         weaponEventHandler = std::make_unique<WeaponEventHandler>(jsonLoader);
         weaponEventHandler->InitializeAttackTypeHandlers();
-        RegisterEventHandler<RE::TESEquipEvent>(eventSource, weaponEventHandler.get());
-        RegisterEventHandler<RE::TESContainerChangedEvent>(eventSource, weaponEventHandler.get());
-        RegisterEventHandler<RE::TESHitEvent>(eventSource, weaponEventHandler.get());
+
+        RegisterMultipleEventHandlers(eventSource,
+                                      weaponEventHandler.get(),
+                                      RE::TESEquipEvent {},
+                                      RE::TESContainerChangedEvent {},
+                                      RE::TESHitEvent {});
     }
 
-    template <typename EventType, typename HandlerType>
-    void
-        EventHandlerManager::RegisterEventHandler(RE::ScriptEventSourceHolder *eventSource,
-                                                  HandlerType                 *handler) {
-        eventSource->AddEventSink<EventType>(handler);
-        spdlog::info("Registered handler for event type: {}", typeid(EventType).name());
+    RE::BSEventNotifyControl
+        EventHandlerManager::ProcessMultipleEvents(
+            std::initializer_list<RE::BSEventNotifyControl> events) {
+        for (auto eventResult : events) {
+            if (eventResult == RE::BSEventNotifyControl::kStop) {
+                return RE::BSEventNotifyControl::kStop;
+            }
+        }
+        return RE::BSEventNotifyControl::kContinue;
     }
 
 }
