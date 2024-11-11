@@ -1,4 +1,6 @@
 #include "WeaponEventHandler.h"
+
+#include "EventHandlerManager.h"
 #include "JSONLoader.h"
 #include "SoundUtil.h"
 #include "Utility.h"
@@ -65,7 +67,8 @@ namespace SoundFX {
     RE::BSEventNotifyControl
         WeaponEventHandler::ProcessEvent(const RE::TESEquipEvent *event,
                                          RE::BSTEventSource<RE::TESEquipEvent> *) {
-        return ProcessEquipEvent(event);
+        return EventHandlerManager::ProcessMultipleEvents(
+            {ProcessEquipEvent(event), ProcessIdleEvent(event)});
     }
 
     RE::BSEventNotifyControl
@@ -171,6 +174,12 @@ namespace SoundFX {
                 }
             }
         }
+
+        return RE::BSEventNotifyControl::kContinue;
+    }
+
+    RE::BSEventNotifyControl
+        WeaponEventHandler::ProcessIdleEvent(const RE::TESEquipEvent *event) {
 
         return RE::BSEventNotifyControl::kContinue;
     }

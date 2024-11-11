@@ -37,6 +37,8 @@ namespace SoundFX {
             ProcessEquipEvent(const RE::TESEquipEvent *event);
         RE::BSEventNotifyControl
             ProcessHitEvent(const RE::TESHitEvent *event);
+        RE::BSEventNotifyControl
+            ProcessIdleEvent(const RE::TESEquipEvent *event);
     };
 
 }
