@@ -14,6 +14,9 @@ namespace SoundFX {
         explicit WeaponEventHandler(JSONLoader &loader) : jsonLoader(loader) {
         }
 
+        void
+            InitializeAttackTypeHandlers();
+
         RE::BSEventNotifyControl
             ProcessEvent(const RE::TESContainerChangedEvent *event,
                          RE::BSTEventSource<RE::TESContainerChangedEvent> *);
@@ -23,6 +26,11 @@ namespace SoundFX {
             ProcessEvent(const RE::TESHitEvent *event, RE::BSTEventSource<RE::TESHitEvent> *);
 
       private:
+        using EventVariant = std::variant<const RE::TESHitEvent *, const RE::TESEquipEvent *>;
+
+        using EventAction = std::function<void(EventVariant, const std::string &)>;
+        static std::unordered_map<std::string, EventAction> actionMap;
+
         RE::BSEventNotifyControl
             ProcessPickUpEvent(const RE::TESContainerChangedEvent *event);
         RE::BSEventNotifyControl
