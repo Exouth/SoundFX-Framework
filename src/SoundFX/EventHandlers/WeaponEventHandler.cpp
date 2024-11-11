@@ -5,6 +5,57 @@
 
 namespace SoundFX {
 
+    std::unordered_map<std::string, WeaponEventHandler::EventAction> WeaponEventHandler::actionMap;
+
+    // InitAttackType temporary use for Filtering
+    void
+        WeaponEventHandler::InitializeAttackTypeHandlers() {
+        actionMap["PowerAttack"] = [](EventVariant event, const std::string &soundEffect) {
+            if (auto hitEvent = std::get_if<const RE::TESHitEvent *>(&event)) {
+                if ((*hitEvent)->flags.any(RE::TESHitEvent::Flag::kPowerAttack)) {
+                    PlayCustomSoundAsDescriptor(soundEffect);
+                }
+            }
+        };
+        actionMap["SneakAttack"] = [](EventVariant event, const std::string &soundEffect) {
+            if (auto hitEvent = std::get_if<const RE::TESHitEvent *>(&event)) {
+                if ((*hitEvent)->flags.any(RE::TESHitEvent::Flag::kSneakAttack)) {
+                    PlayCustomSoundAsDescriptor(soundEffect);
+                }
+            }
+        };
+        actionMap["BashAttack"] = [](EventVariant event, const std::string &soundEffect) {
+            if (auto hitEvent = std::get_if<const RE::TESHitEvent *>(&event)) {
+                if ((*hitEvent)->flags.any(RE::TESHitEvent::Flag::kBashAttack)) {
+                    PlayCustomSoundAsDescriptor(soundEffect);
+                }
+            }
+        };
+        actionMap["NormalAttack"] = [](EventVariant event, const std::string &soundEffect) {
+            if (auto hitEvent = std::get_if<const RE::TESHitEvent *>(&event)) {
+
+                const RE::TESForm *item = RE::TESForm::LookupByID((*hitEvent)->source);
+                if (!item) {
+                    return RE::BSEventNotifyControl::kContinue;
+                }
+
+                const auto *hit = item->As<RE::TESObjectWEAP>();
+                if (!hit) {
+                    return RE::BSEventNotifyControl::kContinue;
+                }
+
+                if (hit->GetAttackDamage() > 0
+                    && !(*hitEvent)->flags.any(RE::TESHitEvent::Flag::kBashAttack,
+                                               RE::TESHitEvent::Flag::kHitBlocked,
+                                               RE::TESHitEvent::Flag::kPowerAttack,
+                                               RE::TESHitEvent::Flag::kSneakAttack)) {
+                    PlayCustomSoundAsDescriptor(soundEffect);
+                }
+            }
+            return RE::BSEventNotifyControl::kContinue;
+        };
+    }
+
     RE::BSEventNotifyControl
         WeaponEventHandler::ProcessEvent(const RE::TESContainerChangedEvent *event,
                                          RE::BSTEventSource<RE::TESContainerChangedEvent> *) {
@@ -100,28 +151,22 @@ namespace SoundFX {
             return RE::BSEventNotifyControl::kContinue;
         }
 
-        const RE::TESForm *target =
-            RE::TESForm::LookupByID(event->target->formID);
-        if (!target) {
-            spdlog::warn("Failed to lookup target for HitEvent.");
-            return RE::BSEventNotifyControl::kContinue;
-        }
-
         const auto &weapons = jsonLoader.getItems("weapons");
         for (const auto &[itemName, itemEvents] : weapons) {
             const auto resolvedFormID =
                 GetFormIDFromEditorIDAndPluginName(itemEvents.editorID, itemEvents.pluginName);
 
-            if (resolvedFormID
-                == event->source) {
+            if (resolvedFormID == event->source) {
                 for (const auto &jsonEvent : itemEvents.events) {
                     if (jsonEvent.type == "Hit") {
-                        float randomValue = static_cast<float>(rand()) / RAND_MAX;
-                        if (randomValue <= jsonEvent.chance) {
-                            spdlog::info("Playing Hit sound for weapon: {}", jsonEvent.soundEffect);
-                            PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
+                        if (actionMap.find(jsonEvent.details.hitType.value()) != actionMap.end()) {
+                            float randomValue = static_cast<float>(rand()) / RAND_MAX;
+                            if (randomValue <= jsonEvent.chance) {
+                                actionMap[jsonEvent.details.hitType.value()](event,
+                                                                             jsonEvent.soundEffect);
+                            }
+                            return RE::BSEventNotifyControl::kContinue;
                         }
-                        return RE::BSEventNotifyControl::kContinue;
                     }
                 }
             }

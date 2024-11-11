@@ -4,14 +4,25 @@
 
 void
     OnSKSEMessage(SKSE::MessagingInterface::Message *msg) {
-    switch (msg->type) {
-    case SKSE::MessagingInterface::kNewGame:
-    case SKSE::MessagingInterface::kPostLoadGame:
+    if (msg->type == SKSE::MessagingInterface::kDataLoaded) {
         {
             auto                               &jsonLoader = SoundFX::JSONLoader::GetInstance();
             static SoundFX::EventHandlerManager eventManager(jsonLoader);
             eventManager.InitializeEventHandlers();
-            break;
+
+            // For autoload Testing Save (Creating AutoExec File for SKSE)
+            auto scriptFactory = RE::IFormFactory::GetConcreteFormFactoryByType<RE::Script>();
+            if (scriptFactory) {
+                auto loadCommand = scriptFactory->Create();
+                if (loadCommand) {
+                    loadCommand->SetCommand(
+                        "load "
+                        "Save3_6C8DC6E8_0_507269736F6E65726466676664_Tamriel_000000_20241111115503_"
+                        "1_1");
+                    loadCommand->CompileAndRun(nullptr, RE::COMPILER_NAME::kSystemWindowCompiler);
+                    spdlog::info("Load command executed.");
+                }
+            }
         }
     }
 }
