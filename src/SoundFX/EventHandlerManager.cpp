@@ -11,6 +11,7 @@ namespace SoundFX {
 
         weaponEventHandler = std::make_unique<WeaponEventHandler>(jsonLoader);
         weaponEventHandler->InitializeAttackTypeHandlers();
+        weaponEventHandler->SetupWeaponTasks();
 
         RegisterMultipleEventHandlers(eventSource,
                                       weaponEventHandler.get(),
