@@ -1,5 +1,4 @@
 #include "WeaponEventHandler.h"
-
 #include "EventHandlerManager.h"
 #include "JSONLoader.h"
 #include "SoundUtil.h"
@@ -58,6 +57,12 @@ namespace SoundFX {
         };
     }
 
+    void
+        WeaponEventHandler::SetupWeaponTasks() {
+        StartWeaponTask([this]() { ProcessDrawTask(); }, true);
+        scheduler.Start(1000); // Run every 1 Second
+    }
+
     RE::BSEventNotifyControl
         WeaponEventHandler::ProcessEvent(const RE::TESContainerChangedEvent *event,
                                          RE::BSTEventSource<RE::TESContainerChangedEvent> *) {
@@ -67,8 +72,7 @@ namespace SoundFX {
     RE::BSEventNotifyControl
         WeaponEventHandler::ProcessEvent(const RE::TESEquipEvent *event,
                                          RE::BSTEventSource<RE::TESEquipEvent> *) {
-        return EventHandlerManager::ProcessMultipleEvents(
-            {ProcessEquipEvent(event), ProcessIdleEvent(event)});
+        return EventHandlerManager::ProcessMultipleEvents({ProcessEquipEvent(event)});
     }
 
     RE::BSEventNotifyControl
@@ -178,10 +182,52 @@ namespace SoundFX {
         return RE::BSEventNotifyControl::kContinue;
     }
 
-    RE::BSEventNotifyControl
-        WeaponEventHandler::ProcessIdleEvent(const RE::TESEquipEvent *event) {
+    void
+        WeaponEventHandler::ProcessDrawTask() {
 
-        return RE::BSEventNotifyControl::kContinue;
+        auto *player = RE::PlayerCharacter::GetSingleton();
+        if (!player) {
+            return;
+        }
+
+        auto *rightHandData = player->GetEquippedEntryData(false);
+        auto *leftHandData  = player->GetEquippedEntryData(true);
+
+        if (!rightHandData && !leftHandData) {
+            return;
+        }
+
+        auto checkAndPlaySound = [&](const RE::InventoryEntryData *handData) {
+            if (!handData || !handData->GetObject()) {
+                return;
+            }
+
+            const RE::FormID currentItem = handData->GetObject()->formID;
+            if (currentItem == 0) {
+                return;
+            }
+
+            const auto &weapons = jsonLoader.getItems("weapons");
+            for (const auto &[itemName, itemEvents] : weapons) {
+                const auto resolvedFormID =
+                    GetFormIDFromEditorIDAndPluginName(itemEvents.editorID, itemEvents.pluginName);
+
+                if (resolvedFormID == currentItem) {
+                    for (const auto &jsonEvent : itemEvents.events) {
+                        if (jsonEvent.type == "Idle" && player->AsActorState()->IsWeaponDrawn()) {
+                            float randomValue = static_cast<float>(rand()) / RAND_MAX;
+                            if (randomValue <= jsonEvent.chance) {
+                                PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
+                            }
+                            return;
+                        }
+                    }
+                }
+            }
+        };
+
+        checkAndPlaySound(rightHandData);
+        checkAndPlaySound(leftHandData);
     }
 
 }
