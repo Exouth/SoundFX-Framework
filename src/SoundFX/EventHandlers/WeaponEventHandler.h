@@ -8,7 +8,8 @@ namespace SoundFX {
     class WeaponEventHandler :
         public RE::BSTEventSink<RE::TESContainerChangedEvent>,
         public RE::BSTEventSink<RE::TESEquipEvent>,
-        public RE::BSTEventSink<RE::TESHitEvent> {
+        public RE::BSTEventSink<RE::TESHitEvent>,
+        public RE::BSTEventSink<SKSE::ActionEvent> {
         JSONLoader   &jsonLoader;
         TaskScheduler scheduler;
 
@@ -29,6 +30,8 @@ namespace SoundFX {
             ProcessEvent(const RE::TESEquipEvent *event, RE::BSTEventSource<RE::TESEquipEvent> *);
         RE::BSEventNotifyControl
             ProcessEvent(const RE::TESHitEvent *event, RE::BSTEventSource<RE::TESHitEvent> *);
+        RE::BSEventNotifyControl
+            ProcessEvent(const SKSE::ActionEvent *event, RE::BSTEventSource<SKSE::ActionEvent> *);
 
       private:
         using EventVariant = std::variant<const RE::TESHitEvent *, const RE::TESEquipEvent *>;
@@ -42,6 +45,8 @@ namespace SoundFX {
             ProcessEquipEvent(const RE::TESEquipEvent *event);
         RE::BSEventNotifyControl
             ProcessHitEvent(const RE::TESHitEvent *event);
+        RE::BSEventNotifyControl
+            ProcessAttackEvent(const SKSE::ActionEvent *event);
 
         void
             ProcessDrawTask();
