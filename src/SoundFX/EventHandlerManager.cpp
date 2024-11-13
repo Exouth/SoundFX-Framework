@@ -7,7 +7,8 @@ namespace SoundFX {
 
     void
         EventHandlerManager::InitializeEventHandlers() {
-        auto eventSource = RE::ScriptEventSourceHolder::GetSingleton();
+        auto eventSource     = RE::ScriptEventSourceHolder::GetSingleton();
+        auto eventSourceSKSE = SKSE::GetActionEventSource();
 
         weaponEventHandler = std::make_unique<WeaponEventHandler>(jsonLoader);
         weaponEventHandler->InitializeAttackTypeHandlers();
@@ -18,6 +19,9 @@ namespace SoundFX {
                                       RE::TESEquipEvent {},
                                       RE::TESContainerChangedEvent {},
                                       RE::TESHitEvent {});
+
+        RegisterMultipleEventHandlers(
+            eventSourceSKSE, weaponEventHandler.get(), SKSE::ActionEvent {});
     }
 
     RE::BSEventNotifyControl

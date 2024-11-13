@@ -60,7 +60,7 @@ namespace SoundFX {
     void
         WeaponEventHandler::SetupWeaponTasks() {
         StartWeaponTask([this]() { ProcessDrawTask(); }, true);
-        scheduler.Start(1000); // Run every 1 Second
+        scheduler.Start(500);  // Run every 0.5 Second
     }
 
     RE::BSEventNotifyControl
@@ -79,6 +79,12 @@ namespace SoundFX {
         WeaponEventHandler::ProcessEvent(const RE::TESHitEvent *event,
                                          RE::BSTEventSource<RE::TESHitEvent> *) {
         return ProcessHitEvent(event);
+    }
+
+    RE::BSEventNotifyControl
+        WeaponEventHandler::ProcessEvent(const SKSE::ActionEvent *event,
+                                         RE::BSTEventSource<SKSE::ActionEvent> *) {
+        return ProcessAttackEvent(event);
     }
 
     RE::BSEventNotifyControl
@@ -228,6 +234,67 @@ namespace SoundFX {
 
         checkAndPlaySound(rightHandData);
         checkAndPlaySound(leftHandData);
+    }
+
+    RE::BSEventNotifyControl
+        WeaponEventHandler::ProcessAttackEvent(const SKSE::ActionEvent *event) {
+        if (!event || !event->actor) {
+            return RE::BSEventNotifyControl::kContinue;
+        }
+
+        auto *player = RE::PlayerCharacter::GetSingleton();
+        if (!player) {
+            return RE::BSEventNotifyControl::kContinue;
+        }
+
+        auto *actorState = player->AsActorState();
+        if (!actorState && !actorState->IsWeaponDrawn()) {
+            return RE::BSEventNotifyControl::kContinue;
+        }
+
+        auto *rightHandData = player->GetEquippedEntryData(false);
+        auto *leftHandData  = player->GetEquippedEntryData(true);
+
+        if (!rightHandData && !leftHandData) {
+            return RE::BSEventNotifyControl::kContinue;
+        }
+
+        auto checkAndPlaySound = [&](const RE::InventoryEntryData *handData) {
+            if (!handData || !handData->GetObject()) {
+                return RE::BSEventNotifyControl::kContinue;
+            }
+
+            const RE::FormID currentItem = handData->GetObject()->formID;
+            if (currentItem == 0) {
+                return RE::BSEventNotifyControl::kContinue;
+            }
+
+            const auto &weapons = jsonLoader.getItems("weapons");
+            for (const auto &[itemName, itemEvents] : weapons) {
+                const auto resolvedFormID =
+                    GetFormIDFromEditorIDAndPluginName(itemEvents.editorID, itemEvents.pluginName);
+
+                if (resolvedFormID == currentItem) {
+                    for (const auto &jsonEvent : itemEvents.events) {
+                        if (jsonEvent.type == "Attack"
+                            && event->type == SKSE::ActionEvent::Type::kWeaponSwing) {
+                            float randomValue = static_cast<float>(rand()) / RAND_MAX;
+                            if (randomValue <= jsonEvent.chance) {
+                                PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
+                            }
+                            return RE::BSEventNotifyControl::kContinue;
+                        }
+                    }
+                }
+            }
+
+            return RE::BSEventNotifyControl::kContinue;
+        };
+
+        checkAndPlaySound(rightHandData);
+        checkAndPlaySound(leftHandData);
+
+        return RE::BSEventNotifyControl::kContinue;
     }
 
 }

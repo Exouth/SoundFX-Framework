@@ -19,28 +19,28 @@ namespace SoundFX {
         JSONLoader                         &jsonLoader;
         std::unique_ptr<WeaponEventHandler> weaponEventHandler;
 
-        template <typename HandlerType, typename... EventTypes>
+        template <typename EventSourceType, typename HandlerType, typename... EventTypes>
         void
-            RegisterMultipleEventHandlers(RE::ScriptEventSourceHolder *eventSource,
+            RegisterMultipleEventHandlers(EventSourceType *eventSource,
                                           HandlerType                 *handler,
                                           EventTypes... events);
 
-        template <typename EventType, typename HandlerType>
+        template <typename EventSourceType, typename EventType, typename HandlerType>
         void
-            RegisterEventHandler(RE::ScriptEventSourceHolder *eventSource, HandlerType *handler);
+            RegisterEventHandler(EventSourceType *eventSource, HandlerType *handler);
     };
 
-    template <typename HandlerType, typename... EventTypes>
+    template <typename EventSourceType, typename HandlerType, typename... EventTypes>
     void
-        EventHandlerManager::RegisterMultipleEventHandlers(RE::ScriptEventSourceHolder *eventSource,
+        EventHandlerManager::RegisterMultipleEventHandlers(EventSourceType *eventSource,
                                                            HandlerType                 *handler,
                                                            EventTypes... events) {
-        (RegisterEventHandler<EventTypes>(eventSource, handler), ...);
+        (RegisterEventHandler<EventSourceType, EventTypes>(eventSource, handler), ...);
     }
 
-    template <typename EventType, typename HandlerType>
+    template <typename EventSourceType, typename EventType, typename HandlerType>
     void
-        EventHandlerManager::RegisterEventHandler(RE::ScriptEventSourceHolder *eventSource,
+        EventHandlerManager::RegisterEventHandler(EventSourceType *eventSource,
                                                   HandlerType                 *handler) {
         eventSource->AddEventSink<EventType>(handler);
         spdlog::info("Registered handler for event type: {}", typeid(EventType).name());
