@@ -4,6 +4,9 @@ cmake_minimum_required(VERSION 3.21)
 # Set project name and version.
 project(SoundFXFramework VERSION 0.1.0 LANGUAGES CXX)
 
+# Custom plugin-specific variables
+set(SKSEPluginAuthor "Exouth")
+
 # Enforce C++ standard (C++23)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -27,16 +30,33 @@ find_package(nlohmann_json CONFIG REQUIRED)
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/*.cpp" "${CMAKE_SOURCE_DIR}/src/SoundFX/*.cpp" "${CMAKE_SOURCE_DIR}/src/SoundFX/EventHandlers/*.cpp")
 file(GLOB_RECURSE HEADERS CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/include/*.h" "${CMAKE_SOURCE_DIR}/src/SoundFX/*.h" "${CMAKE_SOURCE_DIR}/src/SoundFX/EventHandlers/*.h")
 
+# Generate Plugin.h from Plugin.h.in
+configure_file(
+    ${CMAKE_SOURCE_DIR}/cmake/Plugin.h.in
+    ${CMAKE_BINARY_DIR}/include/Plugin.h
+    @ONLY
+)
+
+# Generate Version.rc from Version.rc.in
+configure_file(
+    ${CMAKE_SOURCE_DIR}/cmake/Version.rc.in
+    ${CMAKE_BINARY_DIR}/Version.rc
+    @ONLY
+)
+
 # Add the SKSE plugin target
-add_commonlibsse_plugin(${PROJECT_NAME} SOURCES ${SOURCES})
+add_commonlibsse_plugin(${PROJECT_NAME} SOURCES ${SOURCES} ${CMAKE_BINARY_DIR}/Version.rc)
 
 # Include directories and precompiled headers
-target_include_directories(${PROJECT_NAME} PRIVATE include)
+target_include_directories(${PROJECT_NAME} PRIVATE include ${CMAKE_BINARY_DIR}/include)
 target_precompile_headers(${PROJECT_NAME} PRIVATE include/PCH.h)
 target_include_directories(${PROJECT_NAME} PRIVATE include src/SoundFX)
 
 # Link dependencies
 target_link_libraries(${PROJECT_NAME} PRIVATE spdlog::spdlog nlohmann_json::nlohmann_json)
+
+# Add definitions for SSE/AE compatibility
+target_compile_definitions(${PROJECT_NAME} PRIVATE SKSE_SUPPORT_XBYAK ENABLE_SSE ENABLE_AE)
 
 # Set deployment folder for SKSE plugin output
 set(DLL_FOLDER "${OUTPUT_FOLDER}/SKSE/Plugins")
