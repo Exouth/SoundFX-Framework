@@ -27,6 +27,7 @@ namespace SoundFX {
 
         // SpellEvents
         spellEventHandler = std::make_unique<SpellEventHandler>(jsonLoader);
+        spellEventHandler->SetupSpellTasks();
 
         RegisterMultipleEventHandlers(
             eventSourceSKSE, spellEventHandler.get(), SKSE::ActionEvent {});

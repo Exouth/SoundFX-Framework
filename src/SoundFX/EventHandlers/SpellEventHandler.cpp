@@ -1,16 +1,24 @@
+#include "SpellEventHandler.h"
 #include "EventHandlerManager.h"
 #include "JSONLoader.h"
 #include "SoundUtil.h"
 #include "Utility.h"
-#include "SpellEventHandler.h"
 
 namespace SoundFX {
 
+    void
+        SpellEventHandler::SetupSpellTasks() {
+        StartSpellTask([this]() { ProcessIdleTask(); }, true);
+        scheduler.Start(500);  // Run every 0.5 Second
+    }
+
     RE::BSEventNotifyControl
         SpellEventHandler::ProcessEvent(const SKSE::ActionEvent *event,
-                                         RE::BSTEventSource<SKSE::ActionEvent> *) {
-        return EventHandlerManager::ProcessMultipleEvents(
-            {ProcessDrawEvent(event), ProcessSheatheEvent(event), ProcessFireEvent(event), ProcessCastEvent(event)});
+                                        RE::BSTEventSource<SKSE::ActionEvent> *) {
+        return EventHandlerManager::ProcessMultipleEvents({ProcessDrawEvent(event),
+                                                           ProcessSheatheEvent(event),
+                                                           ProcessFireEvent(event),
+                                                           ProcessCastEvent(event)});
     }
 
     RE::BSEventNotifyControl
@@ -49,7 +57,8 @@ namespace SoundFX {
 
                 if (resolvedFormID == handData->formID) {
                     for (const auto &jsonEvent : magicEvents.events) {
-                        if (jsonEvent.type == "Draw" && event->type == SKSE::ActionEvent::Type::kEndDraw) {
+                        if (jsonEvent.type == "Draw"
+                            && event->type == SKSE::ActionEvent::Type::kEndDraw) {
                             float randomValue = static_cast<float>(rand()) / RAND_MAX;
                             if (randomValue <= jsonEvent.chance) {
                                 PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
@@ -64,7 +73,7 @@ namespace SoundFX {
         };
 
         checkAndPlaySound(rightHandData);
-        checkAndPlaySound(leftHandData); 
+        checkAndPlaySound(leftHandData);
 
         return RE::BSEventNotifyControl::kContinue;
     }
@@ -238,5 +247,53 @@ namespace SoundFX {
         checkAndPlaySound(leftHandData);
 
         return RE::BSEventNotifyControl::kContinue;
+    }
+
+    void
+        SpellEventHandler::ProcessIdleTask() {
+
+        auto *player = RE::PlayerCharacter::GetSingleton();
+        if (!player) {
+            return;
+        }
+
+        auto *actorState = player->AsActorState();
+        if (!actorState && !actorState->IsWeaponDrawn()) {
+            return;
+        }
+
+        auto *rightHandData = player->GetEquippedObject(false);
+        auto *leftHandData  = player->GetEquippedObject(true);
+
+        if (!rightHandData && !leftHandData) {
+            return;
+        }
+
+        auto checkAndPlaySound = [&](const RE::TESForm *handData) {
+            if (!handData || !handData->formID) {
+                return;
+            }
+
+            const auto &magic = jsonLoader.getItems("magicEffects");
+            for (const auto &[magicName, magicEvents] : magic) {
+                const auto resolvedFormID = GetFormIDFromEditorIDAndPluginName(
+                    magicEvents.editorID, magicEvents.pluginName);
+
+                if (resolvedFormID == handData->formID) {
+                    for (const auto &jsonEvent : magicEvents.events) {
+                        if (jsonEvent.type == "Idle" && actorState->IsWeaponDrawn()) {
+                            float randomValue = static_cast<float>(rand()) / RAND_MAX;
+                            if (randomValue <= jsonEvent.chance) {
+                                PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
+                            }
+                            return;
+                        }
+                    }
+                }
+            }
+        };
+
+        checkAndPlaySound(rightHandData);
+        checkAndPlaySound(leftHandData);
     }
 }
