@@ -49,7 +49,7 @@ namespace SoundFX {
             ProcessAttackEvent(const SKSE::ActionEvent *event);
 
         void
-            ProcessDrawTask();
+            ProcessIdleTask();
 
         void
             StartWeaponTask(std::function<void()> task, bool repeat = false) {

@@ -59,7 +59,7 @@ namespace SoundFX {
 
     void
         WeaponEventHandler::SetupWeaponTasks() {
-        StartWeaponTask([this]() { ProcessDrawTask(); }, true);
+        StartWeaponTask([this]() { ProcessIdleTask(); }, true);
         scheduler.Start(500);  // Run every 0.5 Second
     }
 
@@ -189,7 +189,7 @@ namespace SoundFX {
     }
 
     void
-        WeaponEventHandler::ProcessDrawTask() {
+        WeaponEventHandler::ProcessIdleTask() {
 
         auto *player = RE::PlayerCharacter::GetSingleton();
         if (!player) {
