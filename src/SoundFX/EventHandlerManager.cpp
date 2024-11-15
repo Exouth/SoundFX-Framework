@@ -39,6 +39,13 @@ namespace SoundFX {
                                       armorEventHandler.get(),
                                       RE::TESContainerChangedEvent {},
                                       RE::TESEquipEvent {});
+
+        // MiscItemEvents
+        miscItemEventHandler = std::make_unique<MiscItemEventHandler>(jsonLoader);
+
+        RegisterMultipleEventHandlers(eventSource,
+                                      miscItemEventHandler.get(),
+                                      RE::TESContainerChangedEvent {});
     }
 
     RE::BSEventNotifyControl
