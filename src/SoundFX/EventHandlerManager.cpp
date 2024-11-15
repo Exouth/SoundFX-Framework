@@ -1,4 +1,5 @@
 #include "EventHandlerManager.h"
+#include "EventHandlers/SpellEventHandler.h"
 
 namespace SoundFX {
 
@@ -10,6 +11,7 @@ namespace SoundFX {
         auto eventSource     = RE::ScriptEventSourceHolder::GetSingleton();
         auto eventSourceSKSE = SKSE::GetActionEventSource();
 
+        // WeaponEvents
         weaponEventHandler = std::make_unique<WeaponEventHandler>(jsonLoader);
         weaponEventHandler->InitializeAttackTypeHandlers();
         weaponEventHandler->SetupWeaponTasks();
@@ -22,6 +24,13 @@ namespace SoundFX {
 
         RegisterMultipleEventHandlers(
             eventSourceSKSE, weaponEventHandler.get(), SKSE::ActionEvent {});
+
+        // SpellEvents
+        spellEventHandler = std::make_unique<SpellEventHandler>(jsonLoader);
+        spellEventHandler->SetupSpellTasks();
+
+        RegisterMultipleEventHandlers(
+            eventSourceSKSE, spellEventHandler.get(), SKSE::ActionEvent {});
     }
 
     RE::BSEventNotifyControl
