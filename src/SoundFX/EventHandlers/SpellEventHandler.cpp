@@ -24,7 +24,7 @@ namespace SoundFX {
     RE::BSEventNotifyControl
         SpellEventHandler::ProcessDrawEvent(const SKSE::ActionEvent *event) {
 
-        if (!event || !event->actor) {
+        if (!event || !event->actor || event->actor != RE::PlayerCharacter::GetSingleton()) {
             return RE::BSEventNotifyControl::kContinue;
         }
 
@@ -62,6 +62,7 @@ namespace SoundFX {
                             float randomValue = static_cast<float>(rand()) / RAND_MAX;
                             if (randomValue <= jsonEvent.chance) {
                                 PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
+                                spdlog::info("Playing sound for DrawEvent");
                             }
                             return RE::BSEventNotifyControl::kContinue;
                         }
@@ -81,7 +82,7 @@ namespace SoundFX {
     RE::BSEventNotifyControl
         SpellEventHandler::ProcessSheatheEvent(const SKSE::ActionEvent *event) {
 
-        if (!event || !event->actor) {
+        if (!event || !event->actor || event->actor != RE::PlayerCharacter::GetSingleton()) {
             return RE::BSEventNotifyControl::kContinue;
         }
 
@@ -119,6 +120,7 @@ namespace SoundFX {
                             float randomValue = static_cast<float>(rand()) / RAND_MAX;
                             if (randomValue <= jsonEvent.chance) {
                                 PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
+                                spdlog::info("Playing sound for SheatheEvent");
                             }
                             return RE::BSEventNotifyControl::kContinue;
                         }
@@ -138,7 +140,7 @@ namespace SoundFX {
     RE::BSEventNotifyControl
         SpellEventHandler::ProcessFireEvent(const SKSE::ActionEvent *event) {
 
-        if (!event || !event->actor) {
+        if (!event || !event->actor || event->actor != RE::PlayerCharacter::GetSingleton()) {
             return RE::BSEventNotifyControl::kContinue;
         }
 
@@ -176,6 +178,7 @@ namespace SoundFX {
                             float randomValue = static_cast<float>(rand()) / RAND_MAX;
                             if (randomValue <= jsonEvent.chance) {
                                 PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
+                                spdlog::info("Playing sound for FireEvent");
                             }
                             return RE::BSEventNotifyControl::kContinue;
                         }
@@ -195,7 +198,7 @@ namespace SoundFX {
     RE::BSEventNotifyControl
         SpellEventHandler::ProcessCastEvent(const SKSE::ActionEvent *event) {
 
-        if (!event || !event->actor) {
+        if (!event || !event->actor || event->actor != RE::PlayerCharacter::GetSingleton()) {
             return RE::BSEventNotifyControl::kContinue;
         }
 
@@ -233,6 +236,7 @@ namespace SoundFX {
                             float randomValue = static_cast<float>(rand()) / RAND_MAX;
                             if (randomValue <= jsonEvent.chance) {
                                 PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
+                                spdlog::info("Playing sound for CastEvent");
                             }
                             return RE::BSEventNotifyControl::kContinue;
                         }

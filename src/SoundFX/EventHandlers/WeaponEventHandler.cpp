@@ -100,25 +100,30 @@ namespace SoundFX {
             return RE::BSEventNotifyControl::kContinue;
         }
 
-        const auto &weapons = jsonLoader.getItems("weapons");
-        for (const auto &[itemName, itemEvents] : weapons) {
-            const auto resolvedFormID =
-                GetFormIDFromEditorIDAndPluginName(itemEvents.editorID, itemEvents.pluginName);
+        if (event->actor->GetObjectReference()
+            == RE::PlayerCharacter::GetSingleton()->GetObjectReference()) {
+            const auto &weapons = jsonLoader.getItems("weapons");
+            for (const auto &[itemName, itemEvents] : weapons) {
+                const auto resolvedFormID =
+                    GetFormIDFromEditorIDAndPluginName(itemEvents.editorID, itemEvents.pluginName);
 
-            if (resolvedFormID == item->formID) {
-                for (const auto &jsonEvent : itemEvents.events) {
-                    if (jsonEvent.type == "Equip") {
-                        float randomValue = static_cast<float>(rand()) / RAND_MAX;
-                        if (randomValue <= jsonEvent.chance) {
-                            spdlog::info("Playing Equip sound for weapon: {}",
-                                         jsonEvent.soundEffect);
-                            PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
+                if (resolvedFormID == item->formID) {
+                    for (const auto &jsonEvent : itemEvents.events) {
+                        if (jsonEvent.type == "Equip") {
+                            float randomValue = static_cast<float>(rand()) / RAND_MAX;
+                            if (randomValue <= jsonEvent.chance) {
+                                spdlog::info("Playing Equip sound for weapon: {}",
+                                             jsonEvent.soundEffect);
+                                PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
+                            }
+                            return RE::BSEventNotifyControl::kContinue;
                         }
-                        return RE::BSEventNotifyControl::kContinue;
                     }
                 }
             }
+            return RE::BSEventNotifyControl::kContinue;
         }
+
         return RE::BSEventNotifyControl::kContinue;
     }
 
@@ -164,25 +169,31 @@ namespace SoundFX {
             return RE::BSEventNotifyControl::kContinue;
         }
 
-        const auto &weapons = jsonLoader.getItems("weapons");
-        for (const auto &[itemName, itemEvents] : weapons) {
-            const auto resolvedFormID =
-                GetFormIDFromEditorIDAndPluginName(itemEvents.editorID, itemEvents.pluginName);
+        if (event->cause->GetObjectReference()
+            == RE::PlayerCharacter::GetSingleton()->GetObjectReference()) {
+            const auto &weapons = jsonLoader.getItems("weapons");
+            for (const auto &[itemName, itemEvents] : weapons) {
+                const auto resolvedFormID =
+                    GetFormIDFromEditorIDAndPluginName(itemEvents.editorID, itemEvents.pluginName);
 
-            if (resolvedFormID == event->source) {
-                for (const auto &jsonEvent : itemEvents.events) {
-                    if (jsonEvent.type == "Hit") {
-                        if (actionMap.find(jsonEvent.details.hitType.value()) != actionMap.end()) {
-                            float randomValue = static_cast<float>(rand()) / RAND_MAX;
-                            if (randomValue <= jsonEvent.chance) {
-                                actionMap[jsonEvent.details.hitType.value()](event,
-                                                                             jsonEvent.soundEffect);
+                if (resolvedFormID == event->source) {
+                    for (const auto &jsonEvent : itemEvents.events) {
+                        if (jsonEvent.type == "Hit") {
+                            if (actionMap.find(jsonEvent.details.hitType.value())
+                                != actionMap.end()) {
+                                float randomValue = static_cast<float>(rand()) / RAND_MAX;
+                                if (randomValue <= jsonEvent.chance) {
+                                    actionMap[jsonEvent.details.hitType.value()](
+                                        event, jsonEvent.soundEffect);
+                                }
+                                return RE::BSEventNotifyControl::kContinue;
                             }
-                            return RE::BSEventNotifyControl::kContinue;
                         }
                     }
                 }
             }
+
+            return RE::BSEventNotifyControl::kContinue;
         }
 
         return RE::BSEventNotifyControl::kContinue;
@@ -238,7 +249,7 @@ namespace SoundFX {
 
     RE::BSEventNotifyControl
         WeaponEventHandler::ProcessAttackEvent(const SKSE::ActionEvent *event) {
-        if (!event || !event->actor) {
+        if (!event || !event->actor || event->actor != RE::PlayerCharacter::GetSingleton()) {
             return RE::BSEventNotifyControl::kContinue;
         }
 
