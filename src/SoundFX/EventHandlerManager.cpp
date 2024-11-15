@@ -37,7 +37,8 @@ namespace SoundFX {
 
         RegisterMultipleEventHandlers(eventSource,
                                       armorEventHandler.get(),
-                                      RE::TESContainerChangedEvent {});
+                                      RE::TESContainerChangedEvent {},
+                                      RE::TESEquipEvent {});
     }
 
     RE::BSEventNotifyControl
