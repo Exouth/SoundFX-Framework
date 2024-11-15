@@ -1,6 +1,7 @@
 #pragma once
 
 #include "EventHandlers/WeaponEventHandler.h"
+#include "EventHandlers/SpellEventHandler.h"
 #include "JSONLoader.h"
 
 namespace SoundFX {
@@ -18,6 +19,7 @@ namespace SoundFX {
       private:
         JSONLoader                         &jsonLoader;
         std::unique_ptr<WeaponEventHandler> weaponEventHandler;
+        std::unique_ptr<SpellEventHandler> spellEventHandler;
 
         template <typename EventSourceType, typename HandlerType, typename... EventTypes>
         void
