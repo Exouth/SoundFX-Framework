@@ -62,7 +62,6 @@ namespace SoundFX {
                             float randomValue = static_cast<float>(rand()) / RAND_MAX;
                             if (randomValue <= jsonEvent.chance) {
                                 PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
-                                spdlog::info("Playing sound for DrawEvent");
                             }
                             return RE::BSEventNotifyControl::kContinue;
                         }
@@ -120,7 +119,6 @@ namespace SoundFX {
                             float randomValue = static_cast<float>(rand()) / RAND_MAX;
                             if (randomValue <= jsonEvent.chance) {
                                 PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
-                                spdlog::info("Playing sound for SheatheEvent");
                             }
                             return RE::BSEventNotifyControl::kContinue;
                         }
@@ -178,7 +176,6 @@ namespace SoundFX {
                             float randomValue = static_cast<float>(rand()) / RAND_MAX;
                             if (randomValue <= jsonEvent.chance) {
                                 PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
-                                spdlog::info("Playing sound for FireEvent");
                             }
                             return RE::BSEventNotifyControl::kContinue;
                         }
@@ -236,7 +233,6 @@ namespace SoundFX {
                             float randomValue = static_cast<float>(rand()) / RAND_MAX;
                             if (randomValue <= jsonEvent.chance) {
                                 PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
-                                spdlog::info("Playing sound for CastEvent");
                             }
                             return RE::BSEventNotifyControl::kContinue;
                         }

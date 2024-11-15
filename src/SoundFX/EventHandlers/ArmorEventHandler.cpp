@@ -41,8 +41,6 @@ namespace SoundFX {
                     if (jsonEvent.type == "PickUp") {
                         float randomValue = static_cast<float>(rand()) / RAND_MAX;
                         if (randomValue <= jsonEvent.chance) {
-                            spdlog::info("Playing PickUp sound for weapon: {}",
-                                         jsonEvent.soundEffect);
                             PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                         }
                         return RE::BSEventNotifyControl::kContinue;
@@ -82,8 +80,6 @@ namespace SoundFX {
                         if (jsonEvent.type == "Equip") {
                             float randomValue = static_cast<float>(rand()) / RAND_MAX;
                             if (randomValue <= jsonEvent.chance) {
-                                spdlog::info("Playing Equip sound for weapon: {}",
-                                             jsonEvent.soundEffect);
                                 PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                             }
                             return RE::BSEventNotifyControl::kContinue;
@@ -126,8 +122,6 @@ namespace SoundFX {
                         if (jsonEvent.type == "Unequip") {
                             float randomValue = static_cast<float>(rand()) / RAND_MAX;
                             if (randomValue <= jsonEvent.chance) {
-                                spdlog::info("Playing Unequip sound for weapon: {}",
-                                             jsonEvent.soundEffect);
                                 PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                             }
                             return RE::BSEventNotifyControl::kContinue;
