@@ -5,7 +5,7 @@
 
 namespace SoundFX {
 
-    class SpellEventHandler : public RE::BSTEventSink<RE::TESEquipEvent> {
+    class SpellEventHandler : public RE::BSTEventSink<SKSE::ActionEvent> {
         JSONLoader &jsonLoader;
 
       public:
@@ -13,11 +13,11 @@ namespace SoundFX {
         }
 
         RE::BSEventNotifyControl
-            ProcessEvent(const RE::TESEquipEvent *event, RE::BSTEventSource<RE::TESEquipEvent> *);
+            ProcessEvent(const SKSE::ActionEvent *event, RE::BSTEventSource<SKSE::ActionEvent> *);
 
       private:
         RE::BSEventNotifyControl
-            ProcessEquipEvent(const RE::TESEquipEvent *event);
+            ProcessDrawEvent(const SKSE::ActionEvent *event);
     };
 
 }
