@@ -18,6 +18,12 @@ namespace SoundFX {
       private:
         RE::BSEventNotifyControl
             ProcessDrawEvent(const SKSE::ActionEvent *event);
+        RE::BSEventNotifyControl
+            ProcessSheatheEvent(const SKSE::ActionEvent *event);
+        RE::BSEventNotifyControl
+            ProcessFireEvent(const SKSE::ActionEvent *event);
+        RE::BSEventNotifyControl
+            ProcessCastEvent(const SKSE::ActionEvent *event);
     };
 
 }
