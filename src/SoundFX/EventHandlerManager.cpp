@@ -31,6 +31,13 @@ namespace SoundFX {
 
         RegisterMultipleEventHandlers(
             eventSourceSKSE, spellEventHandler.get(), SKSE::ActionEvent {});
+
+        // ArmorEvents
+        armorEventHandler = std::make_unique<ArmorEventHandler>(jsonLoader);
+
+        RegisterMultipleEventHandlers(eventSource,
+                                      armorEventHandler.get(),
+                                      RE::TESContainerChangedEvent {});
     }
 
     RE::BSEventNotifyControl
