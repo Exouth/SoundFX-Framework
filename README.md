@@ -34,12 +34,25 @@ Please do not use this in live mod releases until an official stable version is 
 - [CommonLibSSE-NG](https://github.com/CharmedBaryon/CommonLibSSE).
 - [spdlog](https://github.com/gabime/spdlog).
 - [nlohmann_json](https://github.com/nlohmann/json).
+- [openal-soft](https://github.com/kcat/openal-soft).
+- [libsndfile](https://github.com/libsndfile/libsndfile).
 - [Vcpkg](https://vcpkg.io/) for dependency management.
+
 
 ## Licensing
 
-This project is licensed under the **Apache 2.0 License**.  
-You are free to use, modify, and distribute the code under the terms of the license.  
-**However, attribution is required** for any use of this code in other projects.
+This project is licensed under the **GNU General Public License v3.0**.  
+You are free to use, modify, and distribute this code under the terms of the license.  
+**Attribution is required**, meaning you must retain the original copyright notice in the source code.  
+**If you modify and distribute the code, you must also distribute your changes and include the source code.**
 
-For details, see the [`LICENSE`](LICENSE) file.
+This project also includes specific exceptions to facilitate compatibility with proprietary software and libraries commonly used in the modding community. For details about these exceptions, see the [`EXCEPTIONS.md`](EXCEPTIONS.md) file.
+
+For the full license text, see the [`LICENSE`](LICENSE) file.
+
+### Third-Party Licenses
+
+This project also uses third-party libraries that are distributed under their own licenses.  
+See the `licenses` folder for more information:
+- `libsndfile` is licensed under the LGPL-2.1. See [`licenses/LICENSE-libsndfile`](licenses/LICENSE-libsndfile).
+- `OpenAL` is licensed under the LGPL. See [`licenses/LICENSE-openal`](licenses/LICENSE-openal).

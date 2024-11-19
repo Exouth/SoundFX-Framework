@@ -25,6 +25,8 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 find_package(CommonLibSSE CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
+find_package(OpenAL CONFIG REQUIRED)
+find_package(SndFile REQUIRED)
 
 # Automatically add all source and header files from src and include directories
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/*.cpp" "${CMAKE_SOURCE_DIR}/src/SoundFX/*.cpp" "${CMAKE_SOURCE_DIR}/src/SoundFX/EventHandlers/*.cpp")
@@ -53,7 +55,7 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE include/PCH.h)
 target_include_directories(${PROJECT_NAME} PRIVATE include src/SoundFX)
 
 # Link dependencies
-target_link_libraries(${PROJECT_NAME} PRIVATE spdlog::spdlog nlohmann_json::nlohmann_json)
+target_link_libraries(${PROJECT_NAME} PRIVATE spdlog::spdlog nlohmann_json::nlohmann_json OpenAL::OpenAL SndFile::sndfile)
 
 # Add definitions for SSE/AE compatibility
 target_compile_definitions(${PROJECT_NAME} PRIVATE SKSE_SUPPORT_XBYAK ENABLE_SSE ENABLE_AE)

@@ -14,7 +14,9 @@
       "dependencies": [
         "commonlibsse-ng",
         "spdlog",
-        "nlohmann-json"
+        "nlohmann-json",
+        "openal-soft",
+        "libsndfile"
       ]
     }
   },
