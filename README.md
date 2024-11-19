@@ -13,6 +13,7 @@ Please do not use this in live mod releases until an official stable version is 
 - Sounds can be directly loaded into the engine without requiring ESP plugins or additional mods.
 - Highly configurable JSON structure to define triggers.
 - Support for various playback options like chance, volume, and repetition.
+- 3D positional sound effects to create immersive audio experiences, with support for distance-based volume attenuation and spatial positioning.
 - Ability to specify detailed conditions for sound triggers, such as:
   - Playing a sound only for specific events (e.g., PowerAttack, SneakAttack).
   - Restricting sounds to certain items, weapons, or conditions.
