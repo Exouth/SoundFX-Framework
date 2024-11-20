@@ -23,6 +23,9 @@ namespace SoundFX {
             InitializeContext(ALCdevice *device);
         static ALuint
             LoadAudioBuffer(const std::string &filePath);
+
+        static bool
+            InitializeSharedContext();
     };
 
 }

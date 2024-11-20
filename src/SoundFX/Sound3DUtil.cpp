@@ -2,6 +2,12 @@
 
 namespace SoundFX {
 
+    static ALCdevice  *sharedDevice  = nullptr;
+    static ALCcontext *sharedContext = nullptr;
+
+    static std::unordered_map<std::string, ALuint> bufferCache;
+
+
     RE::NiPoint3
         Sound3DUtil::GetForwardVector(RE::NiAVObject *object) {
         if (!object) {
@@ -46,6 +52,11 @@ namespace SoundFX {
 
     ALuint
         Sound3DUtil::LoadAudioBuffer(const std::string &filePath) {
+
+        if (bufferCache.find(filePath) != bufferCache.end()) {
+            return bufferCache[filePath];
+        }
+
         std::string fullPath = "Data/" + filePath;
 
         SF_INFO  fileInfo {};
@@ -72,7 +83,30 @@ namespace SoundFX {
         alBufferData(
             buffer, format, samples.data(), samples.size() * sizeof(short), fileInfo.samplerate);
 
+        bufferCache[filePath] = buffer;
+
         return buffer;
+    }
+
+    bool
+        Sound3DUtil::InitializeSharedContext() {
+        if (!sharedDevice) {
+            sharedDevice = InitializeDevice();
+            if (!sharedDevice) {
+                spdlog::error("Failed to initialize shared OpenAL device.");
+                return false;
+            }
+        }
+        if (!sharedContext) {
+            sharedContext = InitializeContext(sharedDevice);
+            if (!sharedContext) {
+                spdlog::error("Failed to initialize shared OpenAL context.");
+                alcCloseDevice(sharedDevice);
+                sharedDevice = nullptr;
+                return false;
+            }
+        }
+        return true;
     }
 
     bool
@@ -84,20 +118,13 @@ namespace SoundFX {
                                  float               gain,
                                  float               minGain) {
 
-        spdlog::info("Starting 3D sound playback.");
-
-        ALCdevice *device = InitializeDevice();
-        if (!device)
+        if (!InitializeSharedContext())
             return false;
 
-        ALCcontext *context = InitializeContext(device);
-        if (!context)
-            return false;
 
         ALuint buffer = LoadAudioBuffer(filePath);
         if (buffer == 0) {
-            alcDestroyContext(context);
-            alcCloseDevice(device);
+            spdlog::error("Failed to load audio buffer.");
             return false;
         }
 
@@ -112,7 +139,7 @@ namespace SoundFX {
 
         alSourcePlay(source);
 
-        std::thread([source, buffer, context, device, worldSourcePos]() {
+        std::thread([source, worldSourcePos]() {
             ALint state = AL_PLAYING;
 
             RE::NiPoint3 initialPlayerPosition;
@@ -156,10 +183,6 @@ namespace SoundFX {
             }
 
             alDeleteSources(1, &source);
-            alDeleteBuffers(1, &buffer);
-            alcMakeContextCurrent(nullptr);
-            alcDestroyContext(context);
-            alcCloseDevice(device);
         }).detach();
 
         return true;
