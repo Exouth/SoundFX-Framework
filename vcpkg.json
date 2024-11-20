@@ -4,7 +4,7 @@
   "version-string": "0.1.0",
   "description": "Framework for creating custom sound and event-based SKSE plugins for Skyrim SE.",
   "homepage": "https://github.com/Exouth/SoundFX-Framework",
-  "license": "Apache-2.0",
+  "license": "GPL-3.0",
   "maintainers": [
     "Exouth"
   ],
