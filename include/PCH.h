@@ -8,6 +8,9 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <nlohmann/json.hpp>
+#include <AL/al.h>
+#include <AL/alc.h>
+#include <sndfile.h>
 
 #include <string>
 #include <vector>
