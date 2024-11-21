@@ -1,21 +1,22 @@
+#include "ArmorEventHandler.h"
 #include "EventHandlerManager.h"
 #include "JSONLoader.h"
 #include "SoundUtil.h"
-#include "ArmorEventHandler.h"
 #include "Utility.h"
 
 namespace SoundFX {
 
     RE::BSEventNotifyControl
         ArmorEventHandler::ProcessEvent(const RE::TESContainerChangedEvent *event,
-                                         RE::BSTEventSource<RE::TESContainerChangedEvent> *) {
+                                        RE::BSTEventSource<RE::TESContainerChangedEvent> *) {
         return ProcessPickUpEvent(event);
     }
 
     RE::BSEventNotifyControl
         ArmorEventHandler::ProcessEvent(const RE::TESEquipEvent *event,
                                         RE::BSTEventSource<RE::TESEquipEvent> *) {
-        return EventHandlerManager::ProcessMultipleEvents({ProcessEquipEvent(event), ProcessUnequipEvent(event)});
+        return EventHandlerManager::ProcessMultipleEvents(
+            {ProcessEquipEvent(event), ProcessUnequipEvent(event)});
     }
 
     RE::BSEventNotifyControl
@@ -31,13 +32,13 @@ namespace SoundFX {
             return RE::BSEventNotifyControl::kContinue;
         }
 
-        const auto &weapons = jsonLoader.getItems("armors");
-        for (const auto &[itemName, itemEvents] : weapons) {
+        const auto &armors = jsonLoader.getItems("armors");
+        for (const auto &[armorName, armorEvents] : armors) {
             const auto resolvedFormID =
-                GetFormIDFromEditorIDAndPluginName(itemEvents.editorID, itemEvents.pluginName);
+                GetFormIDFromEditorIDAndPluginName(armorEvents.editorID, armorEvents.pluginName);
 
             if (resolvedFormID == item->formID) {
-                for (const auto &jsonEvent : itemEvents.events) {
+                for (const auto &jsonEvent : armorEvents.events) {
                     if (jsonEvent.type == "PickUp") {
                         float randomValue = static_cast<float>(rand()) / RAND_MAX;
                         if (randomValue <= jsonEvent.chance) {
@@ -70,13 +71,13 @@ namespace SoundFX {
 
         if (event->actor->GetObjectReference()
             == RE::PlayerCharacter::GetSingleton()->GetObjectReference()) {
-            const auto &weapons = jsonLoader.getItems("armors");
-            for (const auto &[itemName, itemEvents] : weapons) {
-                const auto resolvedFormID =
-                    GetFormIDFromEditorIDAndPluginName(itemEvents.editorID, itemEvents.pluginName);
+            const auto &armors = jsonLoader.getItems("armors");
+            for (const auto &[armorName, armorEvents] : armors) {
+                const auto resolvedFormID = GetFormIDFromEditorIDAndPluginName(
+                    armorEvents.editorID, armorEvents.pluginName);
 
                 if (resolvedFormID == item->formID) {
-                    for (const auto &jsonEvent : itemEvents.events) {
+                    for (const auto &jsonEvent : armorEvents.events) {
                         if (jsonEvent.type == "Equip") {
                             float randomValue = static_cast<float>(rand()) / RAND_MAX;
                             if (randomValue <= jsonEvent.chance) {
@@ -89,7 +90,7 @@ namespace SoundFX {
             }
             return RE::BSEventNotifyControl::kContinue;
         }
-        
+
         return RE::BSEventNotifyControl::kContinue;
     }
 
@@ -112,13 +113,13 @@ namespace SoundFX {
 
         if (event->actor->GetObjectReference()
             == RE::PlayerCharacter::GetSingleton()->GetObjectReference()) {
-            const auto &weapons = jsonLoader.getItems("armors");
-            for (const auto &[itemName, itemEvents] : weapons) {
-                const auto resolvedFormID =
-                    GetFormIDFromEditorIDAndPluginName(itemEvents.editorID, itemEvents.pluginName);
+            const auto &armors = jsonLoader.getItems("armors");
+            for (const auto &[armorName, armorEvents] : armors) {
+                const auto resolvedFormID = GetFormIDFromEditorIDAndPluginName(
+                    armorEvents.editorID, armorEvents.pluginName);
 
                 if (resolvedFormID == item->formID) {
-                    for (const auto &jsonEvent : itemEvents.events) {
+                    for (const auto &jsonEvent : armorEvents.events) {
                         if (jsonEvent.type == "Unequip") {
                             float randomValue = static_cast<float>(rand()) / RAND_MAX;
                             if (randomValue <= jsonEvent.chance) {

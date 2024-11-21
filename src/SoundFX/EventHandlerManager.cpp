@@ -55,6 +55,12 @@ namespace SoundFX {
 
         RegisterMultipleEventHandlers(
             eventSource, miscItemEventHandler.get(), RE::TESContainerChangedEvent {});
+
+        // QuestEvents
+        questEventHandler = std::make_unique<QuestEventHandler>(jsonLoader);
+
+        RegisterMultipleEventHandlers(
+            eventSource, questEventHandler.get(), RE::TESQuestStageEvent {});
     }
 
     RE::BSEventNotifyControl

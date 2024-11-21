@@ -103,12 +103,12 @@ namespace SoundFX {
         if (event->actor->GetObjectReference()
             == RE::PlayerCharacter::GetSingleton()->GetObjectReference()) {
             const auto &weapons = jsonLoader.getItems("weapons");
-            for (const auto &[itemName, itemEvents] : weapons) {
-                const auto resolvedFormID =
-                    GetFormIDFromEditorIDAndPluginName(itemEvents.editorID, itemEvents.pluginName);
+            for (const auto &[weaponName, weaponEvents] : weapons) {
+                const auto resolvedFormID = GetFormIDFromEditorIDAndPluginName(
+                    weaponEvents.editorID, weaponEvents.pluginName);
 
                 if (resolvedFormID == item->formID) {
-                    for (const auto &jsonEvent : itemEvents.events) {
+                    for (const auto &jsonEvent : weaponEvents.events) {
                         if (jsonEvent.type == "Equip") {
                             float randomValue = static_cast<float>(rand()) / RAND_MAX;
                             if (randomValue <= jsonEvent.chance) {
@@ -139,12 +139,12 @@ namespace SoundFX {
         }
 
         const auto &weapons = jsonLoader.getItems("weapons");
-        for (const auto &[itemName, itemEvents] : weapons) {
+        for (const auto &[weaponName, weaponEvents] : weapons) {
             const auto resolvedFormID =
-                GetFormIDFromEditorIDAndPluginName(itemEvents.editorID, itemEvents.pluginName);
+                GetFormIDFromEditorIDAndPluginName(weaponEvents.editorID, weaponEvents.pluginName);
 
             if (resolvedFormID == item->formID) {
-                for (const auto &jsonEvent : itemEvents.events) {
+                for (const auto &jsonEvent : weaponEvents.events) {
                     if (jsonEvent.type == "PickUp") {
                         float randomValue = static_cast<float>(rand()) / RAND_MAX;
                         if (randomValue <= jsonEvent.chance) {
@@ -168,12 +168,12 @@ namespace SoundFX {
         if (event->cause->GetObjectReference()
             == RE::PlayerCharacter::GetSingleton()->GetObjectReference()) {
             const auto &weapons = jsonLoader.getItems("weapons");
-            for (const auto &[itemName, itemEvents] : weapons) {
-                const auto resolvedFormID =
-                    GetFormIDFromEditorIDAndPluginName(itemEvents.editorID, itemEvents.pluginName);
+            for (const auto &[weaponName, weaponEvents] : weapons) {
+                const auto resolvedFormID = GetFormIDFromEditorIDAndPluginName(
+                    weaponEvents.editorID, weaponEvents.pluginName);
 
                 if (resolvedFormID == event->source) {
-                    for (const auto &jsonEvent : itemEvents.events) {
+                    for (const auto &jsonEvent : weaponEvents.events) {
                         if (jsonEvent.type == "Hit") {
                             if (actionMap.find(jsonEvent.details.hitType.value())
                                 != actionMap.end()) {
@@ -221,12 +221,12 @@ namespace SoundFX {
             }
 
             const auto &weapons = jsonLoader.getItems("weapons");
-            for (const auto &[itemName, itemEvents] : weapons) {
-                const auto resolvedFormID =
-                    GetFormIDFromEditorIDAndPluginName(itemEvents.editorID, itemEvents.pluginName);
+            for (const auto &[weaponName, weaponEvents] : weapons) {
+                const auto resolvedFormID = GetFormIDFromEditorIDAndPluginName(
+                    weaponEvents.editorID, weaponEvents.pluginName);
 
                 if (resolvedFormID == currentItem) {
-                    for (const auto &jsonEvent : itemEvents.events) {
+                    for (const auto &jsonEvent : weaponEvents.events) {
                         if (jsonEvent.type == "Idle" && player->AsActorState()->IsWeaponDrawn()) {
                             float randomValue = static_cast<float>(rand()) / RAND_MAX;
                             if (randomValue <= jsonEvent.chance) {
@@ -277,12 +277,12 @@ namespace SoundFX {
             }
 
             const auto &weapons = jsonLoader.getItems("weapons");
-            for (const auto &[itemName, itemEvents] : weapons) {
-                const auto resolvedFormID =
-                    GetFormIDFromEditorIDAndPluginName(itemEvents.editorID, itemEvents.pluginName);
+            for (const auto &[weaponName, weaponEvents] : weapons) {
+                const auto resolvedFormID = GetFormIDFromEditorIDAndPluginName(
+                    weaponEvents.editorID, weaponEvents.pluginName);
 
                 if (resolvedFormID == currentItem) {
-                    for (const auto &jsonEvent : itemEvents.events) {
+                    for (const auto &jsonEvent : weaponEvents.events) {
                         if (jsonEvent.type == "Attack"
                             && event->type == SKSE::ActionEvent::Type::kWeaponSwing) {
                             float randomValue = static_cast<float>(rand()) / RAND_MAX;
