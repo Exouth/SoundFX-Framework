@@ -13,6 +13,7 @@ namespace SoundFX {
             {ProcessStartQuestEvent(event), ProcessEndQuestEvent(event)});
     }
 
+    // !!!Maybe fix later if it makes Problems with Stages
     std::uint16_t
         QuestEventHandler::GetFirstActiveStage(RE::TESQuest *quest) {
         if (!quest || !quest->executedStages) {
@@ -73,6 +74,33 @@ namespace SoundFX {
 
     RE::BSEventNotifyControl
         QuestEventHandler::ProcessEndQuestEvent(const RE::TESQuestStageEvent *event) {
+
+        if (!event || !event->formID) {
+            return RE::BSEventNotifyControl::kContinue;
+        }
+
+        auto *quest = RE::TESForm::LookupByID<RE::TESQuest>(event->formID);
+        if (!quest) {
+            return RE::BSEventNotifyControl::kContinue;
+        }
+
+        const auto &quests = jsonLoader.getItems("quests");
+        for (const auto &[questName, questEvents] : quests) {
+            const auto resolvedFormID =
+                GetFormIDFromEditorIDAndPluginName(questEvents.editorID, questEvents.pluginName);
+
+            if (resolvedFormID == event->formID) {
+                for (const auto &jsonEvent : questEvents.events) {
+                    if (jsonEvent.type == "End" && quest->IsCompleted()) {
+                        float randomValue = static_cast<float>(rand()) / RAND_MAX;
+                        if (randomValue <= jsonEvent.chance) {
+                            PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
+                        }
+                        return RE::BSEventNotifyControl::kContinue;
+                    }
+                }
+            }
+        }
 
         return RE::BSEventNotifyControl::kContinue;
     }
