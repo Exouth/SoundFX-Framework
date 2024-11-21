@@ -4,6 +4,7 @@
 #include "EventHandlers/SpellEventHandler.h"
 #include "EventHandlers/ArmorEventHandler.h"
 #include "EventHandlers/MiscItemEventHandler.h"
+#include "EventHandlers/QuestEventHandler.h"
 #include "JSONLoader.h"
 
 namespace SoundFX {
@@ -24,6 +25,7 @@ namespace SoundFX {
         std::unique_ptr<SpellEventHandler> spellEventHandler;
         std::unique_ptr<ArmorEventHandler>  armorEventHandler;
         std::unique_ptr<MiscItemEventHandler>  miscItemEventHandler;
+        std::unique_ptr<QuestEventHandler> questEventHandler;
 
         template <typename EventSourceType, typename HandlerType, typename... EventTypes>
         void
