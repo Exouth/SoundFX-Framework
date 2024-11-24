@@ -5,19 +5,24 @@
 
 namespace SoundFX {
 
-    class CellEventHandler : public RE::BSTEventSink<RE::TESCellAttachDetachEvent> {
+    class CellEventHandler {
         JSONLoader &jsonLoader;
+        TaskScheduler scheduler;
 
       public:
         explicit CellEventHandler(JSONLoader &loader) : jsonLoader(loader) {
         }
 
-        RE::BSEventNotifyControl
-            ProcessEvent(const RE::TESCellAttachDetachEvent *event,
-                         RE::BSTEventSource<RE::TESCellAttachDetachEvent> *);
+        void
+            SetupCellTasks();
 
       private:
-        RE::BSEventNotifyControl
-            ProcessCellEnterEvent(const RE::TESCellAttachDetachEvent *event);
+        void
+            ProcessCellEnterTask();
+
+        void
+            StartCellTask(std::function<void()> task, bool repeat = false) {
+            scheduler.AddTask(task, repeat);
+        }
     };
 }
