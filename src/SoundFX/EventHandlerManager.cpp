@@ -66,6 +66,11 @@ namespace SoundFX {
         cellEventHandler = std::make_unique<CellEventHandler>(jsonLoader);
 
         cellEventHandler->SetupCellTasks();
+
+        // NpcInteractions
+        npcInteractionEventHandler = std::make_unique<NpcInteractionEventHandler>(jsonLoader);
+
+        npcInteractionEventHandler->SetupNpcInteractionTasks();
     }
 
     RE::BSEventNotifyControl
