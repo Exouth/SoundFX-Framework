@@ -19,6 +19,8 @@ namespace SoundFX {
       private:
         void
             ProcessCellEnterTask();
+        void
+            ProcessAmbienceSoundTask();
 
         void
             StartCellTask(std::function<void()> task, bool repeat = false) {
