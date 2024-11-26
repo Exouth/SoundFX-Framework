@@ -21,6 +21,12 @@ namespace SoundFX {
             return;
         }
 
+        auto ui = RE::UI::GetSingleton();
+        if (!ui) {
+            spdlog::error("Failed to get UI Singleton.");
+            return;
+        }
+
         // WeaponEvents
         weaponEventHandler = std::make_unique<WeaponEventHandler>(jsonLoader);
         weaponEventHandler->InitializeAttackTypeHandlers();
@@ -70,7 +76,8 @@ namespace SoundFX {
         // NpcInteractions
         npcInteractionEventHandler = std::make_unique<NpcInteractionEventHandler>(jsonLoader);
 
-        npcInteractionEventHandler->SetupNpcInteractionTasks();
+        RegisterMultipleEventHandlers(
+            ui, npcInteractionEventHandler.get(), RE::MenuOpenCloseEvent {});
     }
 
     RE::BSEventNotifyControl

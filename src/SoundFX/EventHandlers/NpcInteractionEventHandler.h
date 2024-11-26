@@ -5,24 +5,25 @@
 
 namespace SoundFX {
 
-    class NpcInteractionEventHandler {
+    class NpcInteractionEventHandler : public RE::BSTEventSink<RE::MenuOpenCloseEvent> {
         JSONLoader   &jsonLoader;
-        TaskScheduler scheduler;
 
       public:
         explicit NpcInteractionEventHandler(JSONLoader &loader) : jsonLoader(loader) {
         }
 
-        void
-            SetupNpcInteractionTasks();
+        RE::BSEventNotifyControl
+            ProcessEvent(const RE::MenuOpenCloseEvent *event,
+                         RE::BSTEventSource<RE::MenuOpenCloseEvent> *);
 
       private:
-        void
-            ProcessDialogOpenTask();
+        RE::BSEventNotifyControl
+            ProcessDialogOpenEvent(const RE::MenuOpenCloseEvent *event);
 
-        void
-            StartNpcInteractionTask(std::function<void()> task, bool repeat = false) {
-            scheduler.AddTask(task, repeat);
-        }
+        RE::NiPoint3
+            GetActorForwardVector(RE::Actor *actor);
+
+        std::unordered_map<RE::FormID, RE::Actor *>
+            GetNpcsInPlayerFOV(RE::Actor *player, float range, float fovAngle);
     };
 }
