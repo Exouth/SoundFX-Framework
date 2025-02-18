@@ -5,6 +5,31 @@
 
 namespace SoundFX {
 
+    std::unordered_map<std::string, NpcInteractionEventHandler::EventAction>
+        NpcInteractionEventHandler::actionMap;
+
+    void
+        NpcInteractionEventHandler::InitializeOnlyAtTypeHandlers() {
+        actionMap["All"] = [](const std::string &soundEffect,
+                              const std::string &editorid,
+                              const std::string &selectedDialogue) {
+            PlayCustomSoundAsDescriptor(soundEffect);
+        };
+        actionMap["EditorID"] = [](const std::string &soundEffect,
+                                   const std::string &editorid,
+                                   const std::string &selectedDialogue) {
+            if (editorid == selectedDialogue) {
+                PlayCustomSoundAsDescriptor(soundEffect);
+            }
+        };
+    }
+
+    void
+        NpcInteractionEventHandler::SetupNpcInteractionTasks() {
+        StartNpcInteractionTask([this]() { ProcessDialogTopicTask(); }, true);
+        scheduler.Start(100);  // Run every 0.1 Second
+    }
+
     RE::BSEventNotifyControl
         NpcInteractionEventHandler::ProcessEvent(const RE::MenuOpenCloseEvent *event,
                                                  RE::BSTEventSource<RE::MenuOpenCloseEvent> *) {
@@ -57,6 +82,73 @@ namespace SoundFX {
         }
 
         return RE::BSEventNotifyControl::kContinue;
+    }
+
+    void
+        NpcInteractionEventHandler::ProcessDialogTopicTask() {
+
+        auto *ui = RE::UI::GetSingleton();
+        if (!ui) {
+            return;
+        }
+
+        if (ui->IsMenuOpen(RE::DialogueMenu::MENU_NAME)) {
+
+            auto *menuTopicManager = RE::MenuTopicManager::GetSingleton();
+            if (!menuTopicManager) {
+                return;
+            }
+
+            auto  speakerHandle = menuTopicManager->speaker;
+            auto *speaker       = speakerHandle.get().get();
+
+            if (!speaker || !speaker->GetBaseObject()) {
+                return;
+            }
+
+            const auto &npcInteractions = jsonLoader.getItems("npcInteractions");
+            for (const auto &[npcInteractiontName, npcInteractionEvents] : npcInteractions) {
+                const auto resolvedFormID = GetFormIDFromEditorIDAndPluginName(
+                    npcInteractionEvents.editorID, npcInteractionEvents.pluginName);
+
+                if (resolvedFormID == speaker->GetBaseObject()->formID) {
+                    for (const auto &jsonEvent : npcInteractionEvents.events) {
+                        if (jsonEvent.type == "DialogTopic") {
+
+                            const std::string &onlyAtOriginal = jsonEvent.details.onlyAt.value();
+                            const std::string  key =
+                                (onlyAtOriginal != "All") ? "EditorID" : onlyAtOriginal;
+
+                            if (actionMap.find(key) != actionMap.end()) {
+                                float randomValue = static_cast<float>(rand()) / RAND_MAX;
+                                if (randomValue <= jsonEvent.chance) {
+                                    auto *selectedNode = menuTopicManager->currentTopicInfo;
+                                    if (selectedNode) {
+                                        auto *selectedDialogue = selectedNode->parentTopic;
+
+                                        if (!selectedDialogue->GetFormEditorID()
+                                            || lastParentTopic == nullptr) {
+                                            lastParentTopic = selectedDialogue;
+                                            return;
+                                        }
+
+                                        if (selectedDialogue->GetFormEditorID()
+                                            != lastParentTopic->GetFormEditorID()) {
+                                            lastParentTopic = selectedDialogue;
+
+                                            actionMap[key](jsonEvent.soundEffect,
+                                                           jsonEvent.details.onlyAt.value(),
+                                                           selectedDialogue->GetFormEditorID());
+                                        }
+                                    }
+                                }
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     RE::NiPoint3

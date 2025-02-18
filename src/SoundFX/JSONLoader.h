@@ -6,7 +6,7 @@ namespace SoundFX {
         std::optional<std::string> attackType;
         std::optional<std::string> hitType;
         std::optional<std::string> environment;
-        std::optional<int>         enemyCount;
+        std::optional<std::string> onlyAt;
     };
 
     struct Event {

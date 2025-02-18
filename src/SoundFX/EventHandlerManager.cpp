@@ -1,5 +1,6 @@
 #include "EventHandlerManager.h"
 #include "EventHandlers/SpellEventHandler.h"
+#include "RE/S/ScriptEventSourceHolder.h"
 
 namespace SoundFX {
 
@@ -75,6 +76,8 @@ namespace SoundFX {
 
         // NpcInteractions
         npcInteractionEventHandler = std::make_unique<NpcInteractionEventHandler>(jsonLoader);
+        npcInteractionEventHandler->InitializeOnlyAtTypeHandlers();
+        npcInteractionEventHandler->SetupNpcInteractionTasks();
 
         RegisterMultipleEventHandlers(
             ui, npcInteractionEventHandler.get(), RE::MenuOpenCloseEvent {});
