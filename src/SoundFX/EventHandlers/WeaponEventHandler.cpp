@@ -161,12 +161,18 @@ namespace SoundFX {
     RE::BSEventNotifyControl
         WeaponEventHandler::ProcessHitEvent(const RE::TESHitEvent *event) {
 
-        if (event == nullptr || event->target == 0 || event->source == 0) {
+        if (event == nullptr || event->target == nullptr || event->source == 0
+            || event->cause == nullptr) {
+            return RE::BSEventNotifyControl::kContinue;
+        }
+
+        auto *player = RE::PlayerCharacter::GetSingleton();
+        if (!player) {
             return RE::BSEventNotifyControl::kContinue;
         }
 
         if (event->cause->GetObjectReference()
-            == RE::PlayerCharacter::GetSingleton()->GetObjectReference()) {
+            == player->GetObjectReference()) {
             const auto &weapons = jsonLoader.getItems("weapons");
             for (const auto &[weaponName, weaponEvents] : weapons) {
                 const auto resolvedFormID = GetFormIDFromEditorIDAndPluginName(
