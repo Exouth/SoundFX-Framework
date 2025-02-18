@@ -56,9 +56,9 @@ namespace SoundFX {
 
             // Use master record instead as fallback
             if (formFile && forms.size() == 1) {
-                spdlog::info("Using Fallback Master Record: {:08X} in plugin '{}'",
-                             form->GetFormID(),
-                             pluginName);
+                spdlog::debug("Using Fallback Master Record: {:08X} in plugin '{}'",
+                              form->GetFormID(),
+                              pluginName);
                 return form->GetFormID();
             }
         }

@@ -28,5 +28,6 @@
 #include <functional>
 #include <mutex>
 #include <thread>
+#include <corecrt_math_defines.h>
 
 using namespace std::literals;

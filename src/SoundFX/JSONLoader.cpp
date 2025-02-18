@@ -123,8 +123,8 @@ namespace SoundFX {
                 if (details.contains("environment")) {
                     event.details.environment = details["environment"].get<std::string>();
                 }
-                if (details.contains("enemyCount")) {
-                    event.details.enemyCount = details["enemyCount"].get<int>();
+                if (details.contains("onlyAt")) {
+                    event.details.onlyAt = details["onlyAt"].get<std::string>();
                 }
             }
         } catch (const std::exception &e) {

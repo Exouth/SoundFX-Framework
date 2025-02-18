@@ -1,5 +1,6 @@
 #include "EventHandlerManager.h"
 #include "EventHandlers/SpellEventHandler.h"
+#include "RE/S/ScriptEventSourceHolder.h"
 
 namespace SoundFX {
 
@@ -18,6 +19,12 @@ namespace SoundFX {
         auto eventSourceSKSE = SKSE::GetActionEventSource();
         if (!eventSourceSKSE) {
             spdlog::error("Failed to get SKSE ActionEventSource.");
+            return;
+        }
+
+        auto ui = RE::UI::GetSingleton();
+        if (!ui) {
+            spdlog::error("Failed to get UI Singleton.");
             return;
         }
 
@@ -66,6 +73,14 @@ namespace SoundFX {
         cellEventHandler = std::make_unique<CellEventHandler>(jsonLoader);
 
         cellEventHandler->SetupCellTasks();
+
+        // NpcInteractions
+        npcInteractionEventHandler = std::make_unique<NpcInteractionEventHandler>(jsonLoader);
+        npcInteractionEventHandler->InitializeOnlyAtTypeHandlers();
+        npcInteractionEventHandler->SetupNpcInteractionTasks();
+
+        RegisterMultipleEventHandlers(
+            ui, npcInteractionEventHandler.get(), RE::MenuOpenCloseEvent {});
     }
 
     RE::BSEventNotifyControl
