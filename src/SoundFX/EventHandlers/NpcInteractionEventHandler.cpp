@@ -127,6 +127,10 @@ namespace SoundFX {
                                         auto *selectedDialogue = selectedNode->parentTopic;
 
                                         if (!selectedDialogue->GetFormEditorID()
+                                            // Sometimes a nullptr check is not sufficient, as the
+                                            // string might be initialized but empty. We need to
+                                            // skip such cases.
+                                            || std::strlen(selectedDialogue->GetFormEditorID()) == 0
                                             || lastParentTopic == nullptr) {
                                             lastParentTopic = selectedDialogue;
                                             return;
