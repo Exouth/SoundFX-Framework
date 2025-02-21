@@ -9,7 +9,8 @@ namespace SoundFX {
     RE::BSEventNotifyControl
         CombatEventHandler::ProcessEvent(const RE::TESCombatEvent *event,
                                          RE::BSTEventSource<RE::TESCombatEvent> *) {
-        return EventHandlerManager::ProcessMultipleEvents({ProcessStartCombatEvent(event)});
+        return EventHandlerManager::ProcessMultipleEvents(
+            {ProcessStartCombatEvent(event), ProcessSearchCombatEvent(event)});
     }
 
     RE::BSEventNotifyControl
@@ -20,6 +21,16 @@ namespace SoundFX {
         }
 
         if (!event->targetActor || !event->actor || !event->actor->GetBaseObject()) {
+            return RE::BSEventNotifyControl::kContinue;
+        }
+
+        auto *player = RE::PlayerCharacter::GetSingleton();
+        if (!player) {
+            return RE::BSEventNotifyControl::kContinue;
+        }
+
+        // Currently Only Play when Player is involved, skip if Combat is between NPCs
+        if (player->GetFormID() != event->targetActor->GetFormID()) {
             return RE::BSEventNotifyControl::kContinue;
         }
 
@@ -53,6 +64,16 @@ namespace SoundFX {
         }
 
         if (!event->targetActor || !event->actor || !event->actor->GetBaseObject()) {
+            return RE::BSEventNotifyControl::kContinue;
+        }
+
+        auto *player = RE::PlayerCharacter::GetSingleton();
+        if (!player) {
+            return RE::BSEventNotifyControl::kContinue;
+        }
+
+        // Currently Only Play when Player is involved, skip if Combat is between NPCs
+        if (player->GetFormID() != event->targetActor->GetFormID()) {
             return RE::BSEventNotifyControl::kContinue;
         }
 
