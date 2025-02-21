@@ -19,5 +19,7 @@ namespace SoundFX {
             ProcessStartCombatEvent(const RE::TESCombatEvent *event);
         RE::BSEventNotifyControl
             ProcessSearchCombatEvent(const RE::TESCombatEvent *event);
+        RE::BSEventNotifyControl
+            ProcessStopCombatEvent(const RE::TESCombatEvent *event);
     };
 }
