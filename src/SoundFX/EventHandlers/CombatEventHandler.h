@@ -23,8 +23,12 @@ namespace SoundFX {
             ProcessStopCombatEvent(const RE::TESCombatEvent *event);
         RE::BSEventNotifyControl
             ProcessDieCombatEvent(const RE::TESCombatEvent *event);
+        RE::BSEventNotifyControl
+            ProcessFleeCombatEvent(const RE::TESCombatEvent *event);
 
         bool
             IsPlayerInvolvedInCombat(RE::Actor *eventActor, RE::PlayerCharacter *player);
+        bool
+            IsActorFleeing(const RE::Actor *eventActor) const;
     };
 }

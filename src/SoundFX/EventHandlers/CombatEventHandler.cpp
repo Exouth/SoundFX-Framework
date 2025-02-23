@@ -12,7 +12,8 @@ namespace SoundFX {
         return EventHandlerManager::ProcessMultipleEvents({ProcessStartCombatEvent(event),
                                                            ProcessSearchCombatEvent(event),
                                                            ProcessStopCombatEvent(event),
-                                                           ProcessDieCombatEvent(event)});
+                                                           ProcessDieCombatEvent(event),
+                                                           ProcessFleeCombatEvent(event)});
     }
 
     RE::BSEventNotifyControl
@@ -194,6 +195,48 @@ namespace SoundFX {
         return RE::BSEventNotifyControl::kContinue;
     }
 
+    RE::BSEventNotifyControl
+        CombatEventHandler::ProcessFleeCombatEvent(const RE::TESCombatEvent *event) {
+
+        if (!event || !event->targetActor || !event->actor || !event->actor->GetBaseObject()
+            || !event->newState.any(RE::ACTOR_COMBAT_STATE::kCombat)) {
+            return RE::BSEventNotifyControl::kContinue;
+        }
+
+        auto *eventActor = event->actor->As<RE::Actor>();
+        auto *player     = RE::PlayerCharacter::GetSingleton();
+
+        // Currently Only Play when Player is involved, skip if Combat is between NPCs
+        if (!eventActor || !player || player->GetFormID() != event->targetActor->GetFormID()) {
+            return RE::BSEventNotifyControl::kContinue;
+        }
+
+        DelayExec(0.3f, [this, eventActor]() {
+            if (!eventActor || !IsActorFleeing(eventActor))
+                return;
+
+            const auto &combats = jsonLoader.getItems("combats");
+            for (const auto &[combatName, combatEvents] : combats) {
+                const auto resolvedFormID = GetFormIDFromEditorIDAndPluginName(
+                    combatEvents.editorID, combatEvents.pluginName);
+
+                if (resolvedFormID == eventActor->GetBaseObject()->formID) {
+                    for (const auto &jsonEvent : combatEvents.events) {
+                        if (jsonEvent.type == "Flee") {
+                            float randomValue = static_cast<float>(rand()) / RAND_MAX;
+                            if (randomValue <= jsonEvent.chance) {
+                                PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
+                            }
+                            return;
+                        }
+                    }
+                }
+            }
+        });
+
+        return RE::BSEventNotifyControl::kContinue;
+    }
+
     bool
         CombatEventHandler::IsPlayerInvolvedInCombat(RE::Actor           *eventActor,
                                                      RE::PlayerCharacter *player) {
@@ -214,6 +257,14 @@ namespace SoundFX {
             }
         }
         return false;
+    }
+
+    bool
+        CombatEventHandler::IsActorFleeing(const RE::Actor *eventActor) const {
+        const auto &runtimeData      = eventActor->GetActorRuntimeData();
+        const auto *combatController = runtimeData.combatController;
+
+        return combatController && combatController->state && combatController->state->isFleeing;
     }
 
 }
