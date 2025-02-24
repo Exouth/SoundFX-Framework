@@ -6,6 +6,12 @@
 
 namespace SoundFX {
 
+    void
+        CombatEventHandler::SetupCombatTasks() {
+        StartCombatTask([this]() { ProcessKillMoveCombatTask(); }, true);
+        scheduler.Start(500);  // Run every 0.5 Second
+    }
+
     RE::BSEventNotifyControl
         CombatEventHandler::ProcessEvent(const RE::TESCombatEvent *event,
                                          RE::BSTEventSource<RE::TESCombatEvent> *) {
@@ -237,6 +243,51 @@ namespace SoundFX {
         return RE::BSEventNotifyControl::kContinue;
     }
 
+    void
+        CombatEventHandler::ProcessKillMoveCombatTask() {
+
+        auto *player      = RE::PlayerCharacter::GetSingleton();
+        auto *playerActor = player->As<RE::Actor>();
+
+        if (!player || !playerActor) {
+            return;
+        }
+
+        static bool wasInKillMove = false;
+
+        if (player->IsInKillMove()) {
+            if (!wasInKillMove) {
+                const auto &combats = jsonLoader.getItems("combats");
+                for (const auto &[combatName, combatEvents] : combats) {
+                    const auto resolvedFormID = GetFormIDFromEditorIDAndPluginName(
+                        combatEvents.editorID, combatEvents.pluginName);
+
+                    RE::Actor *foundActor = GetCombatTargetByFormID(playerActor, resolvedFormID);
+
+                    if (!foundActor || !foundActor->GetBaseObject()
+                        || !foundActor->GetBaseObject()->formID) {
+                        return;
+                    }
+
+                    if (resolvedFormID == foundActor->GetBaseObject()->formID) {
+                        for (const auto &jsonEvent : combatEvents.events) {
+                            if (jsonEvent.type == "KillMove") {
+                                float randomValue = static_cast<float>(rand()) / RAND_MAX;
+                                if (randomValue <= jsonEvent.chance) {
+                                    wasInKillMove = true;
+                                    PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            wasInKillMove = true;
+        } else {
+            wasInKillMove = false;
+        }
+    }
+
     bool
         CombatEventHandler::IsPlayerInvolvedInCombat(RE::Actor           *eventActor,
                                                      RE::PlayerCharacter *player) {
@@ -267,4 +318,64 @@ namespace SoundFX {
         return combatController && combatController->state && combatController->state->isFleeing;
     }
 
+    float
+        CombatEventHandler::GetDistanceBetweenActors(RE::Actor *actor1, RE::Actor *actor2) {
+        if (!actor1 || !actor2)
+            return FLT_MAX;
+
+        RE::NiPoint3 pos1 = actor1->GetPosition();
+        RE::NiPoint3 pos2 = actor2->GetPosition();
+
+        return pos1.GetDistance(pos2);
+    }
+
+    std::vector<RE::Actor *>
+        CombatEventHandler::GetCombatTargets(RE::Actor *eventActor) {
+        std::vector<RE::Actor *> targets;
+
+        if (!eventActor) {
+            return targets;
+        }
+
+        const auto *combatGroup = eventActor->GetCombatGroup();
+        if (combatGroup) {
+            for (const auto &target : combatGroup->targets) {
+                RE::NiPointer<RE::Actor> targetActorPtr = target.targetHandle.get();
+                if (targetActorPtr) {
+                    RE::Actor *targetActor = targetActorPtr.get();
+                    float      distance    = GetDistanceBetweenActors(eventActor, targetActor);
+                    if (targetActor && distance <= MAX_DISTANCE) {
+                        targets.push_back(targetActor);
+                    }
+                }
+            }
+        }
+
+        return targets;
+    }
+
+    RE::Actor *
+        CombatEventHandler::FindActorByFormID(RE::Actor                      *playerActor,
+                                              RE::FormID                      formID,
+                                              const std::vector<RE::Actor *> &actors) {
+        RE::Actor *closestActor    = nullptr;
+        float      closestDistance = FLT_MAX;
+
+        for (auto *actor : actors) {
+            if (actor && actor->GetBaseObject() && actor->GetBaseObject()->formID == formID) {
+                const float distance = GetDistanceBetweenActors(playerActor, actor);
+                if (distance < closestDistance) {
+                    closestDistance = distance;
+                    closestActor    = actor;
+                }
+            }
+        }
+        return closestActor;
+    }
+
+    RE::Actor *
+        CombatEventHandler::GetCombatTargetByFormID(RE::Actor *eventActor, RE::FormID formID) {
+        const auto targets = GetCombatTargets(eventActor);
+        return FindActorByFormID(eventActor, formID, targets);
+    }
 }

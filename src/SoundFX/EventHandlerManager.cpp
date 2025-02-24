@@ -85,6 +85,8 @@ namespace SoundFX {
         // CombatEvents
         combatEventHandler = std::make_unique<CombatEventHandler>(jsonLoader);
 
+        combatEventHandler->SetupCombatTasks();
+
         RegisterMultipleEventHandlers(eventSource, combatEventHandler.get(), RE::TESCombatEvent {});
     }
 
