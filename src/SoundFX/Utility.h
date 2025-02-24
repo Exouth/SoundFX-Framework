@@ -11,4 +11,7 @@ namespace SoundFX {
     RE::FormID
         GetFormIDFromEditorIDAndPluginName(const std::string &editorID,
                                            const std::string &pluginName);
+
+    void
+        DelayExec(float delayInSeconds, std::function<void()> task);
 }
