@@ -23,6 +23,8 @@ Please do not use this in live mod releases until an official stable version is 
 
 > This section will be updated once the project is stable. For now, cloning the repository and building the plugin is required.
 
+> **See [Building From Source (Windows)](#building-from-source-windows) for instructions.**
+
 ## Requirements
 
 ### For Users:
@@ -39,6 +41,57 @@ Please do not use this in live mod releases until an official stable version is 
 - [libsndfile](https://github.com/libsndfile/libsndfile).
 - [Vcpkg](https://vcpkg.io/) for dependency management.
 
+Make sure you have the **“Desktop development with C++”** workload installed in Visual Studio so that `cl.exe`, CMake, and Ninja are available.
+
+## Building From Source (Windows)
+
+This project is built using **CMake**, **Visual Studio 2022**, and **vcpkg** for dependency management.
+
+1. **Clone the Repository**
+```
+git clone https://github.com/Exouth/SoundFX-Framework.git
+cd SoundFX-Framework
+```
+
+2. **Set up vcpkg (if you haven't already)**
+
+	1. Clone vcpkg (if not done previously)
+	```
+	git clone https://github.com/microsoft/vcpkg.git
+	cd vcpkg
+	.\bootstrap-vcpkg.bat
+	```
+
+    2. Set the VCPKG_ROOT environment variable so CMake can locate vcpkg
+	```
+	set VCPKG_ROOT=C:\Path\to\vcpkg
+	```
+
+    3. Return to the SoundFX-Framework folder
+	```
+	cd ..\SoundFX-Framework
+	```
+
+	> *(If you’ve already set up vcpkg globally, you can skip this step.)*
+
+3. **Configure and Build with CMake**
+
+	Debug build:
+	```
+	cmake --preset debug
+	cmake --build --preset debug
+	```
+
+	Release build
+	```
+	cmake --preset release
+	cmake --build --preset release
+	```
+
+	The resulting SKSE plugin (SoundFXFramework.dll) will be placed in
+	```
+	build/release/output/SKSE/Plugins/SoundFXFramework.dll
+	```
 
 ## Licensing
 
