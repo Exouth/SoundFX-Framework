@@ -55,43 +55,43 @@ cd SoundFX-Framework
 
 2. **Set up vcpkg (if you haven't already)**
 
-	1. Clone vcpkg (if not done previously)
-	```
-	git clone https://github.com/microsoft/vcpkg.git
-	cd vcpkg
-	.\bootstrap-vcpkg.bat
-	```
+Clone vcpkg (if not done previously)
+```
+git clone https://github.com/microsoft/vcpkg.git
+cd vcpkg
+.\bootstrap-vcpkg.bat
+```
 
-    2. Set the VCPKG_ROOT environment variable so CMake can locate vcpkg
-	```
-	set VCPKG_ROOT=C:\Path\to\vcpkg
-	```
+Set the VCPKG_ROOT environment variable so CMake can locate vcpkg
+```
+set VCPKG_ROOT=C:\Path\to\vcpkg
+```
 
-    3. Return to the SoundFX-Framework folder
-	```
-	cd ..\SoundFX-Framework
-	```
+Return to the SoundFX-Framework folder
+```
+cd ..\SoundFX-Framework
+```
 
-	> *(If you’ve already set up vcpkg globally, you can skip this step.)*
+> *(If you’ve already set up vcpkg globally, you can skip this step.)*
 
 3. **Configure and Build with CMake**
 
-	Debug build:
-	```
-	cmake --preset debug
-	cmake --build --preset debug
-	```
+Debug build:
+```
+cmake --preset debug
+cmake --build --preset debug
+```
 
-	Release build
-	```
-	cmake --preset release
-	cmake --build --preset release
-	```
+Release build
+```
+cmake --preset release
+cmake --build --preset release
+```
 
-	The resulting SKSE plugin (SoundFXFramework.dll) will be placed in
-	```
-	build/release/output/SKSE/Plugins/SoundFXFramework.dll
-	```
+The resulting SKSE plugin (SoundFXFramework.dll) will be placed in
+```
+build/release/output/SKSE/Plugins/SoundFXFramework.dll
+```
 
 ## Licensing
 
