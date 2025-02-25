@@ -81,6 +81,13 @@ namespace SoundFX {
 
         RegisterMultipleEventHandlers(
             ui, npcInteractionEventHandler.get(), RE::MenuOpenCloseEvent {});
+
+        // CombatEvents
+        combatEventHandler = std::make_unique<CombatEventHandler>(jsonLoader);
+
+        combatEventHandler->SetupCombatTasks();
+
+        RegisterMultipleEventHandlers(eventSource, combatEventHandler.get(), RE::TESCombatEvent {});
     }
 
     RE::BSEventNotifyControl
