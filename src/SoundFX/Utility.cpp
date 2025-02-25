@@ -66,4 +66,14 @@ namespace SoundFX {
         return 0;
     }
 
+    void
+        DelayExec(float delayInSeconds, std::function<void()> task) {
+
+        std::thread([delayInSeconds, task]() {
+            std::this_thread::sleep_for(std::chrono::duration<float>(delayInSeconds));
+
+            SKSE::GetTaskInterface()->AddTask(task);
+        }).detach();
+    }
+
 }
