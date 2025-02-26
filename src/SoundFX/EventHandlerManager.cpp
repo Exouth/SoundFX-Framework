@@ -1,6 +1,4 @@
 #include "EventHandlerManager.h"
-#include "EventHandlers/SpellEventHandler.h"
-#include "RE/S/ScriptEventSourceHolder.h"
 
 namespace SoundFX {
 

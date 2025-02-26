@@ -1,8 +1,5 @@
 #pragma once
 
-#include "JSONLoader.h"
-#include "TaskScheduler.h"
-
 namespace SoundFX {
 
     class QuestEventHandler : public RE::BSTEventSink<RE::TESQuestStageEvent> {
