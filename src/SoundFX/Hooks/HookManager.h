@@ -5,6 +5,13 @@
 namespace SoundFX {
     class HookManager {
       public:
+        HookManager(const HookManager &) = delete;
+        HookManager &
+            operator=(const HookManager &) = delete;
+        HookManager(HookManager &&)        = delete;
+        HookManager &
+            operator=(HookManager &&) = delete;
+
         static HookManager &
             GetInstance();
 
@@ -20,10 +27,6 @@ namespace SoundFX {
       private:
         HookManager()  = default;
         ~HookManager() = default;
-
-        HookManager(const HookManager &) = delete;
-        HookManager &
-            operator=(const HookManager &) = delete;
 
         std::vector<std::unique_ptr<BaseHook>> hooks;
     };

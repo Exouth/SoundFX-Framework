@@ -3,7 +3,7 @@
 #include "BaseHook.h"
 
 namespace SoundFX {
-    class InputEventHook : public BaseHook {
+    class InputEventHook final : public BaseHook {
       public:
         void
             Install() override;
