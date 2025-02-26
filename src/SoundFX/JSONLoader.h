@@ -37,7 +37,8 @@ namespace SoundFX {
             getItems(const std::string &category) const;
 
       private:
-        JSONLoader(const std::string &filePath);
+        explicit
+            JSONLoader(const std::string &filePath);
         bool
                                                                                      loadJSON();
         std::string                                                                  filePath;
@@ -47,7 +48,7 @@ namespace SoundFX {
 
         void
             parseCategory(const std::string &category);
-        Event
+        static Event
             parseEvent(const nlohmann::json &jsonEvent);
 
         JSONLoader(const JSONLoader &) = delete;

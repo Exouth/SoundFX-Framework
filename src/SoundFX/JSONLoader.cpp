@@ -91,7 +91,7 @@ namespace SoundFX {
 
     Event
         JSONLoader::parseEvent(const nlohmann::json &jsonEvent) {
-        Event event;
+        Event event {.chance = 1.0f, .repeatFrequency = 1, .volume = 1.0f};
 
         try {
             if (jsonEvent.contains("type")) {
@@ -142,10 +142,9 @@ namespace SoundFX {
         if (allItems.contains(category)) {
             spdlog::debug("Category '{}' found, returning items.", category);
             return allItems.at(category);
-        } else {
-            spdlog::warn("Category '{}' not found. Returning empty map.", category);
-            return empty;
         }
+
+        return empty;
     }
 
 }

@@ -1,15 +1,16 @@
 #include "Sound3DUtil.h"
 
+namespace {
+    ALCdevice  *sharedDevice  = nullptr;
+    ALCcontext *sharedContext = nullptr;
+
+    std::unordered_map<std::string, ALuint> bufferCache;
+}
+
 namespace SoundFX {
 
-    static ALCdevice  *sharedDevice  = nullptr;
-    static ALCcontext *sharedContext = nullptr;
-
-    static std::unordered_map<std::string, ALuint> bufferCache;
-
-
     RE::NiPoint3
-        Sound3DUtil::GetForwardVector(RE::NiAVObject *object) {
+        Sound3DUtil::GetForwardVector(const RE::NiAVObject *object) {
         if (!object) {
             spdlog::error("GetForwardVector: object is null");
             return {0.0f, 0.0f, 1.0f};  // Fallback
@@ -57,7 +58,7 @@ namespace SoundFX {
             return bufferCache[filePath];
         }
 
-        std::string fullPath = "Data/" + filePath;
+        const std::string fullPath = "Data/" + filePath;
 
         SF_INFO  fileInfo {};
         SNDFILE *sndFile = sf_open(fullPath.c_str(), SFM_READ, &fileInfo);
@@ -73,15 +74,31 @@ namespace SoundFX {
         }
 
         std::vector<short> samples(fileInfo.frames * fileInfo.channels);
-        sf_read_short(sndFile, samples.data(), samples.size());
+
+        if (samples.size() > static_cast<size_t>(std::numeric_limits<sf_count_t>::max())) {
+            spdlog::error("Sample size exceeds the allowed range for sf_count_t!");
+            return 0;
+        }
+
+        sf_read_short(sndFile, samples.data(), static_cast<sf_count_t>(samples.size()));
         sf_close(sndFile);
 
         ALuint buffer;
         alGenBuffers(1, &buffer);
 
-        ALenum format = (fileInfo.channels == 1) ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16;
-        alBufferData(
-            buffer, format, samples.data(), samples.size() * sizeof(short), fileInfo.samplerate);
+        const ALenum format = fileInfo.channels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16;
+
+        if (samples.size() * sizeof(short)
+            > static_cast<size_t>(std::numeric_limits<ALsizei>::max())) {
+            spdlog::error("Audio buffer size exceeds the allowed range for OpenAL!");
+            return 0;
+        }
+
+        alBufferData(buffer,
+                     format,
+                     samples.data(),
+                     static_cast<ALsizei>(samples.size() * sizeof(short)),
+                     fileInfo.samplerate);
 
         bufferCache[filePath] = buffer;
 
@@ -121,8 +138,7 @@ namespace SoundFX {
         if (!InitializeSharedContext())
             return false;
 
-
-        ALuint buffer = LoadAudioBuffer(filePath);
+        const ALuint buffer = LoadAudioBuffer(filePath);
         if (buffer == 0) {
             spdlog::error("Failed to load audio buffer.");
             return false;
@@ -139,39 +155,39 @@ namespace SoundFX {
 
         alSourcePlay(source);
 
-        std::thread([source, worldSourcePos]() {
+        std::thread([source, worldSourcePos] {
             ALint state = AL_PLAYING;
 
             RE::NiPoint3 initialPlayerPosition;
             bool         isInitialized = false;
 
             while (state == AL_PLAYING) {
-                auto *player = RE::PlayerCharacter::GetSingleton();
+                const auto *player = RE::PlayerCharacter::GetSingleton();
                 if (player && player->Get3D()) {
-                    RE::NiPoint3 currentPlayerPosition = player->GetPosition();
+                    const RE::NiPoint3 currentPlayerPosition = player->GetPosition();
 
                     if (!isInitialized) {
                         initialPlayerPosition = currentPlayerPosition;
                         isInitialized         = true;
                     }
 
-                    RE::NiPoint3 relativeSourcePos = {
+                    const RE::NiPoint3 relativeSourcePos = {
                         worldSourcePos.x - (currentPlayerPosition.x - initialPlayerPosition.x),
                         worldSourcePos.y - (currentPlayerPosition.y - initialPlayerPosition.y),
                         worldSourcePos.z - (currentPlayerPosition.z - initialPlayerPosition.z)};
 
-                    RE::NiPoint3 forwardVector = GetForwardVector(player->Get3D());
-                    RE::NiPoint3 upVector      = {0.0f, 0.0f, 1.0f};
+                    const RE::NiPoint3     forwardVector = GetForwardVector(player->Get3D());
+                    constexpr RE::NiPoint3 upVector      = {0.0f, 0.0f, 1.0f};
 
-                    ALfloat listenerPos[3] = {0.0f, 0.0f, 0.0f};
-                    ALfloat listenerOri[6] = {forwardVector.x,
-                                              forwardVector.y,
-                                              forwardVector.z,
-                                              upVector.x,
-                                              upVector.y,
-                                              upVector.z};
+                    constexpr ALfloat listenerPos[3] = {0.0f, 0.0f, 0.0f};
+                    const ALfloat listenerOri[6] = {forwardVector.x,
+                                                    forwardVector.y,
+                                                    forwardVector.z,
+                                                    upVector.x,
+                                                    upVector.y,
+                                                    upVector.z};
 
-                    ALfloat sourcePos[3] = {
+                    const ALfloat sourcePos[3] = {
                         relativeSourcePos.x, relativeSourcePos.y, relativeSourcePos.z};
                     alSourcefv(source, AL_POSITION, sourcePos);
                     alListenerfv(AL_POSITION, listenerPos);

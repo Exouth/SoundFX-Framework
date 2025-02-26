@@ -1,12 +1,11 @@
 #pragma once
 
-#include "JSONLoader.h"
 #include "TaskScheduler.h"
 
 namespace SoundFX {
 
-    class SpellEventHandler : public RE::BSTEventSink<SKSE::ActionEvent> {
-        JSONLoader &jsonLoader;
+    class SpellEventHandler final : public RE::BSTEventSink<SKSE::ActionEvent> {
+        JSONLoader   &jsonLoader;
         TaskScheduler scheduler;
 
       public:
@@ -17,23 +16,24 @@ namespace SoundFX {
             SetupSpellTasks();
 
         RE::BSEventNotifyControl
-            ProcessEvent(const SKSE::ActionEvent *event, RE::BSTEventSource<SKSE::ActionEvent> *);
+            ProcessEvent(const SKSE::ActionEvent *event,
+                         RE::BSTEventSource<SKSE::ActionEvent> *) override;
 
       private:
         RE::BSEventNotifyControl
-            ProcessDrawEvent(const SKSE::ActionEvent *event);
+            ProcessDrawEvent(const SKSE::ActionEvent *event) const;
         RE::BSEventNotifyControl
-            ProcessSheatheEvent(const SKSE::ActionEvent *event);
+            ProcessSheatheEvent(const SKSE::ActionEvent *event) const;
         RE::BSEventNotifyControl
-            ProcessFireEvent(const SKSE::ActionEvent *event);
+            ProcessFireEvent(const SKSE::ActionEvent *event) const;
         RE::BSEventNotifyControl
-            ProcessCastEvent(const SKSE::ActionEvent *event);
+            ProcessCastEvent(const SKSE::ActionEvent *event) const;
 
         void
-            ProcessIdleTask();
+            ProcessIdleTask() const;
 
         void
-            StartSpellTask(std::function<void()> task, bool repeat = false) {
+            StartSpellTask(const std::function<void()> &task, bool repeat = false) {
             scheduler.AddTask(task, repeat);
         }
     };

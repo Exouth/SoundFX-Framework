@@ -1,6 +1,4 @@
 #include "EventHandlerManager.h"
-#include "EventHandlers/SpellEventHandler.h"
-#include "RE/S/ScriptEventSourceHolder.h"
 
 namespace SoundFX {
 
@@ -10,19 +8,19 @@ namespace SoundFX {
     void
         EventHandlerManager::InitializeEventHandlers() {
 
-        auto eventSource = RE::ScriptEventSourceHolder::GetSingleton();
+        const auto eventSource = RE::ScriptEventSourceHolder::GetSingleton();
         if (!eventSource) {
             spdlog::error("Failed to get ScriptEventSourceHolder singleton.");
             return;
         }
 
-        auto eventSourceSKSE = SKSE::GetActionEventSource();
+        const auto eventSourceSKSE = SKSE::GetActionEventSource();
         if (!eventSourceSKSE) {
             spdlog::error("Failed to get SKSE ActionEventSource.");
             return;
         }
 
-        auto ui = RE::UI::GetSingleton();
+        const auto ui = RE::UI::GetSingleton();
         if (!ui) {
             spdlog::error("Failed to get UI Singleton.");
             return;
@@ -93,7 +91,7 @@ namespace SoundFX {
     RE::BSEventNotifyControl
         EventHandlerManager::ProcessMultipleEvents(
             std::initializer_list<RE::BSEventNotifyControl> events) {
-        for (auto eventResult : events) {
+        for (const auto eventResult : events) {
             if (eventResult == RE::BSEventNotifyControl::kStop) {
                 return RE::BSEventNotifyControl::kStop;
             }

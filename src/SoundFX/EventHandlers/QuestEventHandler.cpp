@@ -1,8 +1,4 @@
-#include "EventHandlerManager.h"
-#include "JSONLoader.h"
 #include "QuestEventHandler.h"
-#include "SoundUtil.h"
-#include "Utility.h"
 
 namespace SoundFX {
 
@@ -15,12 +11,12 @@ namespace SoundFX {
 
     // !!!Maybe fix later if it makes Problems with Stages
     std::uint16_t
-        QuestEventHandler::GetFirstActiveStage(RE::TESQuest *quest) {
+        QuestEventHandler::GetFirstActiveStage(const RE::TESQuest *quest) {
         if (!quest || !quest->executedStages) {
             return 0;  // Fallback
         }
 
-        auto          stages        = quest->executedStages;
+        const auto    stages        = quest->executedStages;
         std::uint16_t fallbackStage = 0;  // Fallback
 
         for (const auto &stage : *stages) {
@@ -28,7 +24,7 @@ namespace SoundFX {
                 continue;
             }
 
-            auto stageIndex = stage.data.index;
+            const auto stageIndex = stage.data.index;
             if (stageIndex == 0) {
                 fallbackStage = 10;
             } else if (fallbackStage == 0 || stageIndex < fallbackStage) {
@@ -40,27 +36,27 @@ namespace SoundFX {
     }
 
     RE::BSEventNotifyControl
-        QuestEventHandler::ProcessStartQuestEvent(const RE::TESQuestStageEvent *event) {
+        QuestEventHandler::ProcessStartQuestEvent(const RE::TESQuestStageEvent *event) const {
 
         if (!event || !event->formID) {
             return RE::BSEventNotifyControl::kContinue;
         }
 
-        auto *quest = RE::TESForm::LookupByID<RE::TESQuest>(event->formID);
+        const auto *quest = RE::TESForm::LookupByID<RE::TESQuest>(event->formID);
         if (!quest) {
             return RE::BSEventNotifyControl::kContinue;
         }
 
         const auto &quests = jsonLoader.getItems("quests");
-        for (const auto &[questName, questEvents] : quests) {
+        for (const auto &questEvents : quests | std::views::values) {
             const auto resolvedFormID =
                 GetFormIDFromEditorIDAndPluginName(questEvents.editorID, questEvents.pluginName);
 
             if (resolvedFormID == event->formID) {
                 for (const auto &jsonEvent : questEvents.events) {
-                    auto startStage = GetFirstActiveStage(quest);
+                    const auto startStage = GetFirstActiveStage(quest);
                     if (jsonEvent.type == "Start" && event->stage == startStage) {
-                        float randomValue = static_cast<float>(rand()) / RAND_MAX;
+                        const float randomValue = GenerateRandomFloat();
                         if (randomValue <= jsonEvent.chance) {
                             PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                         }
@@ -73,26 +69,26 @@ namespace SoundFX {
     }
 
     RE::BSEventNotifyControl
-        QuestEventHandler::ProcessEndQuestEvent(const RE::TESQuestStageEvent *event) {
+        QuestEventHandler::ProcessEndQuestEvent(const RE::TESQuestStageEvent *event) const {
 
         if (!event || !event->formID) {
             return RE::BSEventNotifyControl::kContinue;
         }
 
-        auto *quest = RE::TESForm::LookupByID<RE::TESQuest>(event->formID);
+        const auto *quest = RE::TESForm::LookupByID<RE::TESQuest>(event->formID);
         if (!quest) {
             return RE::BSEventNotifyControl::kContinue;
         }
 
         const auto &quests = jsonLoader.getItems("quests");
-        for (const auto &[questName, questEvents] : quests) {
+        for (const auto &questEvents : quests | std::views::values) {
             const auto resolvedFormID =
                 GetFormIDFromEditorIDAndPluginName(questEvents.editorID, questEvents.pluginName);
 
             if (resolvedFormID == event->formID) {
                 for (const auto &jsonEvent : questEvents.events) {
                     if (jsonEvent.type == "End" && quest->IsCompleted()) {
-                        float randomValue = static_cast<float>(rand()) / RAND_MAX;
+                        const float randomValue = GenerateRandomFloat();
                         if (randomValue <= jsonEvent.chance) {
                             PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                         }
