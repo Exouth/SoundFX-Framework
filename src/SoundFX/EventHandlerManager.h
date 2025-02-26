@@ -8,7 +8,6 @@
 #include "EventHandlers/QuestEventHandler.h"
 #include "EventHandlers/SpellEventHandler.h"
 #include "EventHandlers/WeaponEventHandler.h"
-#include "JSONLoader.h"
 
 namespace SoundFX {
 

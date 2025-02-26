@@ -18,6 +18,8 @@
  */
 
 #include "SoundFX/EventHandlerManager.h"
+#include "SoundFX/Hooks/HookManager.h"
+#include "SoundFX/ImGui/Core/RendererHook.h"
 #include "SoundFX/JSONLoader.h"
 #include "SoundFX/Logger.h"
 
@@ -36,8 +38,8 @@ void
                 if (loadCommand) {
                     loadCommand->SetCommand(
                         "load "
-                        "Save3_6C8DC6E8_0_507269736F6E65726466676664_Tamriel_000000_20241111115503_"
-                        "1_1");
+                        "Save3_83E44258_0_507269736F6E6572647366736466736466_Tamriel_000001_"
+                        "20250226114851_1_1");
                     loadCommand->CompileAndRun(nullptr, RE::COMPILER_NAME::kSystemWindowCompiler);
                     spdlog::info("Load command executed.");
                 }
@@ -51,7 +53,13 @@ SKSEPluginLoad(const SKSE::LoadInterface *skse) {
 
     SoundFX::Logger::Initialize();
 
+    SKSE::AllocTrampoline(64); // For 2 Hooks
+
     SoundFX::JSONLoader::GetInstance().load();
+
+    SoundFX::RendererHook::Install();
+
+    SoundFX::HookManager::GetInstance().InstallHooks();
 
     SKSE::GetMessagingInterface()->RegisterListener(OnSKSEMessage);
     spdlog::info("Plugin loaded successfully");
