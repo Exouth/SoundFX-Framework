@@ -4,7 +4,7 @@
 
 namespace SoundFX {
 
-    class NpcInteractionEventHandler : public RE::BSTEventSink<RE::MenuOpenCloseEvent> {
+    class NpcInteractionEventHandler final : public RE::BSTEventSink<RE::MenuOpenCloseEvent> {
         JSONLoader   &jsonLoader;
         TaskScheduler scheduler;
 

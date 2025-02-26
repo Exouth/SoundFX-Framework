@@ -4,7 +4,7 @@
 
 namespace SoundFX {
 
-    class CombatEventHandler : public RE::BSTEventSink<RE::TESCombatEvent> {
+    class CombatEventHandler final : public RE::BSTEventSink<RE::TESCombatEvent> {
         JSONLoader   &jsonLoader;
         TaskScheduler scheduler;
 

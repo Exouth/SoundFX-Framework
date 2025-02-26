@@ -4,7 +4,7 @@
 
 namespace SoundFX {
 
-    class WeaponEventHandler :
+    class WeaponEventHandler final :
         public RE::BSTEventSink<RE::TESContainerChangedEvent>,
         public RE::BSTEventSink<RE::TESEquipEvent>,
         public RE::BSTEventSink<RE::TESHitEvent>,

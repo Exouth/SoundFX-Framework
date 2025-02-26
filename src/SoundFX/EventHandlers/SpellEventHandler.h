@@ -4,7 +4,7 @@
 
 namespace SoundFX {
 
-    class SpellEventHandler : public RE::BSTEventSink<SKSE::ActionEvent> {
+    class SpellEventHandler final : public RE::BSTEventSink<SKSE::ActionEvent> {
         JSONLoader   &jsonLoader;
         TaskScheduler scheduler;
 

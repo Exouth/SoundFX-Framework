@@ -2,7 +2,7 @@
 
 namespace SoundFX {
 
-    class QuestEventHandler : public RE::BSTEventSink<RE::TESQuestStageEvent> {
+    class QuestEventHandler final : public RE::BSTEventSink<RE::TESQuestStageEvent> {
         JSONLoader &jsonLoader;
 
       public:

@@ -2,7 +2,7 @@
 
 namespace SoundFX {
 
-    class ArmorEventHandler :
+    class ArmorEventHandler final :
         public RE::BSTEventSink<RE::TESContainerChangedEvent>,
         public RE::BSTEventSink<RE::TESEquipEvent> {
         JSONLoader &jsonLoader;
