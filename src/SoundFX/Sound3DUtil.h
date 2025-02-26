@@ -15,7 +15,7 @@ namespace SoundFX {
 
       private:
         static RE::NiPoint3
-            GetForwardVector(RE::NiAVObject *object);
+            GetForwardVector(const RE::NiAVObject *object);
 
         static ALCdevice *
             InitializeDevice();

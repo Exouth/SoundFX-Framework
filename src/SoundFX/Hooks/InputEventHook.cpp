@@ -5,7 +5,7 @@
 namespace SoundFX {
     void
         InputEventHook::Install() {
-        REL::Relocation<uintptr_t> hook {RELOCATION_ID(67315, 68617)};
+        const REL::Relocation hook {RELOCATION_ID(67315, 68617)};
         _DispatchInputEvent = SKSE::GetTrampoline().write_call<5>(
             hook.address() + REL::VariantOffset(0x7B, 0x7B, 0).offset(), DispatchInputEvent);
     }

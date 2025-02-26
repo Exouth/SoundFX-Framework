@@ -1,14 +1,16 @@
 #include "ImGuiManager.h"
 #include "ImGui/UI/MainWindow.h"
 
-namespace SoundFX {
-    bool ImGuiManager::showDebugUI = false;
-
+namespace {
     HWND
         GetSkyrimWindow() {
-        auto rendererWindow = RE::BSGraphics::Renderer::GetCurrentRenderWindow();
+        const auto rendererWindow = RE::BSGraphics::Renderer::GetCurrentRenderWindow();
         return rendererWindow ? reinterpret_cast<HWND>(rendererWindow->hWnd) : nullptr;
     }
+}
+
+namespace SoundFX {
+    bool ImGuiManager::showDebugUI = false;
 
     void
         ImGuiManager::Initialize() {
@@ -16,7 +18,7 @@ namespace SoundFX {
         ImGuiIO &io = ImGui::GetIO();
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 
-        HWND hwnd = GetSkyrimWindow();
+        const HWND hwnd = GetSkyrimWindow();
         if (!hwnd) {
             spdlog::error("Couldnt find Skyrim windows!");
             return;

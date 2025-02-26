@@ -7,29 +7,29 @@ namespace SoundFX {
     // InitAttackType temporary use for Filtering
     void
         WeaponEventHandler::InitializeAttackTypeHandlers() {
-        actionMap["PowerAttack"] = [](EventVariant event, const std::string &soundEffect) {
-            if (auto hitEvent = std::get_if<const RE::TESHitEvent *>(&event)) {
+        actionMap["PowerAttack"] = [](const EventVariant event, const std::string &soundEffect) {
+            if (const auto hitEvent = std::get_if<const RE::TESHitEvent *>(&event)) {
                 if ((*hitEvent)->flags.any(RE::TESHitEvent::Flag::kPowerAttack)) {
                     PlayCustomSoundAsDescriptor(soundEffect);
                 }
             }
         };
-        actionMap["SneakAttack"] = [](EventVariant event, const std::string &soundEffect) {
-            if (auto hitEvent = std::get_if<const RE::TESHitEvent *>(&event)) {
+        actionMap["SneakAttack"] = [](const EventVariant event, const std::string &soundEffect) {
+            if (const auto hitEvent = std::get_if<const RE::TESHitEvent *>(&event)) {
                 if ((*hitEvent)->flags.any(RE::TESHitEvent::Flag::kSneakAttack)) {
                     PlayCustomSoundAsDescriptor(soundEffect);
                 }
             }
         };
-        actionMap["BashAttack"] = [](EventVariant event, const std::string &soundEffect) {
-            if (auto hitEvent = std::get_if<const RE::TESHitEvent *>(&event)) {
+        actionMap["BashAttack"] = [](const EventVariant event, const std::string &soundEffect) {
+            if (const auto hitEvent = std::get_if<const RE::TESHitEvent *>(&event)) {
                 if ((*hitEvent)->flags.any(RE::TESHitEvent::Flag::kBashAttack)) {
                     PlayCustomSoundAsDescriptor(soundEffect);
                 }
             }
         };
-        actionMap["NormalAttack"] = [](EventVariant event, const std::string &soundEffect) {
-            if (auto hitEvent = std::get_if<const RE::TESHitEvent *>(&event)) {
+        actionMap["NormalAttack"] = [](const EventVariant event, const std::string &soundEffect) {
+            if (const auto hitEvent = std::get_if<const RE::TESHitEvent *>(&event)) {
 
                 const RE::TESForm *item = RE::TESForm::LookupByID((*hitEvent)->source);
                 if (!item) {
@@ -84,7 +84,7 @@ namespace SoundFX {
     }
 
     RE::BSEventNotifyControl
-        WeaponEventHandler::ProcessEquipEvent(const RE::TESEquipEvent *event) {
+        WeaponEventHandler::ProcessEquipEvent(const RE::TESEquipEvent *event) const {
 
         if (event == nullptr || event->baseObject == 0) {
             return RE::BSEventNotifyControl::kContinue;
@@ -99,14 +99,14 @@ namespace SoundFX {
         if (event->actor->GetObjectReference()
             == RE::PlayerCharacter::GetSingleton()->GetObjectReference()) {
             const auto &weapons = jsonLoader.getItems("weapons");
-            for (const auto &[weaponName, weaponEvents] : weapons) {
+            for (const auto &weaponEvents : weapons | std::views::values) {
                 const auto resolvedFormID = GetFormIDFromEditorIDAndPluginName(
                     weaponEvents.editorID, weaponEvents.pluginName);
 
                 if (resolvedFormID == item->formID) {
                     for (const auto &jsonEvent : weaponEvents.events) {
                         if (jsonEvent.type == "Equip") {
-                            float randomValue = static_cast<float>(rand()) / RAND_MAX;
+                            const float randomValue = GenerateRandomFloat();
                             if (randomValue <= jsonEvent.chance) {
                                 PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                             }
@@ -122,7 +122,7 @@ namespace SoundFX {
     }
 
     RE::BSEventNotifyControl
-        WeaponEventHandler::ProcessPickUpEvent(const RE::TESContainerChangedEvent *event) {
+        WeaponEventHandler::ProcessPickUpEvent(const RE::TESContainerChangedEvent *event) const {
 
         if (event == nullptr || event->newContainer == 0) {
             return RE::BSEventNotifyControl::kContinue;
@@ -135,14 +135,14 @@ namespace SoundFX {
         }
 
         const auto &weapons = jsonLoader.getItems("weapons");
-        for (const auto &[weaponName, weaponEvents] : weapons) {
+        for (const auto &weaponEvents : weapons | std::views::values) {
             const auto resolvedFormID =
                 GetFormIDFromEditorIDAndPluginName(weaponEvents.editorID, weaponEvents.pluginName);
 
             if (resolvedFormID == item->formID) {
                 for (const auto &jsonEvent : weaponEvents.events) {
                     if (jsonEvent.type == "PickUp") {
-                        float randomValue = static_cast<float>(rand()) / RAND_MAX;
+                        const float randomValue = GenerateRandomFloat();
                         if (randomValue <= jsonEvent.chance) {
                             PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                         }
@@ -155,22 +155,21 @@ namespace SoundFX {
     }
 
     RE::BSEventNotifyControl
-        WeaponEventHandler::ProcessHitEvent(const RE::TESHitEvent *event) {
+        WeaponEventHandler::ProcessHitEvent(const RE::TESHitEvent *event) const {
 
         if (event == nullptr || event->target == nullptr || event->source == 0
             || event->cause == nullptr) {
             return RE::BSEventNotifyControl::kContinue;
         }
 
-        auto *player = RE::PlayerCharacter::GetSingleton();
+        const auto *player = RE::PlayerCharacter::GetSingleton();
         if (!player) {
             return RE::BSEventNotifyControl::kContinue;
         }
 
-        if (event->cause->GetObjectReference()
-            == player->GetObjectReference()) {
+        if (event->cause->GetObjectReference() == player->GetObjectReference()) {
             const auto &weapons = jsonLoader.getItems("weapons");
-            for (const auto &[weaponName, weaponEvents] : weapons) {
+            for (const auto &weaponEvents : weapons | std::views::values) {
                 const auto resolvedFormID = GetFormIDFromEditorIDAndPluginName(
                     weaponEvents.editorID, weaponEvents.pluginName);
 
@@ -179,7 +178,7 @@ namespace SoundFX {
                         if (jsonEvent.type == "Hit") {
                             if (actionMap.find(jsonEvent.details.hitType.value())
                                 != actionMap.end()) {
-                                float randomValue = static_cast<float>(rand()) / RAND_MAX;
+                                const float randomValue = GenerateRandomFloat();
                                 if (randomValue <= jsonEvent.chance) {
                                     actionMap[jsonEvent.details.hitType.value()](
                                         event, jsonEvent.soundEffect);
@@ -198,15 +197,15 @@ namespace SoundFX {
     }
 
     void
-        WeaponEventHandler::ProcessIdleTask() {
+        WeaponEventHandler::ProcessIdleTask() const {
 
         auto *player = RE::PlayerCharacter::GetSingleton();
         if (!player) {
             return;
         }
 
-        auto *rightHandData = player->GetEquippedEntryData(false);
-        auto *leftHandData  = player->GetEquippedEntryData(true);
+        const auto *rightHandData = player->GetEquippedEntryData(false);
+        const auto *leftHandData  = player->GetEquippedEntryData(true);
 
         if (!rightHandData && !leftHandData) {
             return;
@@ -223,14 +222,14 @@ namespace SoundFX {
             }
 
             const auto &weapons = jsonLoader.getItems("weapons");
-            for (const auto &[weaponName, weaponEvents] : weapons) {
+            for (const auto &weaponEvents : weapons | std::views::values) {
                 const auto resolvedFormID = GetFormIDFromEditorIDAndPluginName(
                     weaponEvents.editorID, weaponEvents.pluginName);
 
                 if (resolvedFormID == currentItem) {
                     for (const auto &jsonEvent : weaponEvents.events) {
                         if (jsonEvent.type == "Idle" && player->AsActorState()->IsWeaponDrawn()) {
-                            float randomValue = static_cast<float>(rand()) / RAND_MAX;
+                            const float randomValue = GenerateRandomFloat();
                             if (randomValue <= jsonEvent.chance) {
                                 PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                             }
@@ -246,7 +245,7 @@ namespace SoundFX {
     }
 
     RE::BSEventNotifyControl
-        WeaponEventHandler::ProcessAttackEvent(const SKSE::ActionEvent *event) {
+        WeaponEventHandler::ProcessAttackEvent(const SKSE::ActionEvent *event) const {
         if (!event || !event->actor || event->actor != RE::PlayerCharacter::GetSingleton()) {
             return RE::BSEventNotifyControl::kContinue;
         }
@@ -256,13 +255,13 @@ namespace SoundFX {
             return RE::BSEventNotifyControl::kContinue;
         }
 
-        auto *actorState = player->AsActorState();
+        const auto *actorState = player->AsActorState();
         if (!actorState && !actorState->IsWeaponDrawn()) {
             return RE::BSEventNotifyControl::kContinue;
         }
 
-        auto *rightHandData = player->GetEquippedEntryData(false);
-        auto *leftHandData  = player->GetEquippedEntryData(true);
+        const auto *rightHandData = player->GetEquippedEntryData(false);
+        const auto *leftHandData  = player->GetEquippedEntryData(true);
 
         if (!rightHandData && !leftHandData) {
             return RE::BSEventNotifyControl::kContinue;
@@ -279,7 +278,7 @@ namespace SoundFX {
             }
 
             const auto &weapons = jsonLoader.getItems("weapons");
-            for (const auto &[weaponName, weaponEvents] : weapons) {
+            for (const auto &weaponEvents : weapons | std::views::values) {
                 const auto resolvedFormID = GetFormIDFromEditorIDAndPluginName(
                     weaponEvents.editorID, weaponEvents.pluginName);
 
@@ -287,7 +286,7 @@ namespace SoundFX {
                     for (const auto &jsonEvent : weaponEvents.events) {
                         if (jsonEvent.type == "Attack"
                             && event->type == SKSE::ActionEvent::Type::kWeaponSwing) {
-                            float randomValue = static_cast<float>(rand()) / RAND_MAX;
+                            const float randomValue = GenerateRandomFloat();
                             if (randomValue <= jsonEvent.chance) {
                                 PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                             }

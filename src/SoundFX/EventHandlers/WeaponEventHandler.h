@@ -4,7 +4,7 @@
 
 namespace SoundFX {
 
-    class WeaponEventHandler :
+    class WeaponEventHandler final :
         public RE::BSTEventSink<RE::TESContainerChangedEvent>,
         public RE::BSTEventSink<RE::TESEquipEvent>,
         public RE::BSTEventSink<RE::TESHitEvent>,
@@ -19,39 +19,42 @@ namespace SoundFX {
         void
             SetupWeaponTasks();
 
-        void
+        static void
             InitializeAttackTypeHandlers();
 
         RE::BSEventNotifyControl
             ProcessEvent(const RE::TESContainerChangedEvent *event,
-                         RE::BSTEventSource<RE::TESContainerChangedEvent> *);
+                         RE::BSTEventSource<RE::TESContainerChangedEvent> *) override;
         RE::BSEventNotifyControl
-            ProcessEvent(const RE::TESEquipEvent *event, RE::BSTEventSource<RE::TESEquipEvent> *);
+            ProcessEvent(const RE::TESEquipEvent *event,
+                         RE::BSTEventSource<RE::TESEquipEvent> *) override;
         RE::BSEventNotifyControl
-            ProcessEvent(const RE::TESHitEvent *event, RE::BSTEventSource<RE::TESHitEvent> *);
+            ProcessEvent(const RE::TESHitEvent *event,
+                         RE::BSTEventSource<RE::TESHitEvent> *) override;
         RE::BSEventNotifyControl
-            ProcessEvent(const SKSE::ActionEvent *event, RE::BSTEventSource<SKSE::ActionEvent> *);
+            ProcessEvent(const SKSE::ActionEvent *event,
+                         RE::BSTEventSource<SKSE::ActionEvent> *) override;
 
       private:
         using EventVariant = std::variant<const RE::TESHitEvent *, const RE::TESEquipEvent *>;
-        using EventAction = std::function<void(EventVariant, const std::string &)>;
+        using EventAction  = std::function<void(EventVariant, const std::string &)>;
 
         static std::unordered_map<std::string, EventAction> actionMap;
 
         RE::BSEventNotifyControl
-            ProcessPickUpEvent(const RE::TESContainerChangedEvent *event);
+            ProcessPickUpEvent(const RE::TESContainerChangedEvent *event) const;
         RE::BSEventNotifyControl
-            ProcessEquipEvent(const RE::TESEquipEvent *event);
+            ProcessEquipEvent(const RE::TESEquipEvent *event) const;
         RE::BSEventNotifyControl
-            ProcessHitEvent(const RE::TESHitEvent *event);
+            ProcessHitEvent(const RE::TESHitEvent *event) const;
         RE::BSEventNotifyControl
-            ProcessAttackEvent(const SKSE::ActionEvent *event);
+            ProcessAttackEvent(const SKSE::ActionEvent *event) const;
 
         void
-            ProcessIdleTask();
+            ProcessIdleTask() const;
 
         void
-            StartWeaponTask(std::function<void()> task, bool repeat = false) {
+            StartWeaponTask(const std::function<void()> &task, bool repeat = false) {
             scheduler.AddTask(task, repeat);
         }
     };

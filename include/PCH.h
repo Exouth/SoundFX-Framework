@@ -52,7 +52,7 @@
 #include <functional>
 #include <mutex>
 #include <thread>
-#include <corecrt_math_defines.h>
+#include <numbers>
 
 #include "Logger.h"
 #include "JSONLoader.h"

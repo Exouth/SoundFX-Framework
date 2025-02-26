@@ -10,11 +10,11 @@ namespace SoundFX {
     }
 
     void
-        CellEventHandler::ProcessCellEnterTask() {
+        CellEventHandler::ProcessCellEnterTask() const {
 
         static RE::TESObjectCELL *lastCell = nullptr;
 
-        auto player = RE::PlayerCharacter::GetSingleton();
+        const auto player = RE::PlayerCharacter::GetSingleton();
         if (!player) {
             return;
         }
@@ -38,14 +38,14 @@ namespace SoundFX {
             lastCell = currentCell;
 
             const auto &cells = jsonLoader.getItems("cells");
-            for (const auto &[cellName, cellEvents] : cells) {
+            for (const auto &cellEvents : cells | std::views::values) {
                 const auto resolvedFormID =
                     GetFormIDFromEditorIDAndPluginName(cellEvents.editorID, cellEvents.pluginName);
 
                 if (resolvedFormID == currentCell->formID) {
                     for (const auto &jsonEvent : cellEvents.events) {
                         if (jsonEvent.type == "Enter") {
-                            float randomValue = static_cast<float>(rand()) / RAND_MAX;
+                            const float randomValue = GenerateRandomFloat();
                             if (randomValue <= jsonEvent.chance) {
                                 PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                             }
@@ -59,14 +59,14 @@ namespace SoundFX {
 
     // Further completion will be made when 3D sound is better implemented
     void
-        CellEventHandler::ProcessAmbienceSoundTask() {
+        CellEventHandler::ProcessAmbienceSoundTask() const {
 
-        auto player = RE::PlayerCharacter::GetSingleton();
+        const auto player = RE::PlayerCharacter::GetSingleton();
         if (!player) {
             return;
         }
 
-        auto *currentCell = player->GetParentCell();
+        const auto *currentCell = player->GetParentCell();
         if (!currentCell) {
             return;
         }
@@ -79,14 +79,14 @@ namespace SoundFX {
         if (!menuManager->IsMenuOpen(RE::LoadingMenu::MENU_NAME)) {
 
             const auto &cells = jsonLoader.getItems("cells");
-            for (const auto &[cellName, cellEvents] : cells) {
+            for (const auto &cellEvents : cells | std::views::values) {
                 const auto resolvedFormID =
                     GetFormIDFromEditorIDAndPluginName(cellEvents.editorID, cellEvents.pluginName);
 
                 if (resolvedFormID == currentCell->formID) {
                     for (const auto &jsonEvent : cellEvents.events) {
                         if (jsonEvent.type == "Ambience") {
-                            float randomValue = static_cast<float>(rand()) / RAND_MAX;
+                            const float randomValue = GenerateRandomFloat();
                             if (randomValue <= jsonEvent.chance) {
                                 PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                             }
