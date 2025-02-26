@@ -11,12 +11,12 @@ namespace SoundFX {
 
     // !!!Maybe fix later if it makes Problems with Stages
     std::uint16_t
-        QuestEventHandler::GetFirstActiveStage(RE::TESQuest *quest) {
+        QuestEventHandler::GetFirstActiveStage(const RE::TESQuest *quest) {
         if (!quest || !quest->executedStages) {
             return 0;  // Fallback
         }
 
-        auto          stages        = quest->executedStages;
+        const auto    stages        = quest->executedStages;
         std::uint16_t fallbackStage = 0;  // Fallback
 
         for (const auto &stage : *stages) {
@@ -36,7 +36,7 @@ namespace SoundFX {
     }
 
     RE::BSEventNotifyControl
-        QuestEventHandler::ProcessStartQuestEvent(const RE::TESQuestStageEvent *event) {
+        QuestEventHandler::ProcessStartQuestEvent(const RE::TESQuestStageEvent *event) const {
 
         if (!event || !event->formID) {
             return RE::BSEventNotifyControl::kContinue;
@@ -48,7 +48,7 @@ namespace SoundFX {
         }
 
         const auto &quests = jsonLoader.getItems("quests");
-        for (const auto &[questName, questEvents] : quests) {
+        for (const auto &questEvents : quests | std::views::values) {
             const auto resolvedFormID =
                 GetFormIDFromEditorIDAndPluginName(questEvents.editorID, questEvents.pluginName);
 
@@ -69,7 +69,7 @@ namespace SoundFX {
     }
 
     RE::BSEventNotifyControl
-        QuestEventHandler::ProcessEndQuestEvent(const RE::TESQuestStageEvent *event) {
+        QuestEventHandler::ProcessEndQuestEvent(const RE::TESQuestStageEvent *event) const {
 
         if (!event || !event->formID) {
             return RE::BSEventNotifyControl::kContinue;
@@ -81,7 +81,7 @@ namespace SoundFX {
         }
 
         const auto &quests = jsonLoader.getItems("quests");
-        for (const auto &[questName, questEvents] : quests) {
+        for (const auto &questEvents : quests | std::views::values) {
             const auto resolvedFormID =
                 GetFormIDFromEditorIDAndPluginName(questEvents.editorID, questEvents.pluginName);
 

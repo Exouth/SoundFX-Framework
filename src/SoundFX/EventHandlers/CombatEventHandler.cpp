@@ -19,7 +19,7 @@ namespace SoundFX {
     }
 
     RE::BSEventNotifyControl
-        CombatEventHandler::ProcessStartCombatEvent(const RE::TESCombatEvent *event) {
+        CombatEventHandler::ProcessStartCombatEvent(const RE::TESCombatEvent *event) const {
 
         if (event == nullptr || event->newState.any(RE::ACTOR_COMBAT_STATE::kNone)) {
             return RE::BSEventNotifyControl::kContinue;
@@ -40,7 +40,7 @@ namespace SoundFX {
         }
 
         const auto &combats = jsonLoader.getItems("combats");
-        for (const auto &[combatName, combatEvents] : combats) {
+        for (const auto &combatEvents : combats | std::views::values) {
             const auto resolvedFormID =
                 GetFormIDFromEditorIDAndPluginName(combatEvents.editorID, combatEvents.pluginName);
 
@@ -62,7 +62,7 @@ namespace SoundFX {
     }
 
     RE::BSEventNotifyControl
-        CombatEventHandler::ProcessSearchCombatEvent(const RE::TESCombatEvent *event) {
+        CombatEventHandler::ProcessSearchCombatEvent(const RE::TESCombatEvent *event) const {
 
         if (event == nullptr || event->newState.any(RE::ACTOR_COMBAT_STATE::kNone)) {
             return RE::BSEventNotifyControl::kContinue;
@@ -83,7 +83,7 @@ namespace SoundFX {
         }
 
         const auto &combats = jsonLoader.getItems("combats");
-        for (const auto &[combatName, combatEvents] : combats) {
+        for (const auto &combatEvents : combats | std::views::values) {
             const auto resolvedFormID =
                 GetFormIDFromEditorIDAndPluginName(combatEvents.editorID, combatEvents.pluginName);
 
@@ -105,7 +105,7 @@ namespace SoundFX {
     }
 
     RE::BSEventNotifyControl
-        CombatEventHandler::ProcessStopCombatEvent(const RE::TESCombatEvent *event) {
+        CombatEventHandler::ProcessStopCombatEvent(const RE::TESCombatEvent *event) const {
 
         if (!event || !event->actor || !event->actor->GetBaseObject()) {
             return RE::BSEventNotifyControl::kContinue;
@@ -126,7 +126,7 @@ namespace SoundFX {
         }
 
         const auto &combats = jsonLoader.getItems("combats");
-        for (const auto &[combatName, combatEvents] : combats) {
+        for (const auto &combatEvents : combats | std::views::values) {
             const auto resolvedFormID =
                 GetFormIDFromEditorIDAndPluginName(combatEvents.editorID, combatEvents.pluginName);
 
@@ -148,7 +148,7 @@ namespace SoundFX {
     }
 
     RE::BSEventNotifyControl
-        CombatEventHandler::ProcessDieCombatEvent(const RE::TESCombatEvent *event) {
+        CombatEventHandler::ProcessDieCombatEvent(const RE::TESCombatEvent *event) const {
 
         if (!event || !event->actor || !event->actor->GetBaseObject()) {
             return RE::BSEventNotifyControl::kContinue;
@@ -176,7 +176,7 @@ namespace SoundFX {
         }
 
         const auto &combats = jsonLoader.getItems("combats");
-        for (const auto &[combatName, combatEvents] : combats) {
+        for (const auto &combatEvents : combats | std::views::values) {
             const auto resolvedFormID =
                 GetFormIDFromEditorIDAndPluginName(combatEvents.editorID, combatEvents.pluginName);
 
@@ -198,7 +198,7 @@ namespace SoundFX {
     }
 
     RE::BSEventNotifyControl
-        CombatEventHandler::ProcessFleeCombatEvent(const RE::TESCombatEvent *event) {
+        CombatEventHandler::ProcessFleeCombatEvent(const RE::TESCombatEvent *event) const {
 
         if (!event || !event->targetActor || !event->actor || !event->actor->GetBaseObject()
             || !event->newState.any(RE::ACTOR_COMBAT_STATE::kCombat)) {
@@ -218,7 +218,7 @@ namespace SoundFX {
                 return;
 
             const auto &combats = jsonLoader.getItems("combats");
-            for (const auto &[combatName, combatEvents] : combats) {
+            for (const auto &combatEvents : combats | std::views::values) {
                 const auto resolvedFormID = GetFormIDFromEditorIDAndPluginName(
                     combatEvents.editorID, combatEvents.pluginName);
 
@@ -240,7 +240,7 @@ namespace SoundFX {
     }
 
     void
-        CombatEventHandler::ProcessKillMoveCombatTask() {
+        CombatEventHandler::ProcessKillMoveCombatTask() const {
 
         auto *player      = RE::PlayerCharacter::GetSingleton();
         auto *playerActor = player->As<RE::Actor>();
@@ -254,7 +254,7 @@ namespace SoundFX {
         if (player->IsInKillMove()) {
             if (!wasInKillMove) {
                 const auto &combats = jsonLoader.getItems("combats");
-                for (const auto &[combatName, combatEvents] : combats) {
+                for (const auto &combatEvents : combats | std::views::values) {
                     const auto resolvedFormID = GetFormIDFromEditorIDAndPluginName(
                         combatEvents.editorID, combatEvents.pluginName);
 
@@ -285,8 +285,8 @@ namespace SoundFX {
     }
 
     bool
-        CombatEventHandler::IsPlayerInvolvedInCombat(RE::Actor           *eventActor,
-                                                     RE::PlayerCharacter *player) {
+        CombatEventHandler::IsPlayerInvolvedInCombat(const RE::Actor           *eventActor,
+                                                     const RE::PlayerCharacter *player) {
         auto *combatGroup = eventActor->GetCombatGroup();
         if (combatGroup) {
             for (const auto &target : combatGroup->targets) {
@@ -307,7 +307,7 @@ namespace SoundFX {
     }
 
     bool
-        CombatEventHandler::IsActorFleeing(const RE::Actor *eventActor) const {
+        CombatEventHandler::IsActorFleeing(const RE::Actor *eventActor) {
         const auto &runtimeData      = eventActor->GetActorRuntimeData();
         const auto *combatController = runtimeData.combatController;
 
@@ -315,7 +315,8 @@ namespace SoundFX {
     }
 
     float
-        CombatEventHandler::GetDistanceBetweenActors(RE::Actor *actor1, RE::Actor *actor2) {
+        CombatEventHandler::GetDistanceBetweenActors(const RE::Actor *actor1,
+                                                     const RE::Actor *actor2) {
         if (!actor1 || !actor2)
             return FLT_MAX;
 
@@ -326,7 +327,7 @@ namespace SoundFX {
     }
 
     std::vector<RE::Actor *>
-        CombatEventHandler::GetCombatTargets(RE::Actor *eventActor) {
+        CombatEventHandler::GetCombatTargets(const RE::Actor *eventActor) {
         std::vector<RE::Actor *> targets;
 
         if (!eventActor) {
@@ -351,7 +352,7 @@ namespace SoundFX {
     }
 
     RE::Actor *
-        CombatEventHandler::FindActorByFormID(RE::Actor                      *playerActor,
+        CombatEventHandler::FindActorByFormID(const RE::Actor                *playerActor,
                                               RE::FormID                      formID,
                                               const std::vector<RE::Actor *> &actors) {
         RE::Actor *closestActor    = nullptr;
@@ -370,7 +371,8 @@ namespace SoundFX {
     }
 
     RE::Actor *
-        CombatEventHandler::GetCombatTargetByFormID(RE::Actor *eventActor, RE::FormID formID) {
+        CombatEventHandler::GetCombatTargetByFormID(const RE::Actor *eventActor,
+                                                    const RE::FormID formID) {
         const auto targets = GetCombatTargets(eventActor);
         return FindActorByFormID(eventActor, formID, targets);
     }

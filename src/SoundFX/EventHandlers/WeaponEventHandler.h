@@ -19,7 +19,7 @@ namespace SoundFX {
         void
             SetupWeaponTasks();
 
-        void
+        static void
             InitializeAttackTypeHandlers();
 
         RE::BSEventNotifyControl
@@ -42,19 +42,19 @@ namespace SoundFX {
         static std::unordered_map<std::string, EventAction> actionMap;
 
         RE::BSEventNotifyControl
-            ProcessPickUpEvent(const RE::TESContainerChangedEvent *event);
+            ProcessPickUpEvent(const RE::TESContainerChangedEvent *event) const;
         RE::BSEventNotifyControl
-            ProcessEquipEvent(const RE::TESEquipEvent *event);
+            ProcessEquipEvent(const RE::TESEquipEvent *event) const;
         RE::BSEventNotifyControl
-            ProcessHitEvent(const RE::TESHitEvent *event);
+            ProcessHitEvent(const RE::TESHitEvent *event) const;
         RE::BSEventNotifyControl
-            ProcessAttackEvent(const SKSE::ActionEvent *event);
+            ProcessAttackEvent(const SKSE::ActionEvent *event) const;
 
         void
-            ProcessIdleTask();
+            ProcessIdleTask() const;
 
         void
-            StartWeaponTask(std::function<void()> task, bool repeat = false) {
+            StartWeaponTask(const std::function<void()> &task, bool repeat = false) {
             scheduler.AddTask(task, repeat);
         }
     };

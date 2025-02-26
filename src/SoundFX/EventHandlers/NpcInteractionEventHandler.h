@@ -15,7 +15,7 @@ namespace SoundFX {
         void
             SetupNpcInteractionTasks();
 
-        void
+        static void
             InitializeOnlyAtTypeHandlers();
 
         RE::BSEventNotifyControl
@@ -31,20 +31,20 @@ namespace SoundFX {
         static std::unordered_map<std::string, EventAction> actionMap;
 
         RE::BSEventNotifyControl
-            ProcessDialogOpenEvent(const RE::MenuOpenCloseEvent *event);
+            ProcessDialogOpenEvent(const RE::MenuOpenCloseEvent *event) const;
 
         void
             ProcessDialogTopicTask();
 
         void
-            StartNpcInteractionTask(std::function<void()> task, bool repeat = false) {
+            StartNpcInteractionTask(const std::function<void()> &task, bool repeat = false) {
             scheduler.AddTask(task, repeat);
         }
 
-        RE::NiPoint3
-            GetActorForwardVector(RE::Actor *actor);
+        static RE::NiPoint3
+            GetActorForwardVector(const RE::Actor *actor);
 
-        std::unordered_map<RE::FormID, RE::Actor *>
+        static std::unordered_map<RE::FormID, RE::Actor *>
             GetNpcsInPlayerFOV(RE::Actor *player, float range, float fovAngle);
     };
 }

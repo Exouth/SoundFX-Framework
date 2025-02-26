@@ -23,37 +23,38 @@ namespace SoundFX {
         static constexpr float MAX_DISTANCE = 500.0f;
 
         RE::BSEventNotifyControl
-            ProcessStartCombatEvent(const RE::TESCombatEvent *event);
+            ProcessStartCombatEvent(const RE::TESCombatEvent *event) const;
         RE::BSEventNotifyControl
-            ProcessSearchCombatEvent(const RE::TESCombatEvent *event);
+            ProcessSearchCombatEvent(const RE::TESCombatEvent *event) const;
         RE::BSEventNotifyControl
-            ProcessStopCombatEvent(const RE::TESCombatEvent *event);
+            ProcessStopCombatEvent(const RE::TESCombatEvent *event) const;
         RE::BSEventNotifyControl
-            ProcessDieCombatEvent(const RE::TESCombatEvent *event);
+            ProcessDieCombatEvent(const RE::TESCombatEvent *event) const;
         RE::BSEventNotifyControl
-            ProcessFleeCombatEvent(const RE::TESCombatEvent *event);
+            ProcessFleeCombatEvent(const RE::TESCombatEvent *event) const;
 
         void
-            ProcessKillMoveCombatTask();
+            ProcessKillMoveCombatTask() const;
 
         void
-            StartCombatTask(std::function<void()> task, bool repeat = false) {
+            StartCombatTask(const std::function<void()> &task, bool repeat = false) {
             scheduler.AddTask(task, repeat);
         }
 
-        bool
-            IsPlayerInvolvedInCombat(RE::Actor *eventActor, RE::PlayerCharacter *player);
-        bool
-            IsActorFleeing(const RE::Actor *eventActor) const;
-        std::vector<RE::Actor *>
-            GetCombatTargets(RE::Actor *eventActor);
-        RE::Actor *
-            FindActorByFormID(RE::Actor                      *playerActor,
+        static bool
+            IsPlayerInvolvedInCombat(const RE::Actor           *eventActor,
+                                     const RE::PlayerCharacter *player);
+        static bool
+            IsActorFleeing(const RE::Actor *eventActor);
+        static std::vector<RE::Actor *>
+            GetCombatTargets(const RE::Actor *eventActor);
+        static RE::Actor *
+            FindActorByFormID(const RE::Actor                *playerActor,
                               RE::FormID                      formID,
                               const std::vector<RE::Actor *> &actors);
-        RE::Actor *
-            GetCombatTargetByFormID(RE::Actor *eventActor, RE::FormID formID);
-        float
-            GetDistanceBetweenActors(RE::Actor *actor1, RE::Actor *actor2);
+        static RE::Actor *
+            GetCombatTargetByFormID(const RE::Actor *eventActor, RE::FormID formID);
+        static float
+            GetDistanceBetweenActors(const RE::Actor *actor1, const RE::Actor *actor2);
     };
 }

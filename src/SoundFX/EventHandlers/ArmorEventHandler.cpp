@@ -16,7 +16,7 @@ namespace SoundFX {
     }
 
     RE::BSEventNotifyControl
-        ArmorEventHandler::ProcessPickUpEvent(const RE::TESContainerChangedEvent *event) {
+        ArmorEventHandler::ProcessPickUpEvent(const RE::TESContainerChangedEvent *event) const {
 
         if (event == nullptr || event->newContainer == 0) {
             return RE::BSEventNotifyControl::kContinue;
@@ -29,7 +29,7 @@ namespace SoundFX {
         }
 
         const auto &armors = jsonLoader.getItems("armors");
-        for (const auto &[armorName, armorEvents] : armors) {
+        for (const auto &armorEvents : armors | std::views::values) {
             const auto resolvedFormID =
                 GetFormIDFromEditorIDAndPluginName(armorEvents.editorID, armorEvents.pluginName);
 
@@ -49,7 +49,7 @@ namespace SoundFX {
     }
 
     RE::BSEventNotifyControl
-        ArmorEventHandler::ProcessEquipEvent(const RE::TESEquipEvent *event) {
+        ArmorEventHandler::ProcessEquipEvent(const RE::TESEquipEvent *event) const {
 
         if (event == nullptr || event->baseObject == 0) {
             return RE::BSEventNotifyControl::kContinue;
@@ -68,7 +68,7 @@ namespace SoundFX {
         if (event->actor->GetObjectReference()
             == RE::PlayerCharacter::GetSingleton()->GetObjectReference()) {
             const auto &armors = jsonLoader.getItems("armors");
-            for (const auto &[armorName, armorEvents] : armors) {
+            for (const auto &armorEvents : armors | std::views::values) {
                 const auto resolvedFormID = GetFormIDFromEditorIDAndPluginName(
                     armorEvents.editorID, armorEvents.pluginName);
 
@@ -91,7 +91,7 @@ namespace SoundFX {
     }
 
     RE::BSEventNotifyControl
-        ArmorEventHandler::ProcessUnequipEvent(const RE::TESEquipEvent *event) {
+        ArmorEventHandler::ProcessUnequipEvent(const RE::TESEquipEvent *event) const {
 
         if (event == nullptr || event->baseObject == 0) {
             return RE::BSEventNotifyControl::kContinue;
@@ -110,7 +110,7 @@ namespace SoundFX {
         if (event->actor->GetObjectReference()
             == RE::PlayerCharacter::GetSingleton()->GetObjectReference()) {
             const auto &armors = jsonLoader.getItems("armors");
-            for (const auto &[armorName, armorEvents] : armors) {
+            for (const auto &armorEvents : armors | std::views::values) {
                 const auto resolvedFormID = GetFormIDFromEditorIDAndPluginName(
                     armorEvents.editorID, armorEvents.pluginName);
 

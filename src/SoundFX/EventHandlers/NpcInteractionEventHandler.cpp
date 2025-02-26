@@ -37,7 +37,8 @@ namespace SoundFX {
     // in the players field of vision and whether the dialog window is open.
     // So there is no direct “interaction logic” involved here
     RE::BSEventNotifyControl
-        NpcInteractionEventHandler::ProcessDialogOpenEvent(const RE::MenuOpenCloseEvent *event) {
+        NpcInteractionEventHandler::ProcessDialogOpenEvent(
+            const RE::MenuOpenCloseEvent *event) const {
 
         if (!event) {
             return RE::BSEventNotifyControl::kContinue;
@@ -57,8 +58,7 @@ namespace SoundFX {
                     auto npcs = GetNpcsInPlayerFOV(player, range, fovAngle);
 
                     const auto &npcInteractions = jsonLoader.getItems("npcInteractions");
-                    for (const auto &[npcInteractiontName, npcInteractionEvents] :
-                         npcInteractions) {
+                    for (const auto &npcInteractionEvents : npcInteractions | std::views::values) {
                         const auto resolvedFormID = GetFormIDFromEditorIDAndPluginName(
                             npcInteractionEvents.editorID, npcInteractionEvents.pluginName);
 
@@ -91,20 +91,20 @@ namespace SoundFX {
 
         if (ui->IsMenuOpen(RE::DialogueMenu::MENU_NAME)) {
 
-            auto *menuTopicManager = RE::MenuTopicManager::GetSingleton();
+            const auto *menuTopicManager = RE::MenuTopicManager::GetSingleton();
             if (!menuTopicManager) {
                 return;
             }
 
-            auto  speakerHandle = menuTopicManager->speaker;
-            auto *speaker       = speakerHandle.get().get();
+            const auto speakerHandle = menuTopicManager->speaker;
+            auto      *speaker       = speakerHandle.get().get();
 
             if (!speaker || !speaker->GetBaseObject()) {
                 return;
             }
 
             const auto &npcInteractions = jsonLoader.getItems("npcInteractions");
-            for (const auto &[npcInteractiontName, npcInteractionEvents] : npcInteractions) {
+            for (const auto &npcInteractionEvents : npcInteractions | std::views::values) {
                 const auto resolvedFormID = GetFormIDFromEditorIDAndPluginName(
                     npcInteractionEvents.editorID, npcInteractionEvents.pluginName);
 
@@ -117,9 +117,9 @@ namespace SoundFX {
                                 (onlyAtOriginal != "All") ? "EditorID" : onlyAtOriginal;
 
                             if (actionMap.find(key) != actionMap.end()) {
-                                float randomValue = GenerateRandomFloat();
+                                const float randomValue = GenerateRandomFloat();
                                 if (randomValue <= jsonEvent.chance) {
-                                    auto *selectedNode = menuTopicManager->currentTopicInfo;
+                                    const auto *selectedNode = menuTopicManager->currentTopicInfo;
                                     if (selectedNode) {
                                         auto *selectedDialogue = selectedNode->parentTopic;
 
@@ -153,12 +153,12 @@ namespace SoundFX {
     }
 
     RE::NiPoint3
-        NpcInteractionEventHandler::GetActorForwardVector(RE::Actor *actor) {
+        NpcInteractionEventHandler::GetActorForwardVector(const RE::Actor *actor) {
         if (!actor) {
             return {0.0f, 0.0f, 1.0f};  // Fallback
         }
 
-        auto node = actor->Get3D();
+        const auto node = actor->Get3D();
         if (!node) {
             return {0.0f, 0.0f, 1.0f};  // Fallback
         }
@@ -186,29 +186,29 @@ namespace SoundFX {
             return npcsInRange;
         }
 
-        RE::NiPoint3 playerForward = GetActorForwardVector(player);
+        const RE::NiPoint3 playerForward = GetActorForwardVector(player);
 
         for (auto &handle : processLists->highActorHandles) {
-            auto actor = handle.get().get();
+            const auto actor = handle.get().get();
             if (!actor || actor->GetHandle() == player->GetHandle() || !actor->Is3DLoaded()) {
                 continue;
             }
 
             RE::NiPoint3 directionToActor = actor->GetPosition() - player->GetPosition();
 
-            float distance = directionToActor.Length();
+            const float distance = directionToActor.Length();
             if (distance > range) {
                 continue;
             }
 
             directionToActor.Unitize();
 
-            float dotProduct = playerForward.Dot(directionToActor);
-            float angle =
+            const float dotProduct = playerForward.Dot(directionToActor);
+            const float angle =
                 std::acos(dotProduct) * (180.0f / std::numbers::pi_v<float>);  // Angle in degrees
 
             if (angle <= fovAngle / 2.0f) {
-                auto baseform = actor->GetBaseObject();
+                const auto baseform = actor->GetBaseObject();
                 if (baseform) {
                     auto baseFormID         = baseform->formID;
                     npcsInRange[baseFormID] = actor;

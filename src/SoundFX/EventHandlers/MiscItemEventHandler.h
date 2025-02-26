@@ -15,8 +15,8 @@ namespace SoundFX {
 
       private:
         RE::BSEventNotifyControl
-            ProcessPickUpEvent(const RE::TESContainerChangedEvent *event);
+            ProcessPickUpEvent(const RE::TESContainerChangedEvent *event) const;
         RE::BSEventNotifyControl
-            ProcessDropEvent(const RE::TESContainerChangedEvent *event);
+            ProcessDropEvent(const RE::TESContainerChangedEvent *event) const;
     };
 }
