@@ -20,7 +20,7 @@ namespace SoundFX {
 
         RE::BSEventNotifyControl
             ProcessEvent(const RE::MenuOpenCloseEvent *event,
-                         RE::BSTEventSource<RE::MenuOpenCloseEvent> *);
+                         RE::BSTEventSource<RE::MenuOpenCloseEvent> *) override;
 
       private:
         RE::TESTopic *lastParentTopic = nullptr;

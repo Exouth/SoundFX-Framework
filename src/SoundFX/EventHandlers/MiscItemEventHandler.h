@@ -2,8 +2,7 @@
 
 namespace SoundFX {
 
-    class MiscItemEventHandler :
-        public RE::BSTEventSink<RE::TESContainerChangedEvent> {
+    class MiscItemEventHandler : public RE::BSTEventSink<RE::TESContainerChangedEvent> {
         JSONLoader &jsonLoader;
 
       public:
@@ -12,7 +11,7 @@ namespace SoundFX {
 
         RE::BSEventNotifyControl
             ProcessEvent(const RE::TESContainerChangedEvent *event,
-                         RE::BSTEventSource<RE::TESContainerChangedEvent> *);
+                         RE::BSTEventSource<RE::TESContainerChangedEvent> *) override;
 
       private:
         RE::BSEventNotifyControl

@@ -5,7 +5,7 @@
 namespace SoundFX {
 
     class SpellEventHandler : public RE::BSTEventSink<SKSE::ActionEvent> {
-        JSONLoader &jsonLoader;
+        JSONLoader   &jsonLoader;
         TaskScheduler scheduler;
 
       public:
@@ -16,7 +16,8 @@ namespace SoundFX {
             SetupSpellTasks();
 
         RE::BSEventNotifyControl
-            ProcessEvent(const SKSE::ActionEvent *event, RE::BSTEventSource<SKSE::ActionEvent> *);
+            ProcessEvent(const SKSE::ActionEvent *event,
+                         RE::BSTEventSource<SKSE::ActionEvent> *) override;
 
       private:
         RE::BSEventNotifyControl

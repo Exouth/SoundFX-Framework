@@ -13,7 +13,8 @@ namespace SoundFX {
         }
 
         RE::BSEventNotifyControl
-            ProcessEvent(const RE::TESCombatEvent *event, RE::BSTEventSource<RE::TESCombatEvent> *);
+            ProcessEvent(const RE::TESCombatEvent *event,
+                         RE::BSTEventSource<RE::TESCombatEvent> *) override;
 
         void
             SetupCombatTasks();

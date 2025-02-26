@@ -11,7 +11,7 @@ namespace SoundFX {
 
         RE::BSEventNotifyControl
             ProcessEvent(const RE::TESQuestStageEvent *event,
-                         RE::BSTEventSource<RE::TESQuestStageEvent> *);
+                         RE::BSTEventSource<RE::TESQuestStageEvent> *) override;
 
       private:
         std::uint16_t

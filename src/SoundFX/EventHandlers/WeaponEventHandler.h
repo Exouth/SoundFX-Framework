@@ -24,17 +24,20 @@ namespace SoundFX {
 
         RE::BSEventNotifyControl
             ProcessEvent(const RE::TESContainerChangedEvent *event,
-                         RE::BSTEventSource<RE::TESContainerChangedEvent> *);
+                         RE::BSTEventSource<RE::TESContainerChangedEvent> *) override;
         RE::BSEventNotifyControl
-            ProcessEvent(const RE::TESEquipEvent *event, RE::BSTEventSource<RE::TESEquipEvent> *);
+            ProcessEvent(const RE::TESEquipEvent *event,
+                         RE::BSTEventSource<RE::TESEquipEvent> *) override;
         RE::BSEventNotifyControl
-            ProcessEvent(const RE::TESHitEvent *event, RE::BSTEventSource<RE::TESHitEvent> *);
+            ProcessEvent(const RE::TESHitEvent *event,
+                         RE::BSTEventSource<RE::TESHitEvent> *) override;
         RE::BSEventNotifyControl
-            ProcessEvent(const SKSE::ActionEvent *event, RE::BSTEventSource<SKSE::ActionEvent> *);
+            ProcessEvent(const SKSE::ActionEvent *event,
+                         RE::BSTEventSource<SKSE::ActionEvent> *) override;
 
       private:
         using EventVariant = std::variant<const RE::TESHitEvent *, const RE::TESEquipEvent *>;
-        using EventAction = std::function<void(EventVariant, const std::string &)>;
+        using EventAction  = std::function<void(EventVariant, const std::string &)>;
 
         static std::unordered_map<std::string, EventAction> actionMap;
 
