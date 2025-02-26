@@ -39,7 +39,7 @@ namespace SoundFX {
                                           EventTypes... events);
 
         template <typename EventSourceType, typename EventType, typename HandlerType>
-        void
+        static void
             RegisterEventHandler(EventSourceType *eventSource, HandlerType *handler);
     };
 
@@ -55,7 +55,7 @@ namespace SoundFX {
     void
         EventHandlerManager::RegisterEventHandler(EventSourceType *eventSource,
                                                   HandlerType     *handler) {
-        eventSource->AddEventSink<EventType>(handler);
+        eventSource->template AddEventSink<EventType>(handler);
         spdlog::info("Registered handler for event type: {}", typeid(EventType).name());
     }
 

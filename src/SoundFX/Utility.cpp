@@ -23,8 +23,6 @@ namespace SoundFX {
             return formsWithEditorID;
         }
 
-        const RE::BSReadWriteLock guard {lock};
-
         for (const auto &[key, form] : *formsMap) {
             if (std::string_view(key) == editorID && form) {
                 formsWithEditorID.push_back(form);
@@ -37,7 +35,7 @@ namespace SoundFX {
     RE::FormID
         GetFormIDFromEditorIDAndPluginName(const std::string &editorID,
                                            const std::string &pluginName) {
-        auto forms = GetAllFormsByEditorID(editorID);
+        const auto forms = GetAllFormsByEditorID(editorID);
 
         if (forms.empty()) {
             return 0;
@@ -67,9 +65,9 @@ namespace SoundFX {
     }
 
     void
-        DelayExec(float delayInSeconds, std::function<void()> task) {
+        DelayExec(float delayInSeconds, const std::function<void()> &task) {
 
-        std::thread([delayInSeconds, task]() {
+        std::thread([delayInSeconds, task] {
             std::this_thread::sleep_for(std::chrono::duration<float>(delayInSeconds));
 
             SKSE::GetTaskInterface()->AddTask(task);
@@ -78,9 +76,9 @@ namespace SoundFX {
 
     float
         GenerateRandomFloat() {
-        static thread_local std::mt19937 generator(
+        thread_local std::mt19937 generator(
             std::random_device {}());
-        std::uniform_real_distribution<float> distribution(0.0f,
+        std::uniform_real_distribution distribution(0.0f,
                                                            1.0f);
         return distribution(generator);
     }

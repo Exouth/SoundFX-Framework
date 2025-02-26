@@ -13,7 +13,7 @@ namespace SoundFX {
                                            const std::string &pluginName);
 
     void
-        DelayExec(float delayInSeconds, std::function<void()> task);
+        DelayExec(float delayInSeconds, const std::function<void()> &task);
 
     float
         GenerateRandomFloat();
