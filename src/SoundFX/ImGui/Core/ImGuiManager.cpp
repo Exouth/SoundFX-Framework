@@ -47,17 +47,6 @@ namespace SoundFX {
         ImGuiIO &io        = ImGui::GetIO();
         io.MouseDrawCursor = showDebugUI;
 
-        if (showDebugUI) {
-            io.ConfigFlags &= ~ImGuiConfigFlags_NoMouse;
-            io.WantCaptureMouse                                 = true;
-            io.WantCaptureKeyboard                              = true;
-            RE::ControlMap::GetSingleton()->ignoreKeyboardMouse = true;
-        } else {
-            io.WantCaptureMouse                                 = false;
-            io.WantCaptureKeyboard                              = false;
-            RE::ControlMap::GetSingleton()->ignoreKeyboardMouse = false;
-        }
-
         if (!showDebugUI)
             return;
 
