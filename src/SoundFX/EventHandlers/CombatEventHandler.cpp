@@ -29,7 +29,7 @@ namespace SoundFX {
             return RE::BSEventNotifyControl::kContinue;
         }
 
-        auto *player = RE::PlayerCharacter::GetSingleton();
+        const auto *player = RE::PlayerCharacter::GetSingleton();
         if (!player) {
             return RE::BSEventNotifyControl::kContinue;
         }
@@ -48,7 +48,7 @@ namespace SoundFX {
                 for (const auto &jsonEvent : combatEvents.events) {
                     if (jsonEvent.type == "Start"
                         && event->newState.any(RE::ACTOR_COMBAT_STATE::kCombat)) {
-                        float randomValue = GenerateRandomFloat();
+                        const float randomValue = GenerateRandomFloat();
                         if (randomValue <= jsonEvent.chance) {
                             PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                         }
@@ -72,7 +72,7 @@ namespace SoundFX {
             return RE::BSEventNotifyControl::kContinue;
         }
 
-        auto *player = RE::PlayerCharacter::GetSingleton();
+        const auto *player = RE::PlayerCharacter::GetSingleton();
         if (!player) {
             return RE::BSEventNotifyControl::kContinue;
         }
@@ -91,7 +91,7 @@ namespace SoundFX {
                 for (const auto &jsonEvent : combatEvents.events) {
                     if (jsonEvent.type == "Searching"
                         && event->newState.any(RE::ACTOR_COMBAT_STATE::kSearching)) {
-                        float randomValue = GenerateRandomFloat();
+                        const float randomValue = GenerateRandomFloat();
                         if (randomValue <= jsonEvent.chance) {
                             PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                         }
@@ -111,12 +111,12 @@ namespace SoundFX {
             return RE::BSEventNotifyControl::kContinue;
         }
 
-        auto *player = RE::PlayerCharacter::GetSingleton();
+        const auto *player = RE::PlayerCharacter::GetSingleton();
         if (!player) {
             return RE::BSEventNotifyControl::kContinue;
         }
 
-        auto *eventActor = event->actor->As<RE::Actor>();
+        const auto *eventActor = event->actor->As<RE::Actor>();
         if (!eventActor) {
             return RE::BSEventNotifyControl::kContinue;
         }
@@ -134,7 +134,7 @@ namespace SoundFX {
                 for (const auto &jsonEvent : combatEvents.events) {
                     if (jsonEvent.type == "Stop"
                         && event->newState == RE::ACTOR_COMBAT_STATE::kNone) {
-                        float randomValue = GenerateRandomFloat();
+                        const float randomValue = GenerateRandomFloat();
                         if (randomValue <= jsonEvent.chance) {
                             PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                         }
@@ -154,7 +154,7 @@ namespace SoundFX {
             return RE::BSEventNotifyControl::kContinue;
         }
 
-        auto *player = RE::PlayerCharacter::GetSingleton();
+        const auto *player = RE::PlayerCharacter::GetSingleton();
         if (!player) {
             return RE::BSEventNotifyControl::kContinue;
         }
@@ -164,7 +164,8 @@ namespace SoundFX {
             return RE::BSEventNotifyControl::kContinue;
         }
 
-        float currentHP = eventActor->AsActorValueOwner()->GetActorValue(RE::ActorValue::kHealth);
+        const float currentHP =
+            eventActor->AsActorValueOwner()->GetActorValue(RE::ActorValue::kHealth);
         if (currentHP > 0.0f) {
             if (!player->IsInKillMove()) {
                 return RE::BSEventNotifyControl::kContinue;
@@ -184,7 +185,7 @@ namespace SoundFX {
                 for (const auto &jsonEvent : combatEvents.events) {
                     if (jsonEvent.type == "Die"
                         && event->newState == RE::ACTOR_COMBAT_STATE::kNone) {
-                        float randomValue = GenerateRandomFloat();
+                        const float randomValue = GenerateRandomFloat();
                         if (randomValue <= jsonEvent.chance) {
                             PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                         }
@@ -205,8 +206,8 @@ namespace SoundFX {
             return RE::BSEventNotifyControl::kContinue;
         }
 
-        auto *eventActor = event->actor->As<RE::Actor>();
-        auto *player     = RE::PlayerCharacter::GetSingleton();
+        auto       *eventActor = event->actor->As<RE::Actor>();
+        const auto *player     = RE::PlayerCharacter::GetSingleton();
 
         // Currently Only Play when Player is involved, skip if Combat is between NPCs
         if (!eventActor || !player || player->GetFormID() != event->targetActor->GetFormID()) {
@@ -225,7 +226,7 @@ namespace SoundFX {
                 if (resolvedFormID == eventActor->GetBaseObject()->formID) {
                     for (const auto &jsonEvent : combatEvents.events) {
                         if (jsonEvent.type == "Flee") {
-                            float randomValue = GenerateRandomFloat();
+                            const float randomValue = GenerateRandomFloat();
                             if (randomValue <= jsonEvent.chance) {
                                 PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                             }
@@ -242,8 +243,8 @@ namespace SoundFX {
     void
         CombatEventHandler::ProcessKillMoveCombatTask() const {
 
-        auto *player      = RE::PlayerCharacter::GetSingleton();
-        auto *playerActor = player->As<RE::Actor>();
+        auto       *player      = RE::PlayerCharacter::GetSingleton();
+        const auto *playerActor = player->As<RE::Actor>();
 
         if (!player || !playerActor) {
             return;
@@ -268,7 +269,7 @@ namespace SoundFX {
                     if (resolvedFormID == foundActor->GetBaseObject()->formID) {
                         for (const auto &jsonEvent : combatEvents.events) {
                             if (jsonEvent.type == "KillMove") {
-                                float randomValue = GenerateRandomFloat();
+                                const float randomValue = GenerateRandomFloat();
                                 if (randomValue <= jsonEvent.chance) {
                                     wasInKillMove = true;
                                     PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
@@ -294,7 +295,7 @@ namespace SoundFX {
                 if (!targetActorPtr)
                     continue;
 
-                RE::Actor *targetActor = targetActorPtr.get();
+                const RE::Actor *targetActor = targetActorPtr.get();
                 if (!targetActor)
                     continue;
 
@@ -320,8 +321,8 @@ namespace SoundFX {
         if (!actor1 || !actor2)
             return FLT_MAX;
 
-        RE::NiPoint3 pos1 = actor1->GetPosition();
-        RE::NiPoint3 pos2 = actor2->GetPosition();
+        const RE::NiPoint3 pos1 = actor1->GetPosition();
+        const RE::NiPoint3 pos2 = actor2->GetPosition();
 
         return pos1.GetDistance(pos2);
     }
@@ -339,8 +340,8 @@ namespace SoundFX {
             for (const auto &target : combatGroup->targets) {
                 RE::NiPointer<RE::Actor> targetActorPtr = target.targetHandle.get();
                 if (targetActorPtr) {
-                    RE::Actor *targetActor = targetActorPtr.get();
-                    float      distance    = GetDistanceBetweenActors(eventActor, targetActor);
+                    RE::Actor  *targetActor = targetActorPtr.get();
+                    const float distance    = GetDistanceBetweenActors(eventActor, targetActor);
                     if (targetActor && distance <= MAX_DISTANCE) {
                         targets.push_back(targetActor);
                     }

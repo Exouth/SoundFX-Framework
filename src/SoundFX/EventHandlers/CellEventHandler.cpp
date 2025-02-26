@@ -14,7 +14,7 @@ namespace SoundFX {
 
         static RE::TESObjectCELL *lastCell = nullptr;
 
-        auto player = RE::PlayerCharacter::GetSingleton();
+        const auto player = RE::PlayerCharacter::GetSingleton();
         if (!player) {
             return;
         }
@@ -45,7 +45,7 @@ namespace SoundFX {
                 if (resolvedFormID == currentCell->formID) {
                     for (const auto &jsonEvent : cellEvents.events) {
                         if (jsonEvent.type == "Enter") {
-                            float randomValue = GenerateRandomFloat();
+                            const float randomValue = GenerateRandomFloat();
                             if (randomValue <= jsonEvent.chance) {
                                 PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                             }
@@ -61,12 +61,12 @@ namespace SoundFX {
     void
         CellEventHandler::ProcessAmbienceSoundTask() const {
 
-        auto player = RE::PlayerCharacter::GetSingleton();
+        const auto player = RE::PlayerCharacter::GetSingleton();
         if (!player) {
             return;
         }
 
-        auto *currentCell = player->GetParentCell();
+        const auto *currentCell = player->GetParentCell();
         if (!currentCell) {
             return;
         }
@@ -86,7 +86,7 @@ namespace SoundFX {
                 if (resolvedFormID == currentCell->formID) {
                     for (const auto &jsonEvent : cellEvents.events) {
                         if (jsonEvent.type == "Ambience") {
-                            float randomValue = GenerateRandomFloat();
+                            const float randomValue = GenerateRandomFloat();
                             if (randomValue <= jsonEvent.chance) {
                                 PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                             }

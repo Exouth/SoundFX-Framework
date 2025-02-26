@@ -24,7 +24,7 @@ namespace SoundFX {
                 continue;
             }
 
-            auto stageIndex = stage.data.index;
+            const auto stageIndex = stage.data.index;
             if (stageIndex == 0) {
                 fallbackStage = 10;
             } else if (fallbackStage == 0 || stageIndex < fallbackStage) {
@@ -42,7 +42,7 @@ namespace SoundFX {
             return RE::BSEventNotifyControl::kContinue;
         }
 
-        auto *quest = RE::TESForm::LookupByID<RE::TESQuest>(event->formID);
+        const auto *quest = RE::TESForm::LookupByID<RE::TESQuest>(event->formID);
         if (!quest) {
             return RE::BSEventNotifyControl::kContinue;
         }
@@ -54,9 +54,9 @@ namespace SoundFX {
 
             if (resolvedFormID == event->formID) {
                 for (const auto &jsonEvent : questEvents.events) {
-                    auto startStage = GetFirstActiveStage(quest);
+                    const auto startStage = GetFirstActiveStage(quest);
                     if (jsonEvent.type == "Start" && event->stage == startStage) {
-                        float randomValue = GenerateRandomFloat();
+                        const float randomValue = GenerateRandomFloat();
                         if (randomValue <= jsonEvent.chance) {
                             PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                         }
@@ -75,7 +75,7 @@ namespace SoundFX {
             return RE::BSEventNotifyControl::kContinue;
         }
 
-        auto *quest = RE::TESForm::LookupByID<RE::TESQuest>(event->formID);
+        const auto *quest = RE::TESForm::LookupByID<RE::TESQuest>(event->formID);
         if (!quest) {
             return RE::BSEventNotifyControl::kContinue;
         }
@@ -88,7 +88,7 @@ namespace SoundFX {
             if (resolvedFormID == event->formID) {
                 for (const auto &jsonEvent : questEvents.events) {
                     if (jsonEvent.type == "End" && quest->IsCompleted()) {
-                        float randomValue = GenerateRandomFloat();
+                        const float randomValue = GenerateRandomFloat();
                         if (randomValue <= jsonEvent.chance) {
                             PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                         }

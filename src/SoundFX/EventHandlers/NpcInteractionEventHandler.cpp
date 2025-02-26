@@ -52,8 +52,8 @@ namespace SoundFX {
         if (event->menuName == RE::DialogueMenu::MENU_NAME) {
             if (event->opening) {
                 if (player) {
-                    float range    = 300.0f;
-                    float fovAngle = 90.0f;
+                    constexpr float range    = 300.0f;
+                    constexpr float fovAngle = 90.0f;
 
                     auto npcs = GetNpcsInPlayerFOV(player, range, fovAngle);
 
@@ -65,7 +65,7 @@ namespace SoundFX {
                         if (npcs.find(resolvedFormID) != npcs.end()) {
                             for (const auto &jsonEvent : npcInteractionEvents.events) {
                                 if (jsonEvent.type == "DialogOpen") {
-                                    float randomValue = GenerateRandomFloat();
+                                    const float randomValue = GenerateRandomFloat();
                                     if (randomValue <= jsonEvent.chance) {
                                         PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                                     }

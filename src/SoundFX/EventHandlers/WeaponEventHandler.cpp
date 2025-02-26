@@ -7,28 +7,28 @@ namespace SoundFX {
     // InitAttackType temporary use for Filtering
     void
         WeaponEventHandler::InitializeAttackTypeHandlers() {
-        actionMap["PowerAttack"] = [](EventVariant event, const std::string &soundEffect) {
+        actionMap["PowerAttack"] = [](const EventVariant event, const std::string &soundEffect) {
             if (const auto hitEvent = std::get_if<const RE::TESHitEvent *>(&event)) {
                 if ((*hitEvent)->flags.any(RE::TESHitEvent::Flag::kPowerAttack)) {
                     PlayCustomSoundAsDescriptor(soundEffect);
                 }
             }
         };
-        actionMap["SneakAttack"] = [](EventVariant event, const std::string &soundEffect) {
+        actionMap["SneakAttack"] = [](const EventVariant event, const std::string &soundEffect) {
             if (const auto hitEvent = std::get_if<const RE::TESHitEvent *>(&event)) {
                 if ((*hitEvent)->flags.any(RE::TESHitEvent::Flag::kSneakAttack)) {
                     PlayCustomSoundAsDescriptor(soundEffect);
                 }
             }
         };
-        actionMap["BashAttack"] = [](EventVariant event, const std::string &soundEffect) {
+        actionMap["BashAttack"] = [](const EventVariant event, const std::string &soundEffect) {
             if (const auto hitEvent = std::get_if<const RE::TESHitEvent *>(&event)) {
                 if ((*hitEvent)->flags.any(RE::TESHitEvent::Flag::kBashAttack)) {
                     PlayCustomSoundAsDescriptor(soundEffect);
                 }
             }
         };
-        actionMap["NormalAttack"] = [](EventVariant event, const std::string &soundEffect) {
+        actionMap["NormalAttack"] = [](const EventVariant event, const std::string &soundEffect) {
             if (const auto hitEvent = std::get_if<const RE::TESHitEvent *>(&event)) {
 
                 const RE::TESForm *item = RE::TESForm::LookupByID((*hitEvent)->source);
