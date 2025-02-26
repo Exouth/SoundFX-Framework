@@ -4,7 +4,7 @@
 
 namespace {
     ImGuiKey
-        VirtualKeyToImGuiKey(WPARAM wParam) {
+        VirtualKeyToImGuiKey(const WPARAM wParam) {
         switch (wParam) {
         case VK_TAB: return ImGuiKey_Tab;
         case VK_LEFT: return ImGuiKey_LeftArrow;
@@ -48,7 +48,9 @@ namespace SoundFX {
                 continue;
             }
 
-            auto scanCode = button->GetIDCode();
+            // I dont really know at the Moment whether there are very large values returned (Maybe
+            // Look more into it later)
+            const int scanCode = std::clamp(static_cast<int>(button->GetIDCode()), 0, 255);
             switch (button->device.get()) {
             case RE::INPUT_DEVICE::kMouse:
                 if (scanCode <= 5) {
