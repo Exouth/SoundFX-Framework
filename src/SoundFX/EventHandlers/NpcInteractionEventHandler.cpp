@@ -205,7 +205,7 @@ namespace SoundFX {
 
             float dotProduct = playerForward.Dot(directionToActor);
             float angle =
-                std::acos(dotProduct) * (180.0f / static_cast<float>(M_PI));  // Angle in degrees
+                std::acos(dotProduct) * (180.0f / std::numbers::pi_v<float>);  // Angle in degrees
 
             if (angle <= fovAngle / 2.0f) {
                 auto baseform = actor->GetBaseObject();
