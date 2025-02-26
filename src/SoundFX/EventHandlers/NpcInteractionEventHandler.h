@@ -1,11 +1,10 @@
 #pragma once
 
-#include "JSONLoader.h"
 #include "TaskScheduler.h"
 
 namespace SoundFX {
 
-    class NpcInteractionEventHandler : public RE::BSTEventSink<RE::MenuOpenCloseEvent> {
+    class NpcInteractionEventHandler final : public RE::BSTEventSink<RE::MenuOpenCloseEvent> {
         JSONLoader   &jsonLoader;
         TaskScheduler scheduler;
 
@@ -16,12 +15,12 @@ namespace SoundFX {
         void
             SetupNpcInteractionTasks();
 
-        void
+        static void
             InitializeOnlyAtTypeHandlers();
 
         RE::BSEventNotifyControl
             ProcessEvent(const RE::MenuOpenCloseEvent *event,
-                         RE::BSTEventSource<RE::MenuOpenCloseEvent> *);
+                         RE::BSTEventSource<RE::MenuOpenCloseEvent> *) override;
 
       private:
         RE::TESTopic *lastParentTopic = nullptr;
@@ -32,20 +31,20 @@ namespace SoundFX {
         static std::unordered_map<std::string, EventAction> actionMap;
 
         RE::BSEventNotifyControl
-            ProcessDialogOpenEvent(const RE::MenuOpenCloseEvent *event);
+            ProcessDialogOpenEvent(const RE::MenuOpenCloseEvent *event) const;
 
         void
             ProcessDialogTopicTask();
 
         void
-            StartNpcInteractionTask(std::function<void()> task, bool repeat = false) {
+            StartNpcInteractionTask(const std::function<void()> &task, bool repeat = false) {
             scheduler.AddTask(task, repeat);
         }
 
-        RE::NiPoint3
-            GetActorForwardVector(RE::Actor *actor);
+        static RE::NiPoint3
+            GetActorForwardVector(const RE::Actor *actor);
 
-        std::unordered_map<RE::FormID, RE::Actor *>
+        static std::unordered_map<RE::FormID, RE::Actor *>
             GetNpcsInPlayerFOV(RE::Actor *player, float range, float fovAngle);
     };
 }

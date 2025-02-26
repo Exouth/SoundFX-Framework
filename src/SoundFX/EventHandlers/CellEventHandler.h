@@ -1,12 +1,11 @@
 #pragma once
 
-#include "JSONLoader.h"
 #include "TaskScheduler.h"
 
 namespace SoundFX {
 
     class CellEventHandler {
-        JSONLoader &jsonLoader;
+        JSONLoader   &jsonLoader;
         TaskScheduler scheduler;
 
       public:
@@ -18,12 +17,12 @@ namespace SoundFX {
 
       private:
         void
-            ProcessCellEnterTask();
+            ProcessCellEnterTask() const;
         void
-            ProcessAmbienceSoundTask();
+            ProcessAmbienceSoundTask() const;
 
         void
-            StartCellTask(std::function<void()> task, bool repeat = false) {
+            StartCellTask(const std::function<void()> &task, bool repeat = false) {
             scheduler.AddTask(task, repeat);
         }
     };

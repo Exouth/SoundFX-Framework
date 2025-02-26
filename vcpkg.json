@@ -16,7 +16,14 @@
         "spdlog",
         "nlohmann-json",
         "openal-soft",
-        "libsndfile"
+        "libsndfile",
+        {
+          "name": "imgui",
+          "features": [
+            "dx11-binding",
+            "win32-binding"
+          ]
+        }
       ]
     }
   },
