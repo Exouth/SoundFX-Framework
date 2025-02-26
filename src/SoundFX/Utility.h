@@ -14,4 +14,7 @@ namespace SoundFX {
 
     void
         DelayExec(float delayInSeconds, std::function<void()> task);
+
+    float
+        GenerateRandomFloat();
 }

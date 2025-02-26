@@ -65,7 +65,7 @@ namespace SoundFX {
                         if (npcs.find(resolvedFormID) != npcs.end()) {
                             for (const auto &jsonEvent : npcInteractionEvents.events) {
                                 if (jsonEvent.type == "DialogOpen") {
-                                    float randomValue = static_cast<float>(rand()) / RAND_MAX;
+                                    float randomValue = GenerateRandomFloat();
                                     if (randomValue <= jsonEvent.chance) {
                                         PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                                     }
@@ -117,7 +117,7 @@ namespace SoundFX {
                                 (onlyAtOriginal != "All") ? "EditorID" : onlyAtOriginal;
 
                             if (actionMap.find(key) != actionMap.end()) {
-                                float randomValue = static_cast<float>(rand()) / RAND_MAX;
+                                float randomValue = GenerateRandomFloat();
                                 if (randomValue <= jsonEvent.chance) {
                                     auto *selectedNode = menuTopicManager->currentTopicInfo;
                                     if (selectedNode) {

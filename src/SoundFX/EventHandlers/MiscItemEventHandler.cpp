@@ -30,7 +30,7 @@ namespace SoundFX {
             if (resolvedFormID == item->formID) {
                 for (const auto &jsonEvent : miscitemEvents.events) {
                     if (jsonEvent.type == "PickUp") {
-                        float randomValue = static_cast<float>(rand()) / RAND_MAX;
+                        float randomValue = GenerateRandomFloat();
                         if (randomValue <= jsonEvent.chance) {
                             PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                         }
@@ -63,7 +63,7 @@ namespace SoundFX {
             if (resolvedFormID == item->formID) {
                 for (const auto &jsonEvent : miscitemEvents.events) {
                     if (jsonEvent.type == "Drop") {
-                        float randomValue = static_cast<float>(rand()) / RAND_MAX;
+                        float randomValue = GenerateRandomFloat();
                         if (randomValue <= jsonEvent.chance) {
                             PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                         }

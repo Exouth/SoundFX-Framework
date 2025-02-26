@@ -45,7 +45,7 @@ namespace SoundFX {
                 if (resolvedFormID == currentCell->formID) {
                     for (const auto &jsonEvent : cellEvents.events) {
                         if (jsonEvent.type == "Enter") {
-                            float randomValue = static_cast<float>(rand()) / RAND_MAX;
+                            float randomValue = GenerateRandomFloat();
                             if (randomValue <= jsonEvent.chance) {
                                 PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                             }
@@ -86,7 +86,7 @@ namespace SoundFX {
                 if (resolvedFormID == currentCell->formID) {
                     for (const auto &jsonEvent : cellEvents.events) {
                         if (jsonEvent.type == "Ambience") {
-                            float randomValue = static_cast<float>(rand()) / RAND_MAX;
+                            float randomValue = GenerateRandomFloat();
                             if (randomValue <= jsonEvent.chance) {
                                 PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                             }

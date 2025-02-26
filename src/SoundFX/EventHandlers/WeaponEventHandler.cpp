@@ -106,7 +106,7 @@ namespace SoundFX {
                 if (resolvedFormID == item->formID) {
                     for (const auto &jsonEvent : weaponEvents.events) {
                         if (jsonEvent.type == "Equip") {
-                            float randomValue = static_cast<float>(rand()) / RAND_MAX;
+                            float randomValue = GenerateRandomFloat();
                             if (randomValue <= jsonEvent.chance) {
                                 PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                             }
@@ -142,7 +142,7 @@ namespace SoundFX {
             if (resolvedFormID == item->formID) {
                 for (const auto &jsonEvent : weaponEvents.events) {
                     if (jsonEvent.type == "PickUp") {
-                        float randomValue = static_cast<float>(rand()) / RAND_MAX;
+                        float randomValue = GenerateRandomFloat();
                         if (randomValue <= jsonEvent.chance) {
                             PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                         }
@@ -179,7 +179,7 @@ namespace SoundFX {
                         if (jsonEvent.type == "Hit") {
                             if (actionMap.find(jsonEvent.details.hitType.value())
                                 != actionMap.end()) {
-                                float randomValue = static_cast<float>(rand()) / RAND_MAX;
+                                float randomValue = GenerateRandomFloat();
                                 if (randomValue <= jsonEvent.chance) {
                                     actionMap[jsonEvent.details.hitType.value()](
                                         event, jsonEvent.soundEffect);
@@ -230,7 +230,7 @@ namespace SoundFX {
                 if (resolvedFormID == currentItem) {
                     for (const auto &jsonEvent : weaponEvents.events) {
                         if (jsonEvent.type == "Idle" && player->AsActorState()->IsWeaponDrawn()) {
-                            float randomValue = static_cast<float>(rand()) / RAND_MAX;
+                            float randomValue = GenerateRandomFloat();
                             if (randomValue <= jsonEvent.chance) {
                                 PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                             }
@@ -287,7 +287,7 @@ namespace SoundFX {
                     for (const auto &jsonEvent : weaponEvents.events) {
                         if (jsonEvent.type == "Attack"
                             && event->type == SKSE::ActionEvent::Type::kWeaponSwing) {
-                            float randomValue = static_cast<float>(rand()) / RAND_MAX;
+                            float randomValue = GenerateRandomFloat();
                             if (randomValue <= jsonEvent.chance) {
                                 PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                             }

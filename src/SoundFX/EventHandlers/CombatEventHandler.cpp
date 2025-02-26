@@ -48,7 +48,7 @@ namespace SoundFX {
                 for (const auto &jsonEvent : combatEvents.events) {
                     if (jsonEvent.type == "Start"
                         && event->newState.any(RE::ACTOR_COMBAT_STATE::kCombat)) {
-                        float randomValue = static_cast<float>(rand()) / RAND_MAX;
+                        float randomValue = GenerateRandomFloat();
                         if (randomValue <= jsonEvent.chance) {
                             PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                         }
@@ -91,7 +91,7 @@ namespace SoundFX {
                 for (const auto &jsonEvent : combatEvents.events) {
                     if (jsonEvent.type == "Searching"
                         && event->newState.any(RE::ACTOR_COMBAT_STATE::kSearching)) {
-                        float randomValue = static_cast<float>(rand()) / RAND_MAX;
+                        float randomValue = GenerateRandomFloat();
                         if (randomValue <= jsonEvent.chance) {
                             PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                         }
@@ -134,7 +134,7 @@ namespace SoundFX {
                 for (const auto &jsonEvent : combatEvents.events) {
                     if (jsonEvent.type == "Stop"
                         && event->newState == RE::ACTOR_COMBAT_STATE::kNone) {
-                        float randomValue = static_cast<float>(rand()) / RAND_MAX;
+                        float randomValue = GenerateRandomFloat();
                         if (randomValue <= jsonEvent.chance) {
                             PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                         }
@@ -184,7 +184,7 @@ namespace SoundFX {
                 for (const auto &jsonEvent : combatEvents.events) {
                     if (jsonEvent.type == "Die"
                         && event->newState == RE::ACTOR_COMBAT_STATE::kNone) {
-                        float randomValue = static_cast<float>(rand()) / RAND_MAX;
+                        float randomValue = GenerateRandomFloat();
                         if (randomValue <= jsonEvent.chance) {
                             PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                         }
@@ -225,7 +225,7 @@ namespace SoundFX {
                 if (resolvedFormID == eventActor->GetBaseObject()->formID) {
                     for (const auto &jsonEvent : combatEvents.events) {
                         if (jsonEvent.type == "Flee") {
-                            float randomValue = static_cast<float>(rand()) / RAND_MAX;
+                            float randomValue = GenerateRandomFloat();
                             if (randomValue <= jsonEvent.chance) {
                                 PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                             }
@@ -268,7 +268,7 @@ namespace SoundFX {
                     if (resolvedFormID == foundActor->GetBaseObject()->formID) {
                         for (const auto &jsonEvent : combatEvents.events) {
                             if (jsonEvent.type == "KillMove") {
-                                float randomValue = static_cast<float>(rand()) / RAND_MAX;
+                                float randomValue = GenerateRandomFloat();
                                 if (randomValue <= jsonEvent.chance) {
                                     wasInKillMove = true;
                                     PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
