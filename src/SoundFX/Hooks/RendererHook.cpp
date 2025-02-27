@@ -1,11 +1,5 @@
 #include "RendererHook.h"
-#include "ImGuiManager.h"
-
-namespace {
-    ID3D11Device        *g_D3D11Device  = nullptr;
-    ID3D11DeviceContext *g_D3D11Context = nullptr;
-    bool                 g_Initialized  = false;
-}
+#include "ImGui/Core/ImGuiManager.h"
 
 namespace SoundFX {
     void

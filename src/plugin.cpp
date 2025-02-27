@@ -19,7 +19,6 @@
 
 #include "SoundFX/EventHandlerManager.h"
 #include "SoundFX/Hooks/HookManager.h"
-#include "SoundFX/ImGui/Core/RendererHook.h"
 #include "SoundFX/JSONLoader.h"
 #include "SoundFX/Logger.h"
 
@@ -56,8 +55,6 @@ SKSEPluginLoad(const SKSE::LoadInterface *skse) {
     SKSE::AllocTrampoline(64); // For 2 Hooks
 
     SoundFX::JSONLoader::GetInstance().load();
-
-    SoundFX::RendererHook::Install();
 
     SoundFX::HookManager::GetInstance().InstallHooks();
 
