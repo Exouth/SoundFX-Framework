@@ -1,6 +1,6 @@
 #include "HookManager.h"
 #include "InputEventHook.h"
-#include "RendererHook.h"
+#include "VTableHook.h"
 
 namespace SoundFX {
     HookManager &
@@ -11,7 +11,7 @@ namespace SoundFX {
 
     void
         HookManager::InstallHooks() {
-        RegisterHook<RendererHook>();
+        RegisterHook<VTableHook>();
         RegisterHook<InputEventHook>();
 
         for (const auto &hook : hooks) {

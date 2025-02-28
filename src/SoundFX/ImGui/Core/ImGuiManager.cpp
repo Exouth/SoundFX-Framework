@@ -1,43 +1,14 @@
 #include "ImGuiManager.h"
 #include "ImGui/UI/MainWindow.h"
 
-namespace {
-    HWND
-        GetSkyrimWindow() {
-        const auto rendererWindow = RE::BSGraphics::Renderer::GetCurrentRenderWindow();
-        return rendererWindow ? reinterpret_cast<HWND>(rendererWindow->hWnd) : nullptr;
-    }
-}
-
 namespace SoundFX {
     bool ImGuiManager::showDebugUI = false;
 
     void
-        ImGuiManager::Initialize() {
+        ImGuiManager::Initialize(HWND hwnd, ID3D11Device *device, ID3D11DeviceContext *context) {
         ImGui::CreateContext();
-        ImGuiIO &io = ImGui::GetIO();
-        io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-
-        const HWND hwnd = GetSkyrimWindow();
-        if (!hwnd) {
-            spdlog::error("Couldnt find Skyrim windows!");
-            return;
-        }
-
-        if (!ImGui_ImplWin32_Init(hwnd)) {
-            spdlog::error("ImGui_ImplWin32_Init failed!");
-            return;
-        }
-        if (!ImGui_ImplDX11_Init(
-                reinterpret_cast<ID3D11Device *>(
-                    RE::BSGraphics::Renderer::GetSingleton()->GetDevice()),
-                reinterpret_cast<ID3D11DeviceContext *>(
-                    RE::BSGraphics::Renderer::GetSingleton()->GetRendererData()->context))) {
-            spdlog::error("ImGui_ImplDX11_Init failed!");
-            return;
-        }
-
-        spdlog::info("ImGui initialized successfully!");
+        ImGui_ImplDX11_Init(device, context);
+        ImGui_ImplWin32_Init(hwnd);
     }
 
     void
