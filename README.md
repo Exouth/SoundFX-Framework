@@ -39,6 +39,7 @@ Please do not use this in live mod releases until an official stable version is 
 - [nlohmann_json](https://github.com/nlohmann/json).
 - [openal-soft](https://github.com/kcat/openal-soft).
 - [libsndfile](https://github.com/libsndfile/libsndfile).
+- [ImGui](https://github.com/ocornut/imgui).
 - [Vcpkg](https://vcpkg.io/) for dependency management.
 
 Make sure you have the **“Desktop development with C++”** workload installed in Visual Studio so that `cl.exe`, CMake, and Ninja are available.
