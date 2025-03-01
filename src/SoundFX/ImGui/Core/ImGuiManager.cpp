@@ -1,4 +1,5 @@
 #include "ImGuiManager.h"
+#include "ImGui/Renderers/SoundMarker.h"
 #include "ImGui/UI/MainWindow.h"
 
 namespace SoundFX {
@@ -17,19 +18,24 @@ namespace SoundFX {
             ToggleUI();
         }
 
+        if (auto ui = RE::UI::GetSingleton(); ui && ui->GameIsPaused()) {
+            return;
+        }
+
         ImGuiIO &io        = ImGui::GetIO();
         io.MouseDrawCursor = showDebugUI;
 
         UpdateInputState();
 
-        if (!showDebugUI)
-            return;
-
         ImGui_ImplDX11_NewFrame();
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
 
-        MainWindow::Render();
+        if (showDebugUI) {
+            MainWindow::Render();
+        }
+
+        SoundMarker::Render();
 
         ImGui::Render();
         ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
