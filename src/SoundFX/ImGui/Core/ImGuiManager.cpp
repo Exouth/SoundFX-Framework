@@ -1,43 +1,15 @@
 #include "ImGuiManager.h"
+#include "ImGui/Renderers/SoundMarker.h"
 #include "ImGui/UI/MainWindow.h"
-
-namespace {
-    HWND
-        GetSkyrimWindow() {
-        const auto rendererWindow = RE::BSGraphics::Renderer::GetCurrentRenderWindow();
-        return rendererWindow ? reinterpret_cast<HWND>(rendererWindow->hWnd) : nullptr;
-    }
-}
 
 namespace SoundFX {
     bool ImGuiManager::showDebugUI = false;
 
     void
-        ImGuiManager::Initialize() {
+        ImGuiManager::Initialize(HWND hwnd, ID3D11Device *device, ID3D11DeviceContext *context) {
         ImGui::CreateContext();
-        ImGuiIO &io = ImGui::GetIO();
-        io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-
-        const HWND hwnd = GetSkyrimWindow();
-        if (!hwnd) {
-            spdlog::error("Couldnt find Skyrim windows!");
-            return;
-        }
-
-        if (!ImGui_ImplWin32_Init(hwnd)) {
-            spdlog::error("ImGui_ImplWin32_Init failed!");
-            return;
-        }
-        if (!ImGui_ImplDX11_Init(
-                reinterpret_cast<ID3D11Device *>(
-                    RE::BSGraphics::Renderer::GetSingleton()->GetDevice()),
-                reinterpret_cast<ID3D11DeviceContext *>(
-                    RE::BSGraphics::Renderer::GetSingleton()->GetRendererData()->context))) {
-            spdlog::error("ImGui_ImplDX11_Init failed!");
-            return;
-        }
-
-        spdlog::info("ImGui initialized successfully!");
+        ImGui_ImplDX11_Init(device, context);
+        ImGui_ImplWin32_Init(hwnd);
     }
 
     void
@@ -46,20 +18,47 @@ namespace SoundFX {
             ToggleUI();
         }
 
+        if (auto ui = RE::UI::GetSingleton(); ui && ui->GameIsPaused()) {
+            return;
+        }
+
         ImGuiIO &io        = ImGui::GetIO();
         io.MouseDrawCursor = showDebugUI;
 
-        if (!showDebugUI)
-            return;
+        UpdateInputState();
 
         ImGui_ImplDX11_NewFrame();
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
 
-        MainWindow::Render();
+        if (showDebugUI) {
+            MainWindow::Render();
+        }
+
+        SoundMarker::Render();
 
         ImGui::Render();
         ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+    }
+
+    void
+        ImGuiManager::UpdateInputState() {
+        auto *controlMap = RE::ControlMap::GetSingleton();
+        if (!controlMap) {
+            return;
+        }
+
+        ImGuiIO &io = ImGui::GetIO();
+
+        if (showDebugUI) {
+            io.WantCaptureMouse             = true;
+            io.WantCaptureKeyboard          = true;
+            controlMap->ignoreKeyboardMouse = true;
+        } else {
+            io.WantCaptureMouse             = false;
+            io.WantCaptureKeyboard          = false;
+            controlMap->ignoreKeyboardMouse = false;
+        }
     }
 
     void
