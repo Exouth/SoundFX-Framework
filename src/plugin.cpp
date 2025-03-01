@@ -19,7 +19,6 @@
 
 #include "SoundFX/EventHandlerManager.h"
 #include "SoundFX/Hooks/HookManager.h"
-#include "SoundFX/ImGui/Core/RendererHook.h"
 #include "SoundFX/JSONLoader.h"
 #include "SoundFX/Logger.h"
 
@@ -30,6 +29,8 @@ void
             auto                               &jsonLoader = SoundFX::JSONLoader::GetInstance();
             static SoundFX::EventHandlerManager eventManager(jsonLoader);
             eventManager.InitializeEventHandlers();
+
+            SoundFX::HookManager::GetInstance().InstallHooks();
 
             // For autoload Testing Save (Creating AutoExec File for SKSE)
             auto scriptFactory = RE::IFormFactory::GetConcreteFormFactoryByType<RE::Script>();
@@ -56,10 +57,6 @@ SKSEPluginLoad(const SKSE::LoadInterface *skse) {
     SKSE::AllocTrampoline(64); // For 2 Hooks
 
     SoundFX::JSONLoader::GetInstance().load();
-
-    SoundFX::RendererHook::Install();
-
-    SoundFX::HookManager::GetInstance().InstallHooks();
 
     SKSE::GetMessagingInterface()->RegisterListener(OnSKSEMessage);
     spdlog::info("Plugin loaded successfully");
