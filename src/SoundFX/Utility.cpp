@@ -76,11 +76,15 @@ namespace SoundFX {
 
     float
         GenerateRandomFloat() {
-        thread_local std::mt19937 generator(
-            std::random_device {}());
-        std::uniform_real_distribution distribution(0.0f,
-                                                           1.0f);
+        thread_local std::mt19937      generator(std::random_device {}());
+        std::uniform_real_distribution distribution(0.0f, 1.0f);
         return distribution(generator);
+    }
+
+    float
+        CalculateMarkerSize(float distance, float minSize, float maxSize, float scaleFactor) {
+        const float t = std::clamp(distance / scaleFactor, 0.0f, 1.0f);
+        return std::lerp(maxSize, minSize, t);
     }
 
 }

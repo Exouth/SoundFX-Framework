@@ -17,4 +17,10 @@ namespace SoundFX {
 
     float
         GenerateRandomFloat();
+
+    float
+        CalculateMarkerSize(float distance,
+                            float minSize     = 5.0f,
+                            float maxSize     = 35.0f,
+                            float scaleFactor = 1500.0f);
 }

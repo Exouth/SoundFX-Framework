@@ -13,6 +13,6 @@ namespace SoundFX {
       private:
         static bool showSoundMarkers;
         static bool
-            WorldToScreen(const RE::NiPoint3 &worldPos, ImVec2 &screenPos);
+            WorldToScreen(const RE::NiPoint3 &worldPos, ImVec2 &screenPos, float &depth);
     };
 }
