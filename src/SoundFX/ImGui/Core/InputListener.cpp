@@ -1,9 +1,10 @@
 #include "InputListener.h"
+#include "ImGui/Core/ImGuiManager.h"
 
 #define IM_VK_KEYPAD_ENTER (VK_RETURN + 256)
 
 namespace {
-    ImGuiKey
+    constexpr ImGuiKey
         VirtualKeyToImGuiKey(const WPARAM wParam) {
         switch (wParam) {
         case VK_TAB: return ImGuiKey_Tab;
@@ -12,7 +13,6 @@ namespace {
         case VK_UP: return ImGuiKey_UpArrow;
         case VK_DOWN: return ImGuiKey_DownArrow;
         case VK_RETURN: return ImGuiKey_Enter;
-        case VK_ESCAPE: return ImGuiKey_Escape;
         case VK_SPACE: return ImGuiKey_Space;
         case VK_BACK: return ImGuiKey_Backspace;
         case VK_DELETE: return ImGuiKey_Delete;
@@ -51,7 +51,17 @@ namespace SoundFX {
             // I dont really know at the Moment whether there are very large values returned (Maybe
             // Look more into it later)
             const int scanCode = std::clamp(static_cast<int>(button->GetIDCode()), 0, 255);
-            switch (button->device.get()) {
+
+            const auto buttonDevice = button->device.get();
+
+            // Deactive UI for ESC
+            if (buttonDevice == RE::INPUT_DEVICE::kKeyboard && scanCode == 1
+                && ImGuiManager::IsUIVisible()) {
+                ImGuiManager::ToggleUI();
+                return;
+            }
+
+            switch (buttonDevice) {
             case RE::INPUT_DEVICE::kMouse:
                 if (scanCode <= 5) {
                     io.AddMouseButtonEvent(scanCode, button->IsPressed());

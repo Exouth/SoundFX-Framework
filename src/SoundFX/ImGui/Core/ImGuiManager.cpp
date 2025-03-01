@@ -20,6 +20,8 @@ namespace SoundFX {
         ImGuiIO &io        = ImGui::GetIO();
         io.MouseDrawCursor = showDebugUI;
 
+        UpdateInputState();
+
         if (!showDebugUI)
             return;
 
@@ -31,6 +33,26 @@ namespace SoundFX {
 
         ImGui::Render();
         ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+    }
+
+    void
+        ImGuiManager::UpdateInputState() {
+        auto *controlMap = RE::ControlMap::GetSingleton();
+        if (!controlMap) {
+            return;
+        }
+
+        ImGuiIO &io = ImGui::GetIO();
+
+        if (showDebugUI) {
+            io.WantCaptureMouse             = true;
+            io.WantCaptureKeyboard          = true;
+            controlMap->ignoreKeyboardMouse = true;
+        } else {
+            io.WantCaptureMouse             = false;
+            io.WantCaptureKeyboard          = false;
+            controlMap->ignoreKeyboardMouse = false;
+        }
     }
 
     void

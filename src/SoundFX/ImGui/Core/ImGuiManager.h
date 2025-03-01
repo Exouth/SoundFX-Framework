@@ -13,6 +13,8 @@ namespace SoundFX {
             ToggleUI();
         static bool
             IsUIVisible();
+        static void
+            UpdateInputState();
 
       private:
         static bool showDebugUI;
