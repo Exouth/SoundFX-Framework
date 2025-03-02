@@ -2,6 +2,8 @@
 #include "ImGui/Core/ImGuiManager.h"
 #include "ImGui/Renderers/SoundMarker.h"
 
+#define ICON_FA_UNDO "\xef\x8b\xaa"  // Unicode: f2ea / fa-rotate-left
+
 namespace SoundFX {
 
     void
@@ -33,14 +35,33 @@ namespace SoundFX {
 
     void
         MainWindow::RenderSettingsUI() {
-        static bool distanceFilterEnabled = SoundMarker::IsDistanceFilterEnabled();
+        static bool           distanceFilterEnabled        = SoundMarker::IsDistanceFilterEnabled();
+        static constexpr bool defaultDistanceFilterEnabled = true;
+
         if (ImGui::Checkbox("Enable Distance Filter", &distanceFilterEnabled)) {
             SoundMarker::EnableDistanceFilter(distanceFilterEnabled);
         }
+        if (distanceFilterEnabled != defaultDistanceFilterEnabled) {
+            ImGui::SameLine();
+            if (ImGui::Button(ICON_FA_UNDO "##DistanceFilter")) {
+                distanceFilterEnabled = defaultDistanceFilterEnabled;
+                SoundMarker::EnableDistanceFilter(distanceFilterEnabled);
+            }
+        }
 
-        static float maxRenderDistance = SoundMarker::GetMaxRenderDistance();
+        static float           maxRenderDistance        = SoundMarker::GetMaxRenderDistance();
+        static constexpr float defaultMaxRenderDistance = 4000.0f;
+
         if (ImGui::SliderFloat("Max Render Distance", &maxRenderDistance, 0.0f, 10000.0f)) {
             SoundMarker::SetMaxRenderDistance(maxRenderDistance);
+        }
+        if (constexpr float epsilon = 0.01f;
+            std::fabs(maxRenderDistance - defaultMaxRenderDistance) > epsilon) {
+            ImGui::SameLine();
+            if (ImGui::Button(ICON_FA_UNDO "##MaxRenderDistance")) {
+                maxRenderDistance = defaultMaxRenderDistance;
+                SoundMarker::SetMaxRenderDistance(maxRenderDistance);
+            }
         }
     }
 }
