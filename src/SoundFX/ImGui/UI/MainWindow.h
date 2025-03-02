@@ -5,5 +5,7 @@ namespace SoundFX {
       public:
         static void
             Render();
+        static void
+            RenderSettingsUI();
     };
 }

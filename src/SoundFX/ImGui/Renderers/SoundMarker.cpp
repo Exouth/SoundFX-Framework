@@ -2,7 +2,9 @@
 #include "RE/P/PlayerCamera.h"
 
 namespace SoundFX {
-    bool SoundMarker::showSoundMarkers = false;
+    bool  SoundMarker::showSoundMarkers      = false;
+    bool  SoundMarker::distanceFilterEnabled = true;
+    float SoundMarker::maxRenderDistance     = 4000.0f;
 
     bool
         SoundMarker::WorldToScreen(const RE::NiPoint3 &worldPos, ImVec2 &screenPos, float &depth) {
@@ -65,9 +67,13 @@ namespace SoundFX {
             ImVec2 screenPos;
             float  depth;
 
+            const float distance = camera->pos.GetDistance(pos);
+            if (distanceFilterEnabled && distance > maxRenderDistance) {
+                continue;
+            }
+
             if (WorldToScreen(pos, screenPos, depth)) {
-                const float distance = camera->pos.GetDistance(pos);
-                const float size     = CalculateMarkerSize(distance);
+                const float size = CalculateMarkerSize(distance);
 
                 drawList->AddCircleFilled(screenPos, size, IM_COL32(255, 255, 0, 255));
             }
@@ -83,5 +89,25 @@ namespace SoundFX {
     bool
         SoundMarker::IsVisible() {
         return showSoundMarkers;
+    }
+
+    void
+        SoundMarker::SetMaxRenderDistance(float distance) {
+        maxRenderDistance = distance;
+    }
+
+    void
+        SoundMarker::EnableDistanceFilter(bool enable) {
+        distanceFilterEnabled = enable;
+    }
+
+    bool
+        SoundMarker::IsDistanceFilterEnabled() {
+        return distanceFilterEnabled;
+    }
+
+    float
+        SoundMarker::GetMaxRenderDistance() {
+        return maxRenderDistance;
     }
 }
