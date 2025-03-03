@@ -17,12 +17,13 @@ namespace SoundFX {
             IsDistanceFilterEnabled();
         static float
             GetMaxRenderDistance();
+        static void
+            SetSoundRadius(float radius);
 
       private:
         static bool  showSoundMarkers;
         static bool  distanceFilterEnabled;
         static float maxRenderDistance;
-        static bool
-            WorldToScreen(const RE::NiPoint3 &worldPos, ImVec2 &screenPos, float &depth);
+        static float soundRadius;
     };
 }

@@ -1,47 +1,12 @@
 #include "SoundMarker.h"
 #include "RE/P/PlayerCamera.h"
+#include "RenderObject.h"
 
 namespace SoundFX {
     bool  SoundMarker::showSoundMarkers      = false;
     bool  SoundMarker::distanceFilterEnabled = true;
     float SoundMarker::maxRenderDistance     = 4000.0f;
-
-    bool
-        SoundMarker::WorldToScreen(const RE::NiPoint3 &worldPos, ImVec2 &screenPos, float &depth) {
-        const auto *camera = RE::PlayerCamera::GetSingleton();
-        if (!camera) {
-            return false;
-        }
-
-        const auto root = camera->cameraRoot.get();
-        if (!root || root->GetChildren().empty()) {
-            return false;
-        }
-
-        if (std::strcmp(root->GetChildren()[0]->GetRTTI()->name, "NiCamera") == 0) {
-            const auto niCamera = static_cast<RE::NiCamera *>(root->GetChildren()[0].get());
-
-            const auto &[worldToCam] = niCamera->GetRuntimeData();
-            const auto &viewport     = niCamera->GetRuntimeData2().port;
-
-            float      x, y, z;
-            const bool visible =
-                RE::NiCamera::WorldPtToScreenPt3(worldToCam, viewport, worldPos, x, y, z, 0.0001f);
-
-            if (!visible || z <= 0.0f) {
-                return false;  // Is Behind Camera
-            }
-
-            const ImGuiIO &io = ImGui::GetIO();
-            screenPos.x       = x * io.DisplaySize.x;
-            screenPos.y       = (1.0f - y) * io.DisplaySize.y;
-            depth             = z;
-
-            return true;
-        }
-
-        return false;
-    }
+    float SoundMarker::soundRadius           = 100.0f;
 
     void
         SoundMarker::Render() {
@@ -55,11 +20,12 @@ namespace SoundFX {
 
         ImDrawList *drawList = ImGui::GetForegroundDrawList();
 
-        /*const auto *player = RE::PlayerCharacter::GetSingleton();
+        const auto *player = RE::PlayerCharacter::GetSingleton();
         if (!player) {
             return;
         }
-        // Draw the Markers (For Later)
+
+        // Testing Purpose (Delete Later)
         const std::vector<RE::NiPoint3> testPositions = {
             {player->GetPosition()}, {7729.8643f, -68789.37f, 4515.15f}, {300.0f, 300.0f, 300.0f}};
 
@@ -72,12 +38,21 @@ namespace SoundFX {
                 continue;
             }
 
-            if (WorldToScreen(pos, screenPos, depth)) {
+            if (RenderObject::WorldToScreen(pos, screenPos, depth)) {
                 const float size = CalculateMarkerSize(distance);
 
-                drawList->AddCircleFilled(screenPos, size, IM_COL32(255, 255, 0, 255));
+                // Draws a border at the radius
+                RenderObject::Draw3DCircleOutline(
+                    pos, soundRadius, drawList, IM_COL32(0, 0, 0, 255), 5.0f);
+
+                // Draws Radius/Reach of Sounds
+                RenderObject::Draw3DCircle(pos, soundRadius, drawList, IM_COL32(0, 0, 255, 128));
+
+                // Draws Marker of Sounds
+                RenderObject::Draw3DSphere(pos, size, drawList, IM_COL32(255, 255, 0, 255));
             }
-        }*/
+        }
+        //
     }
 
     void
@@ -109,5 +84,10 @@ namespace SoundFX {
     float
         SoundMarker::GetMaxRenderDistance() {
         return maxRenderDistance;
+    }
+
+    void
+        SoundMarker::SetSoundRadius(float radius) {
+        soundRadius = radius;
     }
 }
