@@ -17,6 +17,10 @@ namespace SoundFX {
             UpdateInputState();
 
       private:
+        static void
+            RenderBackground();
+        static void
+                    RenderForeground();
         static bool showDebugUI;
     };
 }

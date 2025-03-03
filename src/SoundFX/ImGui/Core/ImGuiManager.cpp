@@ -46,14 +46,28 @@ namespace SoundFX {
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
 
+        RenderBackground();
+
         if (showDebugUI) {
             MainWindow::Render();
         }
 
-        SoundMarker::Render();
+        RenderForeground();
 
         ImGui::Render();
         ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+    }
+
+    void
+        ImGuiManager::RenderBackground() {
+        ImDrawList *backgroundDrawList = ImGui::GetBackgroundDrawList();
+        SoundMarker::Render(backgroundDrawList);
+    }
+
+    void
+        ImGuiManager::RenderForeground() {
+        ImDrawList *foregroundDrawList = ImGui::GetForegroundDrawList();
+        // For Later maybe if there comes more
     }
 
     void

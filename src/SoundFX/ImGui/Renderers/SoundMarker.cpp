@@ -9,7 +9,7 @@ namespace SoundFX {
     float SoundMarker::soundRadius           = 100.0f;
 
     void
-        SoundMarker::Render() {
+        SoundMarker::Render(ImDrawList *drawList) {
         if (!showSoundMarkers)
             return;
 
@@ -17,8 +17,6 @@ namespace SoundFX {
         if (!camera) {
             return;
         }
-
-        ImDrawList *drawList = ImGui::GetForegroundDrawList();
 
         const auto *player = RE::PlayerCharacter::GetSingleton();
         if (!player) {

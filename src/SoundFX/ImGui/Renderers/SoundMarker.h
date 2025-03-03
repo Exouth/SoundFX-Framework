@@ -4,7 +4,7 @@ namespace SoundFX {
     class SoundMarker {
       public:
         static void
-            Render();
+            Render(ImDrawList *drawList);
         static void
             ToggleVisibility();
         static bool
