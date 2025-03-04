@@ -19,11 +19,21 @@ namespace SoundFX {
             GetMaxRenderDistance();
         static void
             SetSoundRadius(float radius);
+        static void
+            EnableObstructionEffect(bool enable);
+        static bool
+            IsObstructionEffectEnabled();
+        static void
+            SetObstructionThreshold(float threshold);
+        static float
+            GetObstructionThreshold();
 
       private:
         static bool  showSoundMarkers;
         static bool  distanceFilterEnabled;
+        static bool  obstructionEffectEnabled;
         static float maxRenderDistance;
         static float soundRadius;
+        static float obstructionThreshold;
     };
 }

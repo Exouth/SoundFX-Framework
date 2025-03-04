@@ -3,10 +3,12 @@
 #include "RenderObject.h"
 
 namespace SoundFX {
-    bool  SoundMarker::showSoundMarkers      = false;
-    bool  SoundMarker::distanceFilterEnabled = true;
-    float SoundMarker::maxRenderDistance     = 4000.0f;
-    float SoundMarker::soundRadius           = 100.0f;
+    bool  SoundMarker::showSoundMarkers         = false;
+    bool  SoundMarker::distanceFilterEnabled    = true;
+    float SoundMarker::maxRenderDistance        = 4000.0f;
+    float SoundMarker::soundRadius              = 100.0f;
+    bool  SoundMarker::obstructionEffectEnabled = true;
+    float SoundMarker::obstructionThreshold     = 0.3f;
 
     void
         SoundMarker::Render(ImDrawList *drawList) {
@@ -39,15 +41,26 @@ namespace SoundFX {
             if (RenderObject::WorldToScreen(pos, screenPos, depth)) {
                 const float size = CalculateMarkerSize(distance);
 
+                const float localObstructionThreshold = GetObstructionThreshold();
+
+                const bool isObstructed = IsObstructionEffectEnabled()
+                                       && RenderObject::IsObjectObstructed(
+                                              pos, soundRadius, 16, localObstructionThreshold);
+
+                const ImU32 color =
+                    isObstructed ? IM_COL32(128, 128, 128, 255) : IM_COL32(255, 255, 0, 255);
+                const ImU32 circleColor =
+                    isObstructed ? IM_COL32(64, 64, 64, 128) : IM_COL32(0, 0, 255, 128);
+
                 // Draws a border at the radius
                 RenderObject::Draw3DCircleOutline(
                     pos, soundRadius, drawList, IM_COL32(0, 0, 0, 255), 5.0f);
 
                 // Draws Radius/Reach of Sounds
-                RenderObject::Draw3DCircle(pos, soundRadius, drawList, IM_COL32(0, 0, 255, 128));
+                RenderObject::Draw3DCircle(pos, soundRadius, drawList, circleColor);
 
                 // Draws Marker of Sounds
-                RenderObject::Draw3DSphere(pos, size, drawList, IM_COL32(255, 255, 0, 255));
+                RenderObject::Draw3DSphere(pos, size, drawList, color);
             }
         }
         //
@@ -87,5 +100,25 @@ namespace SoundFX {
     void
         SoundMarker::SetSoundRadius(float radius) {
         soundRadius = radius;
+    }
+
+    void
+        SoundMarker::EnableObstructionEffect(bool enable) {
+        obstructionEffectEnabled = enable;
+    }
+
+    bool
+        SoundMarker::IsObstructionEffectEnabled() {
+        return obstructionEffectEnabled;
+    }
+
+    void
+        SoundMarker::SetObstructionThreshold(float threshold) {
+        obstructionThreshold = std::clamp(threshold, 0.0f, 1.0f);
+    }
+
+    float
+        SoundMarker::GetObstructionThreshold() {
+        return obstructionThreshold;
     }
 }

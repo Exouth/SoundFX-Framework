@@ -10,13 +10,16 @@ namespace SoundFX {
     void
         SettingsUI::InitializeSettings() {
         settings.push_back(std::make_unique<BoolCheckboxSetting>(
-            "Show Sound Markers", SoundMarker::IsVisible(), [](bool value) {
-                SoundMarker::ToggleVisibility();
-            }));
+            "Show Sound Markers", false, [](bool value) { SoundMarker::ToggleVisibility(); }));
 
         settings.push_back(
             std::make_unique<BoolCheckboxSetting>("Enable Distance Filter", true, [](bool value) {
                 SoundMarker::EnableDistanceFilter(value);
+            }));
+
+        settings.push_back(std::make_unique<BoolCheckboxSetting>(
+            "Enable Obstruction Effect", true, [](bool value) {
+                SoundMarker::EnableObstructionEffect(value);
             }));
 
         settings.push_back(std::make_unique<FloatSliderSetting>(
@@ -28,6 +31,11 @@ namespace SoundFX {
         settings.push_back(std::make_unique<FloatSliderSetting>(
             "Sound Radius", 100.0f, 0.0f, 1000.0f, [](float value) {
                 SoundMarker::SetSoundRadius(value);
+            }));
+
+        settings.push_back(std::make_unique<FloatSliderSetting>(
+            "Obstruction Threshold", 0.3f, 0.0f, 1.0f, [](float value) {
+                SoundMarker::SetObstructionThreshold(value);
             }));
     }
 

@@ -21,5 +21,11 @@ namespace SoundFX {
                                 float               thickness);
         static bool
             WorldToScreen(const RE::NiPoint3 &worldPos, ImVec2 &screenPos, float &depth);
+
+        static bool
+            IsObjectObstructed(const RE::NiPoint3 &position,
+                               float               radius,
+                               int                 numSamples,
+                               float               obstructionThreshold);
     };
 }

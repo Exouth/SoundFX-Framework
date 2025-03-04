@@ -41,6 +41,65 @@ namespace SoundFX {
         return false;
     }
 
+    bool
+        RenderObject::IsObjectObstructed(const RE::NiPoint3 &position,
+                                         float               radius,
+                                         int                 numSamples,
+                                         float               obstructionThreshold) {
+        auto player = RE::PlayerCharacter::GetSingleton();
+        if (!player || !player->GetParentCell() || !player->GetParentCell()->GetbhkWorld()) {
+            return false;
+        }
+
+        RE::NiPoint3 cameraPos       = RE::PlayerCamera::GetSingleton()->pos;
+        auto        *bhkWorld        = player->GetParentCell()->GetbhkWorld();
+        int          obstructedCount = 0;
+        int          totalChecks     = numSamples + 1;
+
+        RE::bhkPickData pickData;
+        pickData.rayInput.from = cameraPos * RE::bhkWorld::GetWorldScale();
+
+        // Check the Center Point first
+        pickData.rayInput.to = position * RE::bhkWorld::GetWorldScale();
+        bhkWorld->PickObject(pickData);
+
+        if (pickData.rayOutput.HasHit()) {
+            if (auto collidable = pickData.rayOutput.rootCollidable) {
+                auto ref = RE::TESHavokUtilities::FindCollidableRef(*collidable);
+                if (ref) {
+                    obstructedCount++;
+                }
+            }
+        }
+
+        // Check several Points on the Circle
+        for (int i = 0; i < numSamples; ++i) {
+            float angle = static_cast<float>(i) / static_cast<float>(numSamples) * 2.0f
+                        * std::numbers::pi_v<float>;
+
+            RE::NiPoint3 point = {position.x + radius * std::cos(angle),
+                                  position.y + radius * std::sin(angle),
+                                  position.z};
+
+            pickData.rayInput.to = point * RE::bhkWorld::GetWorldScale();
+            bhkWorld->PickObject(pickData);
+
+            if (pickData.rayOutput.HasHit()) {
+                if (auto collidable = pickData.rayOutput.rootCollidable) {
+                    auto ref = RE::TESHavokUtilities::FindCollidableRef(*collidable);
+                    if (ref) {
+                        obstructedCount++;
+                    }
+                }
+            }
+        }
+
+        float obstructionPercentage =
+            static_cast<float>(obstructedCount) / static_cast<float>(totalChecks);
+
+        return obstructionPercentage >= obstructionThreshold;
+    }
+
     void
         RenderObject::Draw3DCircle(const RE::NiPoint3 &center,
                                    float               radius,
