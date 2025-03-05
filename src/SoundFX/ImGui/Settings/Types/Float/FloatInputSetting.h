@@ -7,7 +7,8 @@ namespace SoundFX {
       public:
         FloatInputSetting(std::string                settingName,
                           float                      initialDefaultValue,
-                          std::function<void(float)> onValueChange);
+                          std::function<void(float)> onValueChange,
+                          std::string                desc = "");
         void
             Render() override;
     };

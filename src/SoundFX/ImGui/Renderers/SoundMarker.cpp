@@ -1,14 +1,15 @@
 #include "SoundMarker.h"
+#include "ImGui/Settings/DefaultSettings.h"
 #include "RE/P/PlayerCamera.h"
 #include "RenderObject.h"
 
 namespace SoundFX {
-    bool  SoundMarker::showSoundMarkers         = false;
-    bool  SoundMarker::distanceFilterEnabled    = true;
-    float SoundMarker::maxRenderDistance        = 4000.0f;
-    float SoundMarker::soundRadius              = 100.0f;
-    bool  SoundMarker::obstructionEffectEnabled = true;
-    float SoundMarker::obstructionThreshold     = 0.3f;
+    bool  SoundMarker::showSoundMarkers         = DefaultSettings::GetShowSoundMarkers();
+    bool  SoundMarker::distanceFilterEnabled    = DefaultSettings::GetDistanceFilterEnabled();
+    float SoundMarker::maxRenderDistance        = DefaultSettings::GetMaxRenderDistance();
+    float SoundMarker::soundRadius              = DefaultSettings::GetSoundRadius();
+    bool  SoundMarker::obstructionEffectEnabled = DefaultSettings::GetObstructionEffectEnabled();
+    float SoundMarker::obstructionThreshold     = DefaultSettings::GetObstructionThreshold();
 
     void
         SoundMarker::Render(ImDrawList *drawList) {
@@ -67,8 +68,13 @@ namespace SoundFX {
     }
 
     void
-        SoundMarker::ToggleVisibility() {
-        showSoundMarkers = !showSoundMarkers;
+        SoundMarker::ToggleVisibility(std::optional<bool> forceState) {
+        if (forceState.has_value()) {
+            showSoundMarkers = forceState.value();
+        } else {
+            showSoundMarkers = !showSoundMarkers;
+        }
+
         spdlog::debug("Sound markers visibility toggled: {}", showSoundMarkers);
     }
 

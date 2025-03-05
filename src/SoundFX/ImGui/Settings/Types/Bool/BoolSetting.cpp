@@ -4,7 +4,9 @@ namespace SoundFX {
 
     BoolSetting::BoolSetting(std::string               name,
                              bool                      defaultValue,
-                             std::function<void(bool)> onChange) :
+                             std::function<void(bool)> onChange,
+                             std::string               desc) :
+        BaseSetting(std::move(desc)),
         name(std::move(name)),
         value(defaultValue),
         defaultValue(defaultValue),

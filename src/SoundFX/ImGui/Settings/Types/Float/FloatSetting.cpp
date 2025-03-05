@@ -4,7 +4,9 @@ namespace SoundFX {
 
     FloatSetting::FloatSetting(std::string                name,
                                float                      defaultValue,
-                               std::function<void(float)> onChange) :
+                               std::function<void(float)> onChange,
+                               std::string                desc) :
+        BaseSetting(std::move(desc)),
         name(std::move(name)),
         value(defaultValue),
         defaultValue(defaultValue),

@@ -9,7 +9,8 @@ namespace SoundFX {
                            float                      initialDefaultValue,
                            float                      minRangeValue,
                            float                      maxRangeValue,
-                           std::function<void(float)> onValueChange);
+                           std::function<void(float)> onValueChange,
+                           std::string                desc = "");
         void
             Render() override;
 

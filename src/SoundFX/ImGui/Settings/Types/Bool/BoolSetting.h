@@ -5,7 +5,10 @@
 namespace SoundFX {
     class BoolSetting : public BaseSetting {
       public:
-        BoolSetting(std::string name, bool defaultValue, std::function<void(bool)> onChange);
+        BoolSetting(std::string               name,
+                    bool                      defaultValue,
+                    std::function<void(bool)> onChange,
+                    std::string               desc = "");
         void
             Reset() override;
         [[nodiscard]] std::string

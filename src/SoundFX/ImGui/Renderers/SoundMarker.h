@@ -6,7 +6,7 @@ namespace SoundFX {
         static void
             Render(ImDrawList *drawList);
         static void
-            ToggleVisibility();
+            ToggleVisibility(std::optional<bool> forceState);
         static bool
             IsVisible();
         static void

@@ -1,6 +1,5 @@
 #include "MainWindow.h"
 #include "ImGui/Core/ImGuiManager.h"
-#include "ImGui/Renderers/SoundMarker.h"
 #include "SettingsUI.h"
 
 namespace SoundFX {
@@ -13,10 +12,8 @@ namespace SoundFX {
 
         ImGui::Begin("SoundFX-Framework Debug", &open);
 
-        ImGui::Text("Debug UI");
-        if (ImGui::Button("Close UI")) {
-            ImGuiManager::ToggleUI();
-        }
+        ImGui::SeparatorText("Settings");
+        ImGui::Spacing();
 
         SettingsUI::RenderSettingsUI();
 
