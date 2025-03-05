@@ -10,6 +10,8 @@ namespace SoundFX {
     float SoundMarker::soundRadius              = DefaultSettings::GetSoundRadius();
     bool  SoundMarker::obstructionEffectEnabled = DefaultSettings::GetObstructionEffectEnabled();
     float SoundMarker::obstructionThreshold     = DefaultSettings::GetObstructionThreshold();
+    bool  SoundMarker::radiusIndicator          = DefaultSettings::GetRadiusIndicator();
+    float SoundMarker::radiusOutlineThickness   = DefaultSettings::GetRadiusOutlineThickness();
 
     void
         SoundMarker::Render(ImDrawList *drawList) {
@@ -53,12 +55,14 @@ namespace SoundFX {
                 const ImU32 circleColor =
                     isObstructed ? IM_COL32(64, 64, 64, 128) : IM_COL32(0, 0, 255, 128);
 
-                // Draws a border at the radius
-                RenderObject::Draw3DCircleOutline(
-                    pos, soundRadius, drawList, IM_COL32(0, 0, 0, 255), 5.0f);
+                if (IsRadiusIndicatorEnabled()) {
+                    // Draws a border at the radius
+                    RenderObject::Draw3DCircleOutline(
+                        pos, soundRadius, drawList, IM_COL32(0, 0, 0, 255), radiusOutlineThickness);
 
-                // Draws Radius/Reach of Sounds
-                RenderObject::Draw3DCircle(pos, soundRadius, drawList, circleColor);
+                    // Draws Radius/Reach of Sounds
+                    RenderObject::Draw3DCircle(pos, soundRadius, drawList, circleColor);
+                }
 
                 // Draws Marker of Sounds
                 RenderObject::Draw3DSphere(pos, size, drawList, color);
@@ -126,5 +130,25 @@ namespace SoundFX {
     float
         SoundMarker::GetObstructionThreshold() {
         return obstructionThreshold;
+    }
+
+    void
+        SoundMarker::SetRadiusIndicator(bool enable) {
+        radiusIndicator = enable;
+    }
+
+    bool
+        SoundMarker::IsRadiusIndicatorEnabled() {
+        return radiusIndicator;
+    }
+
+    void
+        SoundMarker::SetRadiusOutlineThickness(float thickness) {
+        radiusOutlineThickness = thickness;
+    }
+
+    float
+        SoundMarker::GetRadiusOutlineThickness() {
+        return radiusOutlineThickness;
     }
 }

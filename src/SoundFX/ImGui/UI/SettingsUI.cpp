@@ -32,6 +32,14 @@ namespace SoundFX {
             "by objects in the world, indicating that they are not in direct view or behind "
             "something."));
 
+        settings.push_back(std::make_unique<BoolCheckboxSetting>(
+            "Enable Radius Indicator",
+            DefaultSettings::GetRadiusIndicator(),
+            [](bool value) { SoundMarker::SetRadiusIndicator(value); },
+            "Displays a visual representation of the sound's radius around each marker. "
+            "This helps to understand the area affected by the sound event. (Usually only for 3D "
+            "sounds)"));
+
         settings.push_back(std::make_unique<FloatSliderSetting>(
             "Max Render Distance",
             DefaultSettings::GetMaxRenderDistance(),
@@ -40,6 +48,16 @@ namespace SoundFX {
             [](float value) { SoundMarker::SetMaxRenderDistance(value); },
             "Defines the maximum distance at which sound markers will be rendered. "
             "Markers beyond this range will not be displayed."));
+
+        settings.push_back(std::make_unique<FloatSliderSetting>(
+            "Radius Outline Thickness",
+            DefaultSettings::GetRadiusOutlineThickness(),
+            0.0f,
+            25.0f,
+            [](float value) { SoundMarker::SetRadiusOutlineThickness(value); },
+            "Controls the thickness of the outline around the sound radius indicator. "
+            "A thicker outline makes the radius more prominent, while a thinner one keeps it "
+            "subtle."));
 
         // Testing Purpose (Delete later)
         settings.push_back(std::make_unique<FloatSliderSetting>(

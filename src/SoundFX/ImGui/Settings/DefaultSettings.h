@@ -32,5 +32,15 @@ namespace SoundFX {
             GetObstructionThreshold() {
             return 0.5f;
         }
+
+        static bool
+            GetRadiusIndicator() {
+            return true;
+        }
+
+        static float
+            GetRadiusOutlineThickness() {
+            return 5.0f;
+        }
     };
 }

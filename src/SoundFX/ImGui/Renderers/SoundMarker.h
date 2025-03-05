@@ -27,6 +27,14 @@ namespace SoundFX {
             SetObstructionThreshold(float threshold);
         static float
             GetObstructionThreshold();
+        static void
+            SetRadiusIndicator(bool enable);
+        static bool
+            IsRadiusIndicatorEnabled();
+        static void
+            SetRadiusOutlineThickness(float thickness);
+        static float
+            GetRadiusOutlineThickness();
 
       private:
         static bool  showSoundMarkers;
@@ -35,5 +43,7 @@ namespace SoundFX {
         static float maxRenderDistance;
         static float soundRadius;
         static float obstructionThreshold;
+        static bool  radiusIndicator;
+        static float radiusOutlineThickness;
     };
 }
