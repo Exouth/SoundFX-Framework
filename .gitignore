@@ -12,7 +12,7 @@ bin/
 
 # Dist Directory
 dist/SKSE/Plugins/*.json
-dist/Sound/fx/*.wav
+dist/Sounds/*.wav
 
 # CMake generated files
 CMakeFiles/
