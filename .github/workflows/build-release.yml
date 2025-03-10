@@ -1,0 +1,104 @@
+name: Build and Release SoundFX Framework
+
+on:
+ push:
+   tags:
+     - '*'
+ workflow_dispatch:
+
+permissions:
+ contents: write
+
+jobs:
+ build:
+   name: Build SKSE Plugin
+   runs-on: windows-latest
+   steps:
+     - name: Checkout Repository
+       uses: actions/checkout@v4
+       with:
+         fetch-depth: 0
+         submodules: recursive
+
+     - name: Fetch main branch
+       run: |
+         git fetch origin main:refs/remotes/origin/main
+         git branch --track main origin/main || true
+
+     - name: Check if tag is on main branch
+       shell: bash
+       run: |
+         if ! git merge-base --is-ancestor $GITHUB_REF refs/remotes/origin/main; then
+           echo "Tag is not on main branch. Skipping release."
+           exit 1
+         fi
+
+     - name: Setup MSVC Developer Command Prompt
+       uses: ilammy/msvc-dev-cmd@v1.10.0
+
+     - name: Setup vcpkg and Install Dependencies
+       uses: lukka/run-vcpkg@v11.5
+       with:
+         vcpkgJsonGlob: vcpkg.json
+
+     - name: Configure CMake
+       run: cmake -S . -B build --preset=release
+
+     - name: Build Project
+       run: cmake --build build --config Release
+
+     - name: Verify Build Artifacts
+       run: |
+         $dllFile = "build/output/SKSE/Plugins/SoundFXFramework.dll"
+         $pdbFile = "build/output/SKSE/Plugins/SoundFXFramework.pdb"
+
+         if (-Not (Test-Path $dllFile)) {
+             Write-Error "Build failed: SoundFXFramework.dll not found!"
+             exit 1
+         }
+
+         if (-Not (Test-Path $pdbFile)) {
+             Write-Error "Build failed: SoundFXFramework.pdb not found!"
+             exit 1
+         }
+       shell: pwsh
+
+     - name: Clean and Create Blank JSON Configuration
+       run: |
+         $configFile = "build/output/SKSE/Plugins/JSON_FILE_FOR_CONFIGURATION"
+         $newJsonFile = "build/output/SKSE/Plugins/SoundFXFramework.json"
+         $soundEffectsFile = "build/output/Sound/fx/SOUND_EFFECTS"
+
+         if (Test-Path $configFile) {
+             Remove-Item $configFile -Force
+         }
+
+         if (Test-Path $soundEffectsFile) {
+             Remove-Item $soundEffectsFile -Force
+         }
+
+         New-Item -Path $newJsonFile -ItemType File -Force | Out-Null
+       shell: pwsh
+
+     - name: Create ZIP Archive of Output Folder
+       run: |
+         Compress-Archive -Path build/output/* -DestinationPath SoundFXFramework-${{ github.ref_name }}.zip
+       shell: pwsh
+
+     - name: Create GitHub Release
+       uses: ncipollo/release-action@v1
+       with:
+         tag: ${{ github.ref_name }}
+         name: "SoundFX Framework ${{ github.ref_name }}"
+         body: "**Automated Release for SoundFX Framework**\n\nVersion: **${{ github.ref_name }}**\n\nThis release was automatically created and includes the latest build of SoundFX Framework."
+         draft: false
+         prerelease: false
+         artifacts: "SoundFXFramework-${{ github.ref_name }}.zip"
+       env:
+         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+     - name: Upload Artifact for Debugging
+       uses: actions/upload-artifact@v4
+       with:
+         name: SoundFXFramework-Build
+         path: SoundFXFramework-${{ github.ref_name }}.zip
