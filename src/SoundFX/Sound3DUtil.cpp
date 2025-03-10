@@ -180,12 +180,12 @@ namespace SoundFX {
                     constexpr RE::NiPoint3 upVector      = {0.0f, 0.0f, 1.0f};
 
                     constexpr ALfloat listenerPos[3] = {0.0f, 0.0f, 0.0f};
-                    const ALfloat listenerOri[6] = {forwardVector.x,
-                                                    forwardVector.y,
-                                                    forwardVector.z,
-                                                    upVector.x,
-                                                    upVector.y,
-                                                    upVector.z};
+                    const ALfloat     listenerOri[6] = {forwardVector.x,
+                                                        forwardVector.y,
+                                                        forwardVector.z,
+                                                        upVector.x,
+                                                        upVector.y,
+                                                        upVector.z};
 
                     const ALfloat sourcePos[3] = {
                         relativeSourcePos.x, relativeSourcePos.y, relativeSourcePos.z};

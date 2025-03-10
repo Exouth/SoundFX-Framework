@@ -3,7 +3,8 @@ namespace SoundFX {
     bool
         PlayCustomSoundAsDescriptor(const std::string &soundFilePath) {
         try {
-            if (const auto soundDescriptor = std::make_shared<CustomSoundDescriptor>(soundFilePath); soundDescriptor->Play()) {
+            if (const auto soundDescriptor = std::make_shared<CustomSoundDescriptor>(soundFilePath);
+                soundDescriptor->Play()) {
                 return true;
             }
             spdlog::info("Sound finished, returning to event.");

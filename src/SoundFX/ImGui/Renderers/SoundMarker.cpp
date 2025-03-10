@@ -45,7 +45,7 @@ namespace SoundFX {
         if (!showSoundMarkers)
             return;
 
-        ImDrawList               *drawList      = ImGui::GetForegroundDrawList();
+        ImDrawList *drawList = ImGui::GetForegroundDrawList();
 
         // Draw the Markers (For Later)
         /*std::vector<RE::NiPoint3> testPositions = {{205.0f, 200.0f, 200.0f},

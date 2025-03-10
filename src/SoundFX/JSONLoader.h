@@ -37,8 +37,7 @@ namespace SoundFX {
             getItems(const std::string &category) const;
 
       private:
-        explicit
-            JSONLoader(const std::string &filePath);
+        explicit JSONLoader(const std::string &filePath);
         bool
                                                                                      loadJSON();
         std::string                                                                  filePath;

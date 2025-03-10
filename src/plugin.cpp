@@ -54,7 +54,7 @@ SKSEPluginLoad(const SKSE::LoadInterface *skse) {
 
     SoundFX::Logger::Initialize();
 
-    SKSE::AllocTrampoline(64); // For 2 Hooks
+    SKSE::AllocTrampoline(64);  // For 2 Hooks
 
     SoundFX::JSONLoader::GetInstance().load();
 

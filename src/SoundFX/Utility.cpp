@@ -76,10 +76,8 @@ namespace SoundFX {
 
     float
         GenerateRandomFloat() {
-        thread_local std::mt19937 generator(
-            std::random_device {}());
-        std::uniform_real_distribution distribution(0.0f,
-                                                           1.0f);
+        thread_local std::mt19937      generator(std::random_device {}());
+        std::uniform_real_distribution distribution(0.0f, 1.0f);
         return distribution(generator);
     }
 
