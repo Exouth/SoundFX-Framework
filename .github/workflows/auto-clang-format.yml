@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   clang-format:
-    name: Check and Fix Code Formatting
+    name: clang-format
     runs-on: ubuntu-latest
 
     steps:

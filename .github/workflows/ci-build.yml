@@ -1,0 +1,83 @@
+name: CI Build
+
+on:
+  push:
+    branches:
+      - dev
+  pull_request:
+    branches:
+      - dev
+
+permissions:
+  statuses: write
+  checks: write
+  contents: write
+  pull-requests: write
+  actions: write
+
+jobs:
+  wait-for-format:
+    name: Wait for Clang Format Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for clang-format to succeed
+        uses: fountainhead/action-wait-for-check@v1.2.0
+        id: wait-for-format
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          checkName: clang-format
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          timeoutSeconds: 600
+          intervalSeconds: 20
+
+    outputs:
+      conclusion: ${{ steps.wait-for-format.outputs.conclusion }}
+
+  build:
+    name: Compile and Verify Build
+    runs-on: windows-latest
+    needs: wait-for-format
+    if: needs.wait-for-format.outputs.conclusion == 'success'
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Fetch latest changes
+        run: |
+          git fetch origin dev
+          git reset --hard origin/dev
+
+      - name: Setup MSVC Developer Command Prompt
+        uses: ilammy/msvc-dev-cmd@v1.10.0
+
+      - name: Setup vcpkg and Install Dependencies
+        uses: lukka/run-vcpkg@v11.5
+        with:
+          vcpkgJsonGlob: vcpkg.json
+
+      - name: Configure CMake
+        run: cmake -S . -B build --preset=release
+
+      - name: Build Project
+        run: cmake --build build --config Release
+
+      - name: Verify Build Artifacts
+        run: |
+          $dllFile = "build/output/SKSE/Plugins/SoundFXFramework.dll"
+          $pdbFile = "build/output/SKSE/Plugins/SoundFXFramework.pdb"
+
+          if (-Not (Test-Path $dllFile)) {
+              Write-Error "Build failed: SoundFXFramework.dll not found!"
+              exit 1
+          }
+
+          if (-Not (Test-Path $pdbFile)) {
+              Write-Error "Build failed: SoundFXFramework.pdb not found!"
+              exit 1
+          }
+        shell: pwsh
