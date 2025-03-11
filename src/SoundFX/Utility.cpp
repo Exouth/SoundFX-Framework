@@ -81,4 +81,10 @@ namespace SoundFX {
         return distribution(generator);
     }
 
+    float
+        CalculateMarkerSize(float distance, float minSize, float maxSize, float scaleFactor) {
+        const float t = std::clamp(distance / scaleFactor, 0.0f, 1.0f);
+        return std::lerp(maxSize, minSize, t);
+    }
+
 }
