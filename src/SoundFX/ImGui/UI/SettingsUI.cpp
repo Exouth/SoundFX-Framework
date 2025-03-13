@@ -40,6 +40,13 @@ namespace SoundFX {
             "This helps to understand the area affected by the sound event. (Usually only for 3D "
             "sounds)"));
 
+        settings.push_back(std::make_unique<BoolCheckboxSetting>(
+            "Enable Tracers",
+            DefaultSettings::GetTracers(),
+            [](bool value) { SoundMarker::EnableTracers(value); },
+            "Displays a visual line from the player to each sound marker, helping to identify "
+            "the source and position of sounds in the environment."));
+
         settings.push_back(std::make_unique<FloatSliderSetting>(
             "Max Render Distance",
             DefaultSettings::GetMaxRenderDistance(),

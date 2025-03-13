@@ -1,6 +1,5 @@
 #include "SoundMarker.h"
 #include "ImGui/Settings/DefaultSettings.h"
-#include "RE/P/PlayerCamera.h"
 #include "RenderObject.h"
 
 namespace SoundFX {
@@ -12,63 +11,90 @@ namespace SoundFX {
     float SoundMarker::obstructionThreshold     = DefaultSettings::GetObstructionThreshold();
     bool  SoundMarker::radiusIndicator          = DefaultSettings::GetRadiusIndicator();
     float SoundMarker::radiusOutlineThickness   = DefaultSettings::GetRadiusOutlineThickness();
+    bool  SoundMarker::tracers                  = DefaultSettings::GetTracers();
 
     void
         SoundMarker::Render(ImDrawList *drawList) {
-        if (!showSoundMarkers)
+        if (!showSoundMarkers || !drawList) {
             return;
+        }
 
         const auto *camera = RE::PlayerCamera::GetSingleton();
-        if (!camera) {
-            return;
-        }
-
         const auto *player = RE::PlayerCharacter::GetSingleton();
-        if (!player) {
+        if (!camera || !player) {
             return;
         }
 
-        // Testing Purpose (Delete Later)
-        const std::vector<RE::NiPoint3> testPositions = {
-            {player->GetPosition()}, {7729.8643f, -68789.37f, 4515.15f}, {300.0f, 300.0f, 300.0f}};
-
-        for (const auto &pos : testPositions) {
-            ImVec2 screenPos;
-            float  depth;
-
-            const float distance = camera->pos.GetDistance(pos);
-            if (distanceFilterEnabled && distance > maxRenderDistance) {
-                continue;
-            }
-
-            if (RenderObject::WorldToScreen(pos, screenPos, depth)) {
-                const float size = CalculateMarkerSize(distance);
-
-                const float localObstructionThreshold = GetObstructionThreshold();
-
-                const bool isObstructed = IsObstructionEffectEnabled()
-                                       && RenderObject::IsObjectObstructed(
-                                              pos, soundRadius, 16, localObstructionThreshold);
-
-                const ImU32 color =
-                    isObstructed ? IM_COL32(128, 128, 128, 255) : IM_COL32(255, 255, 0, 255);
-                const ImU32 circleColor =
-                    isObstructed ? IM_COL32(64, 64, 64, 128) : IM_COL32(0, 0, 255, 128);
-
-                if (IsRadiusIndicatorEnabled()) {
-                    // Draws a border at the radius
-                    RenderObject::Draw3DCircleOutline(
-                        pos, soundRadius, drawList, IM_COL32(0, 0, 0, 255), radiusOutlineThickness);
-
-                    // Draws Radius/Reach of Sounds
-                    RenderObject::Draw3DCircle(pos, soundRadius, drawList, circleColor);
-                }
-
-                // Draws Marker of Sounds
-                RenderObject::Draw3DSphere(pos, size, drawList, color);
-            }
+        const std::vector<RE::NiPoint3> soundPositions = GetActiveSoundPositions();
+        if (soundPositions.empty()) {
+            return;
         }
-        //
+
+        for (const auto &soundPos : soundPositions) {
+            ProcessSoundMarker(soundPos, player->GetPosition(), drawList, camera->pos);
+        }
+    }
+
+    std::vector<RE::NiPoint3>
+        SoundMarker::GetActiveSoundPositions() {
+
+        // Currently Test Position for debugging purpose
+        return {{7729.8643f, -68789.37f, 4515.15f}};
+    }
+
+    void
+        SoundMarker::ProcessSoundMarker(const RE::NiPoint3 &soundPos,
+                                        const RE::NiPoint3 &playerPos,
+                                        ImDrawList         *drawList,
+                                        const RE::NiPoint3 &cameraPos) {
+        if (!drawList) {
+            return;
+        }
+
+        const float distance = cameraPos.GetDistance(soundPos);
+        if (distanceFilterEnabled && distance > maxRenderDistance) {
+            return;
+        }
+
+        const bool isObstructed =
+            obstructionEffectEnabled
+            && RenderObject::IsObjectObstructed(soundPos, soundRadius, 16, obstructionThreshold);
+
+        const ImU32 markerColor =
+            isObstructed ? IM_COL32(128, 128, 128, 255) : IM_COL32(255, 255, 0, 255);
+        const ImU32 tracerColor =
+            isObstructed ? IM_COL32(64, 64, 64, 128) : IM_COL32(0, 0, 255, 128);
+
+        if (tracers) {
+            RenderObject::DrawTracerLine(soundPos, playerPos, drawList, tracerColor, 2.0f);
+        }
+
+        ImVec2 screenPos;
+        float  depth;
+        if (RenderObject::WorldToScreen(soundPos, screenPos, &depth)) {
+            DrawSoundMarker(soundPos, distance, drawList, markerColor, tracerColor);
+        }
+    }
+
+    void
+        SoundMarker::DrawSoundMarker(const RE::NiPoint3 &soundPos,
+                                     float               distance,
+                                     ImDrawList         *drawList,
+                                     ImU32               markerColor,
+                                     ImU32               tracerColor) {
+        if (!drawList) {
+            return;
+        }
+
+        const float markerSize = CalculateMarkerSize(distance);
+
+        if (radiusIndicator) {
+            RenderObject::Draw3DCircleOutline(
+                soundPos, soundRadius, drawList, IM_COL32(0, 0, 0, 255), radiusOutlineThickness);
+            RenderObject::Draw3DCircle(soundPos, soundRadius, drawList, tracerColor);
+        }
+
+        RenderObject::Draw3DSphere(soundPos, markerSize, drawList, markerColor);
     }
 
     void
@@ -150,5 +176,15 @@ namespace SoundFX {
     float
         SoundMarker::GetRadiusOutlineThickness() {
         return radiusOutlineThickness;
+    }
+
+    void
+        SoundMarker::EnableTracers(bool enable) {
+        tracers = enable;
+    }
+
+    bool
+        SoundMarker::IsTracersEnabled() {
+        return tracers;
     }
 }

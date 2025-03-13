@@ -42,5 +42,10 @@ namespace SoundFX {
             GetRadiusOutlineThickness() {
             return 5.0f;
         }
+
+        static bool
+            GetTracers() {
+            return true;
+        }
     };
 }
