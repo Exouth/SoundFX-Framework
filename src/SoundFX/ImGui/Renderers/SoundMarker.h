@@ -39,6 +39,8 @@ namespace SoundFX {
             EnableTracers(bool enable);
         static bool
             IsTracersEnabled();
+        static void
+            SetMaxSoundMarkers(int maxMarkers);
 
       private:
         static std::vector<RE::NiPoint3>
@@ -64,5 +66,6 @@ namespace SoundFX {
         static bool  radiusIndicator;
         static float radiusOutlineThickness;
         static bool  tracers;
+        static int   maxSoundMarkers;
     };
 }

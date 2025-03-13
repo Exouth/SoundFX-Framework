@@ -3,6 +3,7 @@
 #include "ImGui/Settings/DefaultSettings.h"
 #include "ImGui/Settings/Types/Bool/BoolCheckboxSetting.h"
 #include "ImGui/Settings/Types/Float/FloatSliderSetting.h"
+#include "ImGui/Settings/Types/Int/IntComboBoxSetting.h"
 
 namespace SoundFX {
 
@@ -80,6 +81,14 @@ namespace SoundFX {
             [](float value) { SoundMarker::SetObstructionThreshold(value); },
             "Adjusts how much of a marker needs to be hidden before it turns gray. Higher values "
             "require more obstruction before changing color."));
+
+        settings.push_back(std::make_unique<IntComboBoxSetting>(
+            "Max Sound Markers",
+            DefaultSettings::GetMaxSoundMarkers(),
+            std::vector<int> {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, -1},
+            [](int value) { SoundMarker::SetMaxSoundMarkers(value); },
+            "Sets the maximum number of sound markers to render. Select -1 to render all "
+            "markers."));
     }
 
     void

@@ -47,5 +47,10 @@ namespace SoundFX {
             GetTracers() {
             return true;
         }
+
+        static int
+            GetMaxSoundMarkers() {
+            return 10;
+        }
     };
 }

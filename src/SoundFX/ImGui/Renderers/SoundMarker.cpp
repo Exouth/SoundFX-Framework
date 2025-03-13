@@ -12,6 +12,7 @@ namespace SoundFX {
     bool  SoundMarker::radiusIndicator          = DefaultSettings::GetRadiusIndicator();
     float SoundMarker::radiusOutlineThickness   = DefaultSettings::GetRadiusOutlineThickness();
     bool  SoundMarker::tracers                  = DefaultSettings::GetTracers();
+    int   SoundMarker::maxSoundMarkers          = DefaultSettings::GetMaxSoundMarkers();
 
     void
         SoundMarker::Render(ImDrawList *drawList) {
@@ -25,9 +26,18 @@ namespace SoundFX {
             return;
         }
 
-        const std::vector<RE::NiPoint3> soundPositions = GetActiveSoundPositions();
+        std::vector<RE::NiPoint3> soundPositions = GetActiveSoundPositions();
         if (soundPositions.empty()) {
             return;
+        }
+
+        std::ranges::sort(soundPositions,
+                          [camera](const RE::NiPoint3 &a, const RE::NiPoint3 &b) {
+                              return camera->pos.GetDistance(a) < camera->pos.GetDistance(b);
+                          });
+
+        if (maxSoundMarkers != -1 && soundPositions.size() > static_cast<size_t>(maxSoundMarkers)) {
+            soundPositions.resize(maxSoundMarkers);
         }
 
         for (const auto &soundPos : soundPositions) {
@@ -39,7 +49,21 @@ namespace SoundFX {
         SoundMarker::GetActiveSoundPositions() {
 
         // Currently Test Position for debugging purpose
-        return {{7729.8643f, -68789.37f, 4515.15f}};
+        return {{7729.8643f, -68789.37f, 4515.15f},
+                {8029.8643f, -69089.37f, 4815.15f},
+                {7429.8643f, -68489.37f, 4215.15f},
+                {7729.8643f, -68089.37f, 4515.15f},
+                {8129.8643f, -68789.37f, 4915.15f},
+                {7629.8643f, -69089.37f, 4415.15f},
+                {7829.8643f, -68489.37f, 4715.15f},
+                {7529.8643f, -68089.37f, 4315.15f},
+                {7929.8643f, -68789.37f, 4615.15f},
+                {7729.8643f, -69089.37f, 4515.15f},
+                {7629.8643f, -68489.37f, 4415.15f},
+                {7829.8643f, -68089.37f, 4715.15f},
+                {7529.8643f, -68789.37f, 4315.15f},
+                {7929.8643f, -69089.37f, 4615.15f},
+                {7729.8643f, -68489.37f, 4515.15f}};
     }
 
     void
@@ -186,5 +210,10 @@ namespace SoundFX {
     bool
         SoundMarker::IsTracersEnabled() {
         return tracers;
+    }
+
+    void
+        SoundMarker::SetMaxSoundMarkers(int maxMarkers) {
+        maxSoundMarkers = maxMarkers;
     }
 }
