@@ -15,6 +15,7 @@ namespace SoundFX {
     int   SoundMarker::maxSoundMarkers          = DefaultSettings::GetMaxSoundMarkers();
     int   SoundMarker::numSegmentsCircle        = DefaultSettings::GetNumSegmentsCircle();
     int   SoundMarker::numSegmentsSphere        = DefaultSettings::GetNumSegmentsSphere();
+    bool  SoundMarker::textHover                = DefaultSettings::GetTextHover();
 
     void
         SoundMarker::Render(ImDrawList *drawList) {
@@ -28,50 +29,55 @@ namespace SoundFX {
             return;
         }
 
-        std::vector<RE::NiPoint3> soundPositions = GetActiveSoundPositions();
+        std::vector<std::tuple<RE::NiPoint3, std::string, std::string>> soundPositions =
+            GetActiveSoundPositions();
         if (soundPositions.empty()) {
             return;
         }
 
-        std::ranges::sort(soundPositions, [player](const RE::NiPoint3 &a, const RE::NiPoint3 &b) {
-            return player->GetPosition().GetDistance(a) < player->GetPosition().GetDistance(b);
+        std::ranges::sort(soundPositions, [player](const auto &a, const auto &b) {
+            return player->GetPosition().GetDistance(std::get<0>(a))
+                 < player->GetPosition().GetDistance(std::get<0>(b));
         });
 
         if (maxSoundMarkers != -1 && soundPositions.size() > static_cast<size_t>(maxSoundMarkers)) {
             soundPositions.resize(maxSoundMarkers);
         }
 
-        for (const auto &soundPos : soundPositions) {
-            ProcessSoundMarker(soundPos, player->GetPosition(), drawList, camera->pos);
+        for (const auto &[soundPos, name, soundEffect] : soundPositions) {
+            ProcessSoundMarker(
+                soundPos, player->GetPosition(), drawList, camera->pos, name, soundEffect);
         }
     }
 
-    std::vector<RE::NiPoint3>
+    std::vector<std::tuple<RE::NiPoint3, std::string, std::string>>
         SoundMarker::GetActiveSoundPositions() {
 
         // Currently Test Position for debugging purpose
-        return {{7729.8643f, -68789.37f, 4515.15f},
-                {8029.8643f, -69089.37f, 4815.15f},
-                {7429.8643f, -68489.37f, 4215.15f},
-                {7729.8643f, -68089.37f, 4515.15f},
-                {8129.8643f, -68789.37f, 4915.15f},
-                {7629.8643f, -69089.37f, 4415.15f},
-                {7829.8643f, -68489.37f, 4715.15f},
-                {7529.8643f, -68089.37f, 4315.15f},
-                {7929.8643f, -68789.37f, 4615.15f},
-                {7729.8643f, -69089.37f, 4515.15f},
-                {7629.8643f, -68489.37f, 4415.15f},
-                {7829.8643f, -68089.37f, 4715.15f},
-                {7529.8643f, -68789.37f, 4315.15f},
-                {7929.8643f, -69089.37f, 4615.15f},
-                {7729.8643f, -68489.37f, 4515.15f}};
+        return {{{7729.8643f, -68789.37f, 4515.15f}, "Sound1", "Effect1"},
+                {{8029.8643f, -69089.37f, 4815.15f}, "Sound2", "Effect2"},
+                {{7429.8643f, -68489.37f, 4215.15f}, "Sound3", "Effect3"},
+                {{7729.8643f, -68089.37f, 4515.15f}, "Sound4", "Effect4"},
+                {{8129.8643f, -68789.37f, 4915.15f}, "Sound5", "Effect5"},
+                {{7629.8643f, -69089.37f, 4415.15f}, "Sound6", "Effect6"},
+                {{7829.8643f, -68489.37f, 4715.15f}, "Sound7", "Effect7"},
+                {{7529.8643f, -68089.37f, 4315.15f}, "Sound8", "Effect8"},
+                {{7929.8643f, -68789.37f, 4615.15f}, "Sound9", "Effect9"},
+                {{7729.8643f, -69089.37f, 4515.15f}, "Sound10", "Effect10"},
+                {{7629.8643f, -68489.37f, 4415.15f}, "Sound11", "Effect11"},
+                {{7829.8643f, -68089.37f, 4715.15f}, "Sound12", "Effect12"},
+                {{7529.8643f, -68789.37f, 4315.15f}, "Sound13", "Effect13"},
+                {{7929.8643f, -69089.37f, 4615.15f}, "Sound14", "Effect14"},
+                {{7729.8643f, -68489.37f, 4515.15f}, "Sound15", "Effect15"}};
     }
 
     void
         SoundMarker::ProcessSoundMarker(const RE::NiPoint3 &soundPos,
                                         const RE::NiPoint3 &playerPos,
                                         ImDrawList         *drawList,
-                                        const RE::NiPoint3 &cameraPos) {
+                                        const RE::NiPoint3 &cameraPos,
+                                        const std::string  &name,
+                                        const std::string  &soundEffect) {
         if (!drawList) {
             return;
         }
@@ -89,6 +95,8 @@ namespace SoundFX {
             isObstructed ? IM_COL32(128, 128, 128, 255) : IM_COL32(255, 255, 0, 255);
         const ImU32 tracerColor =
             isObstructed ? IM_COL32(64, 64, 64, 128) : IM_COL32(0, 0, 255, 128);
+        const ImU32 textColor =
+            isObstructed ? IM_COL32(192, 192, 192, 255) : IM_COL32(255, 255, 255, 255);
 
         if (tracers) {
             RenderObject::DrawTracerLine(soundPos, playerPos, drawList, tracerColor, 2.0f);
@@ -97,7 +105,14 @@ namespace SoundFX {
         ImVec2 screenPos;
         float  depth;
         if (RenderObject::WorldToScreen(soundPos, screenPos, &depth)) {
-            DrawSoundMarker(soundPos, distance, drawList, markerColor, tracerColor);
+            DrawSoundMarker(soundPos,
+                            distance,
+                            drawList,
+                            markerColor,
+                            tracerColor,
+                            textColor,
+                            name,
+                            soundEffect);
         }
     }
 
@@ -106,7 +121,10 @@ namespace SoundFX {
                                      float               distance,
                                      ImDrawList         *drawList,
                                      ImU32               markerColor,
-                                     ImU32               tracerColor) {
+                                     ImU32               tracerColor,
+                                     ImU32               textColor,
+                                     const std::string  &name,
+                                     const std::string  &soundEffect) {
         if (!drawList) {
             return;
         }
@@ -125,6 +143,11 @@ namespace SoundFX {
         }
 
         RenderObject::Draw3DSphere(soundPos, markerSize, drawList, markerColor, numSegmentsSphere);
+
+        if (textHover) {
+            RenderObject::DrawTextAboveSphere(
+                soundPos, markerSize, textColor, drawList, name, soundEffect);
+        }
     }
 
     void
@@ -241,5 +264,15 @@ namespace SoundFX {
     int
         SoundMarker::GetNumSegmentsSphere() {
         return numSegmentsSphere;
+    }
+
+    void
+        SoundMarker::EnableTextHover(bool enable) {
+        textHover = enable;
+    }
+
+    bool
+        SoundMarker::IsTextHoverEnabled() {
+        return textHover;
     }
 }

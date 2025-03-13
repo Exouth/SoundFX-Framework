@@ -49,6 +49,14 @@ namespace SoundFX {
             "Displays a visual line from the player to each sound marker, helping to identify "
             "the source and position of sounds in the environment."));
 
+        settings.push_back(std::make_unique<BoolCheckboxSetting>(
+            "Enable Text Hover",
+            DefaultSettings::GetTextHover(),
+            [](bool value) { SoundMarker::EnableTextHover(value); },
+            "Displays the name and sound effect above each sound marker when enabled. "
+            "The name is how the sound is named, and the sound effect is the file set for the "
+            "sound"));
+
         settings.push_back(std::make_unique<FloatSliderSetting>(
             "Max Render Distance",
             DefaultSettings::GetMaxRenderDistance(),

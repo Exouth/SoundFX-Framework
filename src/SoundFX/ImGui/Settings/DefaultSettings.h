@@ -62,5 +62,10 @@ namespace SoundFX {
             GetNumSegmentsSphere() {
             return 35;
         }
+
+        static bool
+            GetTextHover() {
+            return true;
+        }
     };
 }

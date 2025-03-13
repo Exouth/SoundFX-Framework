@@ -49,21 +49,30 @@ namespace SoundFX {
             SetNumSegmentsSphere(int numSegments);
         static int
             GetNumSegmentsSphere();
+        static void
+            EnableTextHover(bool enable);
+        static bool
+            IsTextHoverEnabled();
 
       private:
-        static std::vector<RE::NiPoint3>
+        static std::vector<std::tuple<RE::NiPoint3, std::string, std::string>>
             GetActiveSoundPositions();
         static void
             ProcessSoundMarker(const RE::NiPoint3 &soundPos,
                                const RE::NiPoint3 &playerPos,
                                ImDrawList         *drawList,
-                               const RE::NiPoint3 &cameraPos);
+                               const RE::NiPoint3 &cameraPos,
+                               const std::string  &name,
+                               const std::string  &soundEffect);
         static void
             DrawSoundMarker(const RE::NiPoint3 &soundPos,
                             float               distance,
                             ImDrawList         *drawList,
                             ImU32               markerColor,
-                            ImU32               tracerColor);
+                            ImU32               tracerColor,
+                            ImU32               textColor,
+                            const std::string  &name,
+                            const std::string  &soundEffect);
 
         static bool  showSoundMarkers;
         static bool  distanceFilterEnabled;
@@ -77,5 +86,6 @@ namespace SoundFX {
         static int   maxSoundMarkers;
         static int   numSegmentsCircle;
         static int   numSegmentsSphere;
+        static bool  textHover;
     };
 }

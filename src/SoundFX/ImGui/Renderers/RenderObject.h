@@ -38,6 +38,14 @@ namespace SoundFX {
                            ImU32               color,
                            float               thickness);
 
+        static void
+            DrawTextAboveSphere(const RE::NiPoint3 &center,
+                                float               radius,
+                                ImU32               color,
+                                ImDrawList         *drawList,
+                                const std::string  &name,
+                                const std::string  &soundEffect);
+
       private:
         static bool
             PickObject(const RE::NiPoint3 &from, const RE::NiPoint3 &to);
