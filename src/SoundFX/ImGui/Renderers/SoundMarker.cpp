@@ -33,8 +33,8 @@ namespace SoundFX {
             return;
         }
 
-        std::ranges::sort(soundPositions, [camera](const RE::NiPoint3 &a, const RE::NiPoint3 &b) {
-            return camera->pos.GetDistance(a) < camera->pos.GetDistance(b);
+        std::ranges::sort(soundPositions, [player](const RE::NiPoint3 &a, const RE::NiPoint3 &b) {
+            return player->GetPosition().GetDistance(a) < player->GetPosition().GetDistance(b);
         });
 
         if (maxSoundMarkers != -1 && soundPositions.size() > static_cast<size_t>(maxSoundMarkers)) {
