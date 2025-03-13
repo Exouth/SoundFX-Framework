@@ -52,5 +52,15 @@ namespace SoundFX {
             GetMaxSoundMarkers() {
             return 10;
         }
+
+        static int
+            GetNumSegmentsCircle() {
+            return 100;
+        }
+
+        static int
+            GetNumSegmentsSphere() {
+            return 35;
+        }
     };
 }

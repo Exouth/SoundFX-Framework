@@ -41,6 +41,14 @@ namespace SoundFX {
             IsTracersEnabled();
         static void
             SetMaxSoundMarkers(int maxMarkers);
+        static void
+            SetNumSegmentsCircle(int numSegments);
+        static int
+            GetNumSegmentsCircle();
+        static void
+            SetNumSegmentsSphere(int numSegments);
+        static int
+            GetNumSegmentsSphere();
 
       private:
         static std::vector<RE::NiPoint3>
@@ -67,5 +75,7 @@ namespace SoundFX {
         static float radiusOutlineThickness;
         static bool  tracers;
         static int   maxSoundMarkers;
+        static int   numSegmentsCircle;
+        static int   numSegmentsSphere;
     };
 }

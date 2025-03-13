@@ -13,6 +13,8 @@ namespace SoundFX {
     float SoundMarker::radiusOutlineThickness   = DefaultSettings::GetRadiusOutlineThickness();
     bool  SoundMarker::tracers                  = DefaultSettings::GetTracers();
     int   SoundMarker::maxSoundMarkers          = DefaultSettings::GetMaxSoundMarkers();
+    int   SoundMarker::numSegmentsCircle        = DefaultSettings::GetNumSegmentsCircle();
+    int   SoundMarker::numSegmentsSphere        = DefaultSettings::GetNumSegmentsSphere();
 
     void
         SoundMarker::Render(ImDrawList *drawList) {
@@ -31,10 +33,9 @@ namespace SoundFX {
             return;
         }
 
-        std::ranges::sort(soundPositions,
-                          [camera](const RE::NiPoint3 &a, const RE::NiPoint3 &b) {
-                              return camera->pos.GetDistance(a) < camera->pos.GetDistance(b);
-                          });
+        std::ranges::sort(soundPositions, [camera](const RE::NiPoint3 &a, const RE::NiPoint3 &b) {
+            return camera->pos.GetDistance(a) < camera->pos.GetDistance(b);
+        });
 
         if (maxSoundMarkers != -1 && soundPositions.size() > static_cast<size_t>(maxSoundMarkers)) {
             soundPositions.resize(maxSoundMarkers);
@@ -113,12 +114,17 @@ namespace SoundFX {
         const float markerSize = CalculateMarkerSize(distance);
 
         if (radiusIndicator) {
-            RenderObject::Draw3DCircleOutline(
-                soundPos, soundRadius, drawList, IM_COL32(0, 0, 0, 255), radiusOutlineThickness);
-            RenderObject::Draw3DCircle(soundPos, soundRadius, drawList, tracerColor);
+            RenderObject::Draw3DCircleOutline(soundPos,
+                                              soundRadius,
+                                              drawList,
+                                              IM_COL32(0, 0, 0, 255),
+                                              radiusOutlineThickness,
+                                              numSegmentsCircle);
+            RenderObject::Draw3DCircle(
+                soundPos, soundRadius, drawList, tracerColor, numSegmentsCircle);
         }
 
-        RenderObject::Draw3DSphere(soundPos, markerSize, drawList, markerColor);
+        RenderObject::Draw3DSphere(soundPos, markerSize, drawList, markerColor, numSegmentsSphere);
     }
 
     void
@@ -215,5 +221,25 @@ namespace SoundFX {
     void
         SoundMarker::SetMaxSoundMarkers(int maxMarkers) {
         maxSoundMarkers = maxMarkers;
+    }
+
+    void
+        SoundMarker::SetNumSegmentsCircle(int numSegments) {
+        numSegmentsCircle = numSegments;
+    }
+
+    int
+        SoundMarker::GetNumSegmentsCircle() {
+        return numSegmentsCircle;
+    }
+
+    void
+        SoundMarker::SetNumSegmentsSphere(int numSegments) {
+        numSegmentsSphere = numSegments;
+    }
+
+    int
+        SoundMarker::GetNumSegmentsSphere() {
+        return numSegmentsSphere;
     }
 }

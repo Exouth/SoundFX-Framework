@@ -46,14 +46,14 @@ namespace SoundFX {
                                          float               radius,
                                          int                 numSamples,
                                          float               obstructionThreshold) {
-        auto player = RE::PlayerCharacter::GetSingleton();
-        if (!player || !player->GetParentCell() || !player->GetParentCell()->GetbhkWorld()) {
+        if (const auto player = RE::PlayerCharacter::GetSingleton();
+            !player || !player->GetParentCell() || !player->GetParentCell()->GetbhkWorld()) {
             return false;
         }
 
-        RE::NiPoint3 cameraPos       = RE::PlayerCamera::GetSingleton()->pos;
-        int          obstructedCount = 0;
-        int          totalChecks     = numSamples + 1;
+        const RE::NiPoint3 cameraPos       = RE::PlayerCamera::GetSingleton()->pos;
+        int                obstructedCount = 0;
+        const int          totalChecks     = numSamples + 1;
 
         // Check the Center Point first
         if (PickObject(cameraPos, position)) {
@@ -62,8 +62,8 @@ namespace SoundFX {
 
         // Check several Points on the Circle
         for (int i = 0; i < numSamples; ++i) {
-            float angle = static_cast<float>(i) / static_cast<float>(numSamples) * 2.0f
-                        * std::numbers::pi_v<float>;
+            const float angle = static_cast<float>(i) / static_cast<float>(numSamples) * 2.0f
+                              * std::numbers::pi_v<float>;
 
             RE::NiPoint3 point = {position.x + radius * std::cos(angle),
                                   position.y + radius * std::sin(angle),
@@ -74,7 +74,7 @@ namespace SoundFX {
             }
         }
 
-        float obstructionPercentage =
+        const float obstructionPercentage =
             static_cast<float>(obstructedCount) / static_cast<float>(totalChecks);
 
         return obstructionPercentage >= obstructionThreshold;
@@ -82,7 +82,7 @@ namespace SoundFX {
 
     bool
         RenderObject::PickObject(const RE::NiPoint3 &from, const RE::NiPoint3 &to) {
-        auto player = RE::PlayerCharacter::GetSingleton();
+        const auto player = RE::PlayerCharacter::GetSingleton();
         if (!player || !player->GetParentCell() || !player->GetParentCell()->GetbhkWorld()) {
             return false;
         }
@@ -95,8 +95,8 @@ namespace SoundFX {
         bhkWorld->PickObject(pickData);
 
         if (pickData.rayOutput.HasHit()) {
-            if (auto collidable = pickData.rayOutput.rootCollidable) {
-                auto ref = RE::TESHavokUtilities::FindCollidableRef(*collidable);
+            if (const auto collidable = pickData.rayOutput.rootCollidable) {
+                const auto ref = RE::TESHavokUtilities::FindCollidableRef(*collidable);
                 return ref != nullptr;
             }
         }
@@ -108,12 +108,13 @@ namespace SoundFX {
         RenderObject::Draw3DCircle(const RE::NiPoint3 &center,
                                    float               radius,
                                    ImDrawList         *drawList,
-                                   ImU32               color) {
-        constexpr int   numSegments    = 100;
-        constexpr float angleIncrement = 2.0f * std::numbers::pi_v<float> / numSegments;
+                                   ImU32               color,
+                                   int                 numSegmentsCircle) {
+        const float angleIncrement =
+            2.0f * std::numbers::pi_v<float> / static_cast<float>(numSegmentsCircle);
 
         drawList->PathClear();
-        for (int i = 0; i < numSegments; ++i) {
+        for (int i = 0; i < numSegmentsCircle; ++i) {
             const float angle = static_cast<float>(i) * angleIncrement;
 
             RE::NiPoint3 point = {
@@ -133,15 +134,16 @@ namespace SoundFX {
                                           float               radius,
                                           ImDrawList         *drawList,
                                           ImU32               color,
-                                          float               thickness) {
-        constexpr int   numSegments    = 100;
-        constexpr float angleIncrement = 2.0f * std::numbers::pi_v<float> / numSegments;
+                                          float               thickness,
+                                          int                 numSegmentsCircle) {
+        const float angleIncrement =
+            2.0f * std::numbers::pi_v<float> / static_cast<float>(numSegmentsCircle);
 
         drawList->PathClear();
         ImVec2 firstScreenPos;
         bool   firstSet = false;
 
-        for (int i = 0; i < numSegments; ++i) {
+        for (int i = 0; i < numSegmentsCircle; ++i) {
             const float angle = static_cast<float>(i) * angleIncrement;
 
             RE::NiPoint3 point = {
@@ -171,15 +173,15 @@ namespace SoundFX {
         RenderObject::Draw3DSphere(const RE::NiPoint3 &center,
                                    float               radius,
                                    ImDrawList         *drawList,
-                                   ImU32               color) {
-        constexpr int numCircles = 35;  // Number of horizontal circles
-        for (int i = 0; i <= numCircles; ++i) {
-            const float angle =
-                static_cast<float>(i) / static_cast<float>(numCircles) * std::numbers::pi_v<float>;
+                                   ImU32               color,
+                                   int                 numSegmentsSphere) {
+        for (int i = 0; i <= numSegmentsSphere; ++i) {
+            const float angle = static_cast<float>(i) / static_cast<float>(numSegmentsSphere)
+                              * std::numbers::pi_v<float>;
             const float r = radius * std::sin(angle);
             float       z = center.z + radius * std::cos(angle);
 
-            Draw3DCircle({center.x, center.y, z}, r, drawList, color);
+            Draw3DCircle({center.x, center.y, z}, r, drawList, color, numSegmentsSphere);
         }
     }
 

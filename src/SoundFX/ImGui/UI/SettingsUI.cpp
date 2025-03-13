@@ -4,6 +4,7 @@
 #include "ImGui/Settings/Types/Bool/BoolCheckboxSetting.h"
 #include "ImGui/Settings/Types/Float/FloatSliderSetting.h"
 #include "ImGui/Settings/Types/Int/IntComboBoxSetting.h"
+#include "ImGui/Settings/Types/Int/IntSliderSetting.h"
 
 namespace SoundFX {
 
@@ -85,10 +86,28 @@ namespace SoundFX {
         settings.push_back(std::make_unique<IntComboBoxSetting>(
             "Max Sound Markers",
             DefaultSettings::GetMaxSoundMarkers(),
-            std::vector<int> {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, -1},
+            std::vector {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, -1},
             [](int value) { SoundMarker::SetMaxSoundMarkers(value); },
             "Sets the maximum number of sound markers to render. Select -1 to render all "
             "markers."));
+
+        settings.push_back(std::make_unique<IntSliderSetting>(
+            "Circle Segments",
+            DefaultSettings::GetNumSegmentsCircle(),
+            10,
+            300,
+            [](int value) { SoundMarker::SetNumSegmentsCircle(value); },
+            "Sets the number of segments for drawing circles. Higher values result in smoother "
+            "circles."));
+
+        settings.push_back(std::make_unique<IntSliderSetting>(
+            "Sphere Segments",
+            DefaultSettings::GetNumSegmentsSphere(),
+            10,
+            150,
+            [](int value) { SoundMarker::SetNumSegmentsSphere(value); },
+            "Sets the number of segments for drawing spheres. Higher values result in smoother "
+            "spheres."));
     }
 
     void

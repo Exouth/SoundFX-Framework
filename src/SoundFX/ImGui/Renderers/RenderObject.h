@@ -7,18 +7,21 @@ namespace SoundFX {
             Draw3DCircle(const RE::NiPoint3 &center,
                          float               radius,
                          ImDrawList         *drawList,
-                         ImU32               color);
+                         ImU32               color,
+                         int                 numSegmentsCircle);
         static void
             Draw3DSphere(const RE::NiPoint3 &center,
                          float               radius,
                          ImDrawList         *drawList,
-                         ImU32               color);
+                         ImU32               color,
+                         int                 numSegmentsSphere);
         static void
             Draw3DCircleOutline(const RE::NiPoint3 &center,
                                 float               radius,
                                 ImDrawList         *drawList,
                                 ImU32               color,
-                                float               thickness);
+                                float               thickness,
+                                int                 numSegmentsCircle);
         static bool
             WorldToScreen(const RE::NiPoint3 &worldPos, ImVec2 &screenPos, float *depth = nullptr);
 
