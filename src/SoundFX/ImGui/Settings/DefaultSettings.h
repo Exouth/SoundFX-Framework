@@ -67,5 +67,25 @@ namespace SoundFX {
             GetTextHover() {
             return true;
         }
+
+        static ImVec4
+            GetMarkerColor() {
+            return {1.0f, 1.0f, 0.0f, 1.0f};
+        }
+
+        static ImVec4
+            GetRadiusIndicatorColor() {
+            return {0.0f, 0.0f, 1.0f, 0.5f};
+        }
+
+        static ImVec4
+            GetTracerColor() {
+            return {1.0f, 1.0f, 0.0f, 1.0f};
+        }
+
+        static ImVec4
+            GetTextHoverColor() {
+            return {1.0f, 1.0f, 1.0f, 1.0f};
+        }
     };
 }

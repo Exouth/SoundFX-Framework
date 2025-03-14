@@ -2,6 +2,7 @@
 #include "ImGui/Renderers/SoundMarker.h"
 #include "ImGui/Settings/DefaultSettings.h"
 #include "ImGui/Settings/Types/Bool/BoolCheckboxSetting.h"
+#include "ImGui/Settings/Types/Color/ColorSetting.h"
 #include "ImGui/Settings/Types/Float/FloatSliderSetting.h"
 #include "ImGui/Settings/Types/Int/IntComboBoxSetting.h"
 #include "ImGui/Settings/Types/Int/IntSliderSetting.h"
@@ -9,6 +10,7 @@
 namespace SoundFX {
 
     std::vector<std::unique_ptr<BaseSetting>> SettingsUI::settings;
+    std::vector<std::unique_ptr<BaseSetting>> SettingsUI::colorSettings;
 
     void
         SettingsUI::InitializeSettings() {
@@ -116,6 +118,31 @@ namespace SoundFX {
             [](int value) { SoundMarker::SetNumSegmentsSphere(value); },
             "Sets the number of segments for drawing spheres. Higher values result in smoother "
             "spheres."));
+
+        colorSettings.push_back(std::make_unique<ColorSetting>(
+            "Marker Color",
+            DefaultSettings::GetMarkerColor(),
+            [](const ImVec4 &color) { SoundMarker::SetMarkerColor(color); },
+            "Sets the color of the sound markers."));
+
+        colorSettings.push_back(std::make_unique<ColorSetting>(
+            "Radius Indicator Color",
+            DefaultSettings::GetRadiusIndicatorColor(),
+            [](const ImVec4 &color) { SoundMarker::SetRadiusIndicatorColor(color); },
+            "Sets the color of the radius indicator visualizing sound area."));
+
+        colorSettings.push_back(std::make_unique<ColorSetting>(
+            "Tracer Color",
+            DefaultSettings::GetTracerColor(),
+            [](const ImVec4 &color) { SoundMarker::SetTracerColor(color); },
+            "Sets the color of tracer lines connecting markers to the player."));
+
+        colorSettings.push_back(std::make_unique<ColorSetting>(
+            "Text Hover Color",
+            DefaultSettings::GetTextHoverColor(),
+            [](const ImVec4 &color) { SoundMarker::SetTextHoverColor(color); },
+            "Sets the color of the text displayed above sound markers. This includes the sound "
+            "name and effect."));
     }
 
     void
@@ -129,6 +156,15 @@ namespace SoundFX {
             ImGui::Spacing();
         }
 
+        ImGui::Spacing();
+
+        if (ImGui::CollapsingHeader("Color Settings")) {
+            for (const auto &colorSetting : colorSettings) {
+                colorSetting->Render();
+                ImGui::Spacing();
+            }
+        }
+
         ImGui::Separator();
         ImGui::Spacing();
 
@@ -136,6 +172,10 @@ namespace SoundFX {
         if (ImGui::Button("Reset all to default")) {
             for (const auto &setting : settings) {
                 setting->Reset();
+            }
+
+            for (const auto &colorSetting : colorSettings) {
+                colorSetting->Reset();
             }
         }
     }

@@ -10,6 +10,7 @@ namespace SoundFX {
 
       private:
         static std::vector<std::unique_ptr<BaseSetting>> settings;
+        static std::vector<std::unique_ptr<BaseSetting>> colorSettings;
         static void
             InitializeSettings();
     };

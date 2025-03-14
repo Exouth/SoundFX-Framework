@@ -3,19 +3,23 @@
 #include "RenderObject.h"
 
 namespace SoundFX {
-    bool  SoundMarker::showSoundMarkers         = DefaultSettings::GetShowSoundMarkers();
-    bool  SoundMarker::distanceFilterEnabled    = DefaultSettings::GetDistanceFilterEnabled();
-    float SoundMarker::maxRenderDistance        = DefaultSettings::GetMaxRenderDistance();
-    float SoundMarker::soundRadius              = DefaultSettings::GetSoundRadius();
-    bool  SoundMarker::obstructionEffectEnabled = DefaultSettings::GetObstructionEffectEnabled();
-    float SoundMarker::obstructionThreshold     = DefaultSettings::GetObstructionThreshold();
-    bool  SoundMarker::radiusIndicator          = DefaultSettings::GetRadiusIndicator();
-    float SoundMarker::radiusOutlineThickness   = DefaultSettings::GetRadiusOutlineThickness();
-    bool  SoundMarker::tracers                  = DefaultSettings::GetTracers();
-    int   SoundMarker::maxSoundMarkers          = DefaultSettings::GetMaxSoundMarkers();
-    int   SoundMarker::numSegmentsCircle        = DefaultSettings::GetNumSegmentsCircle();
-    int   SoundMarker::numSegmentsSphere        = DefaultSettings::GetNumSegmentsSphere();
-    bool  SoundMarker::textHover                = DefaultSettings::GetTextHover();
+    bool   SoundMarker::showSoundMarkers         = DefaultSettings::GetShowSoundMarkers();
+    bool   SoundMarker::distanceFilterEnabled    = DefaultSettings::GetDistanceFilterEnabled();
+    float  SoundMarker::maxRenderDistance        = DefaultSettings::GetMaxRenderDistance();
+    float  SoundMarker::soundRadius              = DefaultSettings::GetSoundRadius();
+    bool   SoundMarker::obstructionEffectEnabled = DefaultSettings::GetObstructionEffectEnabled();
+    float  SoundMarker::obstructionThreshold     = DefaultSettings::GetObstructionThreshold();
+    bool   SoundMarker::radiusIndicator          = DefaultSettings::GetRadiusIndicator();
+    float  SoundMarker::radiusOutlineThickness   = DefaultSettings::GetRadiusOutlineThickness();
+    bool   SoundMarker::tracers                  = DefaultSettings::GetTracers();
+    int    SoundMarker::maxSoundMarkers          = DefaultSettings::GetMaxSoundMarkers();
+    int    SoundMarker::numSegmentsCircle        = DefaultSettings::GetNumSegmentsCircle();
+    int    SoundMarker::numSegmentsSphere        = DefaultSettings::GetNumSegmentsSphere();
+    bool   SoundMarker::textHover                = DefaultSettings::GetTextHover();
+    ImVec4 SoundMarker::markerColor              = DefaultSettings::GetMarkerColor();
+    ImVec4 SoundMarker::radiusIndicatorColor     = DefaultSettings::GetRadiusIndicatorColor();
+    ImVec4 SoundMarker::tracerColor              = DefaultSettings::GetTracerColor();
+    ImVec4 SoundMarker::textHoverColor           = DefaultSettings::GetTextHoverColor();
 
     void
         SoundMarker::Render(ImDrawList *drawList) {
@@ -91,15 +95,17 @@ namespace SoundFX {
             obstructionEffectEnabled
             && RenderObject::IsObjectObstructed(soundPos, soundRadius, 16, obstructionThreshold);
 
-        const ImU32 markerColor =
-            isObstructed ? IM_COL32(128, 128, 128, 255) : IM_COL32(255, 255, 0, 255);
-        const ImU32 tracerColor =
-            isObstructed ? IM_COL32(64, 64, 64, 128) : IM_COL32(0, 0, 255, 128);
-        const ImU32 textColor =
-            isObstructed ? IM_COL32(192, 192, 192, 255) : IM_COL32(255, 255, 255, 255);
+        const ImU32 markerColorConv =
+            isObstructed ? IM_COL32(128, 128, 128, 255) : ConvertColor(markerColor);
+        const ImU32 radiusIndicatorColorConv =
+            isObstructed ? IM_COL32(64, 64, 64, 128) : ConvertColor(radiusIndicatorColor);
+        const ImU32 tracerColorConv =
+            isObstructed ? IM_COL32(64, 64, 64, 128) : ConvertColor(tracerColor);
+        const ImU32 textColorConv =
+            isObstructed ? IM_COL32(192, 192, 192, 255) : ConvertColor(textHoverColor);
 
         if (tracers) {
-            RenderObject::DrawTracerLine(soundPos, playerPos, drawList, tracerColor, 2.0f);
+            RenderObject::DrawTracerLine(soundPos, playerPos, drawList, tracerColorConv, 2.0f);
         }
 
         ImVec2 screenPos;
@@ -108,9 +114,9 @@ namespace SoundFX {
             DrawSoundMarker(soundPos,
                             distance,
                             drawList,
-                            markerColor,
-                            tracerColor,
-                            textColor,
+                            markerColorConv,
+                            radiusIndicatorColorConv,
+                            textColorConv,
                             name,
                             soundEffect,
                             isObstructed);
@@ -121,9 +127,9 @@ namespace SoundFX {
         SoundMarker::DrawSoundMarker(const RE::NiPoint3 &soundPos,
                                      float               distance,
                                      ImDrawList         *drawList,
-                                     ImU32               markerColor,
-                                     ImU32               tracerColor,
-                                     ImU32               textColor,
+                                     ImU32               localMarkerColor,
+                                     ImU32               localRadiusIndicatorColor,
+                                     ImU32               localTextColor,
                                      const std::string  &name,
                                      const std::string  &soundEffect,
                                      bool                isObstructed) {
@@ -141,15 +147,16 @@ namespace SoundFX {
                                               radiusOutlineThickness,
                                               numSegmentsCircle);
             RenderObject::Draw3DCircle(
-                soundPos, soundRadius, drawList, tracerColor, numSegmentsCircle);
+                soundPos, soundRadius, drawList, localRadiusIndicatorColor, numSegmentsCircle);
         }
 
-        RenderObject::Draw3DSphere(soundPos, markerSize, drawList, markerColor, numSegmentsSphere);
+        RenderObject::Draw3DSphere(
+            soundPos, markerSize, drawList, localMarkerColor, numSegmentsSphere);
 
         if (textHover) {
             RenderObject::DrawTextAboveSphere(soundPos,
                                               markerSize,
-                                              textColor,
+                                              localTextColor,
                                               drawList,
                                               name,
                                               soundEffect,
@@ -281,5 +288,45 @@ namespace SoundFX {
     bool
         SoundMarker::IsTextHoverEnabled() {
         return textHover;
+    }
+
+    void
+        SoundMarker::SetMarkerColor(const ImVec4 color) {
+        markerColor = color;
+    }
+
+    ImVec4
+        SoundMarker::GetMarkerColor() {
+        return markerColor;
+    }
+
+    void
+        SoundMarker::SetRadiusIndicatorColor(const ImVec4 color) {
+        radiusIndicatorColor = color;
+    }
+
+    ImVec4
+        SoundMarker::GetRadiusIndicatorColor() {
+        return radiusIndicatorColor;
+    }
+
+    void
+        SoundMarker::SetTracerColor(const ImVec4 color) {
+        tracerColor = color;
+    }
+
+    ImVec4
+        SoundMarker::GetTracerColor() {
+        return tracerColor;
+    }
+
+    void
+        SoundMarker::SetTextHoverColor(const ImVec4 color) {
+        textHoverColor = color;
+    }
+
+    ImVec4
+        SoundMarker::GetTextHoverColor() {
+        return textHoverColor;
     }
 }

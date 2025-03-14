@@ -53,6 +53,22 @@ namespace SoundFX {
             EnableTextHover(bool enable);
         static bool
             IsTextHoverEnabled();
+        static void
+            SetMarkerColor(ImVec4 color);
+        static ImVec4
+            GetMarkerColor();
+        static void
+            SetTracerColor(ImVec4 color);
+        static ImVec4
+            GetTracerColor();
+        static void
+            SetRadiusIndicatorColor(ImVec4 color);
+        static ImVec4
+            GetRadiusIndicatorColor();
+        static void
+            SetTextHoverColor(ImVec4 color);
+        static ImVec4
+            GetTextHoverColor();
 
       private:
         static std::vector<std::tuple<RE::NiPoint3, std::string, std::string>>
@@ -68,25 +84,29 @@ namespace SoundFX {
             DrawSoundMarker(const RE::NiPoint3 &soundPos,
                             float               distance,
                             ImDrawList         *drawList,
-                            ImU32               markerColor,
-                            ImU32               tracerColor,
-                            ImU32               textColor,
+                            ImU32               localMarkerColor,
+                            ImU32               localRadiusIndicatorColor,
+                            ImU32               localTextColor,
                             const std::string  &name,
                             const std::string  &soundEffect,
                             bool                isObstructed);
 
-        static bool  showSoundMarkers;
-        static bool  distanceFilterEnabled;
-        static bool  obstructionEffectEnabled;
-        static float maxRenderDistance;
-        static float soundRadius;
-        static float obstructionThreshold;
-        static bool  radiusIndicator;
-        static float radiusOutlineThickness;
-        static bool  tracers;
-        static int   maxSoundMarkers;
-        static int   numSegmentsCircle;
-        static int   numSegmentsSphere;
-        static bool  textHover;
+        static bool   showSoundMarkers;
+        static bool   distanceFilterEnabled;
+        static bool   obstructionEffectEnabled;
+        static float  maxRenderDistance;
+        static float  soundRadius;
+        static float  obstructionThreshold;
+        static bool   radiusIndicator;
+        static float  radiusOutlineThickness;
+        static bool   tracers;
+        static int    maxSoundMarkers;
+        static int    numSegmentsCircle;
+        static int    numSegmentsSphere;
+        static bool   textHover;
+        static ImVec4 markerColor;
+        static ImVec4 radiusIndicatorColor;
+        static ImVec4 tracerColor;
+        static ImVec4 textHoverColor;
     };
 }

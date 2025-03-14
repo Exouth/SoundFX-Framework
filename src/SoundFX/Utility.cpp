@@ -87,4 +87,11 @@ namespace SoundFX {
         return std::lerp(maxSize, minSize, t);
     }
 
+    ImU32
+        ConvertColor(const ImVec4 &color) {
+        return IM_COL32(static_cast<int>(color.x * 255.0f),
+                        static_cast<int>(color.y * 255.0f),
+                        static_cast<int>(color.z * 255.0f),
+                        static_cast<int>(color.w * 255.0f));
+    }
 }
