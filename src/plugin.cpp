@@ -17,7 +17,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "SoundFX/EventHandlerManager.h"
+#include "SoundFX/Events/EventHandlerManager.h"
 #include "SoundFX/Hooks/HookManager.h"
 #include "SoundFX/JSONLoader.h"
 #include "SoundFX/Logger.h"
