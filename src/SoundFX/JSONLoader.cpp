@@ -54,6 +54,7 @@ namespace SoundFX {
 
         for (const auto &[itemName, itemData] : jsonData["events"][category].items()) {
             ItemEvents item;
+            item.name = itemName;
 
             if (itemData.contains("editorID")) {
                 item.editorID = itemData["editorID"].get<std::string>();

@@ -19,6 +19,7 @@ namespace SoundFX {
     };
 
     struct ItemEvents {
+        std::string        name;
         std::string        editorID;
         std::string        pluginName;
         std::vector<Event> events;
