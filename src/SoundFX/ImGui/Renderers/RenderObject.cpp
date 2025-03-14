@@ -248,7 +248,8 @@ namespace SoundFX {
                                           ImU32               color,
                                           ImDrawList         *drawList,
                                           const std::string  &name,
-                                          const std::string  &soundEffect) {
+                                          const std::string  &soundEffect,
+                                          bool                isObstructed) {
         if (!drawList) {
             return;
         }
@@ -256,12 +257,18 @@ namespace SoundFX {
         ImVec2 screenPos;
         float  depth;
         if (WorldToScreen({center.x, center.y, center.z + radius + 10.0f}, screenPos, &depth)) {
-            const ImVec2 textSizeName   = ImGui::CalcTextSize(name.c_str());
-            const ImVec2 textSizeEffect = ImGui::CalcTextSize(soundEffect.c_str());
+            const ImVec2 textSizeName       = ImGui::CalcTextSize(name.c_str());
+            const ImVec2 textSizeEffect     = ImGui::CalcTextSize(soundEffect.c_str());
+            const ImVec2 textSizeObstructed = ImGui::CalcTextSize("Is Obstructed");
 
             constexpr float bgPadding = 5.0f;
-            const float     bgHeight  = textSizeName.y + textSizeEffect.y + 2 * bgPadding;
-            const float     bgWidth   = std::max(textSizeName.x, textSizeEffect.x) + 2 * bgPadding;
+            float           bgHeight  = textSizeName.y + textSizeEffect.y + 2 * bgPadding;
+            const float     bgWidth =
+                std::max({textSizeName.x, textSizeEffect.x, textSizeObstructed.x}) + 2 * bgPadding;
+
+            if (isObstructed) {
+                bgHeight += textSizeObstructed.y + bgPadding;
+            }
 
             constexpr ImU32 bgColor = IM_COL32(0, 0, 0, 150);
             drawList->AddRectFilled(ImVec2(screenPos.x - bgWidth * 0.5f, screenPos.y - bgHeight),
@@ -269,13 +276,21 @@ namespace SoundFX {
                                     bgColor,
                                     5.0f);
 
-            drawList->AddText(
-                ImVec2(screenPos.x - textSizeName.x * 0.5f, screenPos.y - bgHeight + bgPadding),
-                color,
-                name.c_str());
+            float textPosY = screenPos.y - bgHeight + bgPadding;
 
-            drawList->AddText(ImVec2(screenPos.x - textSizeEffect.x * 0.5f,
-                                     screenPos.y - bgHeight + textSizeName.y + bgPadding),
+            if (isObstructed) {
+                drawList->AddText(ImVec2(screenPos.x - textSizeObstructed.x * 0.5f, textPosY),
+                                  IM_COL32(255, 0, 0, 255),
+                                  "Is Obstructed");
+                textPosY += textSizeObstructed.y + bgPadding;
+            }
+
+            drawList->AddText(
+                ImVec2(screenPos.x - textSizeName.x * 0.5f, textPosY), color, name.c_str());
+
+            textPosY += textSizeName.y;
+
+            drawList->AddText(ImVec2(screenPos.x - textSizeEffect.x * 0.5f, textPosY),
                               color,
                               soundEffect.c_str());
         }

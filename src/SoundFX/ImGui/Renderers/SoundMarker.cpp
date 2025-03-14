@@ -112,7 +112,8 @@ namespace SoundFX {
                             tracerColor,
                             textColor,
                             name,
-                            soundEffect);
+                            soundEffect,
+                            isObstructed);
         }
     }
 
@@ -124,7 +125,8 @@ namespace SoundFX {
                                      ImU32               tracerColor,
                                      ImU32               textColor,
                                      const std::string  &name,
-                                     const std::string  &soundEffect) {
+                                     const std::string  &soundEffect,
+                                     bool                isObstructed) {
         if (!drawList) {
             return;
         }
@@ -145,8 +147,13 @@ namespace SoundFX {
         RenderObject::Draw3DSphere(soundPos, markerSize, drawList, markerColor, numSegmentsSphere);
 
         if (textHover) {
-            RenderObject::DrawTextAboveSphere(
-                soundPos, markerSize, textColor, drawList, name, soundEffect);
+            RenderObject::DrawTextAboveSphere(soundPos,
+                                              markerSize,
+                                              textColor,
+                                              drawList,
+                                              name,
+                                              soundEffect,
+                                              obstructionEffectEnabled && isObstructed);
         }
     }
 

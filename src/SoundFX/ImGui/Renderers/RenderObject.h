@@ -44,7 +44,8 @@ namespace SoundFX {
                                 ImU32               color,
                                 ImDrawList         *drawList,
                                 const std::string  &name,
-                                const std::string  &soundEffect);
+                                const std::string  &soundEffect,
+                                bool                isObstructed);
 
       private:
         static bool

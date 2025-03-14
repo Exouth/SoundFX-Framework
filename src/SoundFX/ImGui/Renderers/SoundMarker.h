@@ -72,7 +72,8 @@ namespace SoundFX {
                             ImU32               tracerColor,
                             ImU32               textColor,
                             const std::string  &name,
-                            const std::string  &soundEffect);
+                            const std::string  &soundEffect,
+                            bool                isObstructed);
 
         static bool  showSoundMarkers;
         static bool  distanceFilterEnabled;
