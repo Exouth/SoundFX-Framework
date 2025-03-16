@@ -1,6 +1,7 @@
 #include "SoundMarker.h"
 #include "ImGui/Settings/DefaultSettings.h"
 #include "RenderObject.h"
+#include "Sound/SoundManager.h"
 
 namespace SoundFX {
     bool   SoundMarker::showSoundMarkers         = DefaultSettings::GetShowSoundMarkers();
@@ -33,27 +34,32 @@ namespace SoundFX {
             return;
         }
 
-        std::vector<std::tuple<RE::NiPoint3, std::string, std::string>> soundPositions =
-            GetActiveSoundPositions();
-        if (soundPositions.empty()) {
+        auto activeSounds = SoundManager::GetActiveSounds();
+        if (activeSounds.empty()) {
             return;
         }
 
-        std::ranges::sort(soundPositions, [player](const auto &a, const auto &b) {
-            return player->GetPosition().GetDistance(std::get<0>(a))
-                 < player->GetPosition().GetDistance(std::get<0>(b));
+        std::ranges::sort(activeSounds, [player](const auto &a, const auto &b) {
+            return player->GetPosition().GetDistance(a.GetPosition())
+                 < player->GetPosition().GetDistance(b.GetPosition());
         });
 
-        if (maxSoundMarkers != -1 && soundPositions.size() > static_cast<size_t>(maxSoundMarkers)) {
-            soundPositions.resize(maxSoundMarkers);
+        if (maxSoundMarkers != -1 && activeSounds.size() > static_cast<size_t>(maxSoundMarkers)) {
+            activeSounds.resize(maxSoundMarkers);
         }
 
-        for (const auto &[soundPos, name, soundEffect] : soundPositions) {
-            ProcessSoundMarker(
-                soundPos, player->GetPosition(), drawList, camera->pos, name, soundEffect);
+        for (const auto &sound : activeSounds) {
+            ProcessSoundMarker(sound.GetPosition(),
+                               player->GetPosition(),
+                               drawList,
+                               camera->pos,
+                               sound.name,
+                               sound.soundEffect,
+                               sound.maxDistance);
         }
     }
 
+    // Delete later (Not Used)
     std::vector<std::tuple<RE::NiPoint3, std::string, std::string>>
         SoundMarker::GetActiveSoundPositions() {
 
@@ -81,7 +87,8 @@ namespace SoundFX {
                                         ImDrawList         *drawList,
                                         const RE::NiPoint3 &cameraPos,
                                         const std::string  &name,
-                                        const std::string  &soundEffect) {
+                                        const std::string  &soundEffect,
+                                        float               maxDistance) {
         if (!drawList) {
             return;
         }
@@ -119,6 +126,7 @@ namespace SoundFX {
                             textColorConv,
                             name,
                             soundEffect,
+                            maxDistance,
                             isObstructed);
         }
     }
@@ -132,6 +140,7 @@ namespace SoundFX {
                                      ImU32               localTextColor,
                                      const std::string  &name,
                                      const std::string  &soundEffect,
+                                     float               maxDistance,
                                      bool                isObstructed) {
         if (!drawList) {
             return;
@@ -141,13 +150,13 @@ namespace SoundFX {
 
         if (radiusIndicator) {
             RenderObject::Draw3DCircleOutline(soundPos,
-                                              soundRadius,
+                                              maxDistance,
                                               drawList,
                                               IM_COL32(0, 0, 0, 255),
                                               radiusOutlineThickness,
                                               numSegmentsCircle);
             RenderObject::Draw3DCircle(
-                soundPos, soundRadius, drawList, localRadiusIndicatorColor, numSegmentsCircle);
+                soundPos, maxDistance, drawList, localRadiusIndicatorColor, numSegmentsCircle);
         }
 
         RenderObject::Draw3DSphere(

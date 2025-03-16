@@ -79,7 +79,8 @@ namespace SoundFX {
                                ImDrawList         *drawList,
                                const RE::NiPoint3 &cameraPos,
                                const std::string  &name,
-                               const std::string  &soundEffect);
+                               const std::string  &soundEffect,
+                               float               maxDistance);
         static void
             DrawSoundMarker(const RE::NiPoint3 &soundPos,
                             float               distance,
@@ -89,6 +90,7 @@ namespace SoundFX {
                             ImU32               localTextColor,
                             const std::string  &name,
                             const std::string  &soundEffect,
+                            float               maxDistance,
                             bool                isObstructed);
 
         static bool   showSoundMarkers;

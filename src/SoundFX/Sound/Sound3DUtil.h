@@ -5,6 +5,9 @@ namespace SoundFX {
     class Sound3DUtil {
       public:
         static bool
+            InitializeOpenAL();
+
+        static ALuint
             Play3DSound(const std::string  &filePath,
                         const RE::NiPoint3 &worldSourcePos,
                         float               referenceDistance = 100.0f,
@@ -12,6 +15,9 @@ namespace SoundFX {
                         float               rolloffFactor     = 1.0f,
                         float               gain              = 1.0f,
                         float               minGain           = 0.0f);
+
+        static void
+            Shutdown();
 
       private:
         static RE::NiPoint3

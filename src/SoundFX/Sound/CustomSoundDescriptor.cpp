@@ -6,12 +6,15 @@ RE::BSISoundDescriptor::~BSISoundDescriptor()                                   
 namespace SoundFX {
     CustomSoundDescriptor::CustomSoundDescriptor(const std::string &filePath) {
         try {
-            RE::BSAudioManager *audioManager = RE::BSAudioManager::GetSingleton();
-            if (audioManager) {
+            if (RE::BSAudioManager *audioManager = RE::BSAudioManager::GetSingleton()) {
                 RE::BSResource::ID fileID;
                 fileID.GenerateFromPath(filePath.c_str());
-                audioManager->BuildSoundDataFromFile(
-                    soundHandle, fileID, /*flags=*/0x1A, /*priority=*/1);
+                audioManager->BuildSoundDataFromFile(soundHandle,
+                                                     fileID,
+                                                     /*flags=*/
+                                                     0x1A,
+                                                     /*priority=*/
+                                                     1);
             } else {
                 spdlog::error("AudioManager is null.");
             }
@@ -70,8 +73,9 @@ namespace SoundFX {
         return false;
     }
 
+    // Take a look more at this later, maybe it can even replace OpenAL
     bool
-        CustomSoundDescriptor::SetPosition(RE::NiPoint3 position) {
+        CustomSoundDescriptor::SetPosition(const RE::NiPoint3 position) {
         if (soundHandle.IsValid()) {
             return soundHandle.SetPosition(position);
         }
@@ -95,18 +99,22 @@ namespace SoundFX {
         CustomSoundDescriptor::CustomPlaybackCharacteristics::GetFrequencyShift() {
         return 0;
     }
+
     std::uint8_t
         CustomSoundDescriptor::CustomPlaybackCharacteristics::GetFrequencyVariance() {
         return 0;
     }
+
     std::uint8_t
         CustomSoundDescriptor::CustomPlaybackCharacteristics::GetPriority() {
         return 1;
     }
+
     std::uint16_t
         CustomSoundDescriptor::CustomPlaybackCharacteristics::GetStaticAttenuation() {
         return 0;
     }
+
     std::uint8_t
         CustomSoundDescriptor::CustomPlaybackCharacteristics::GetDBVariance() {
         return 0;
