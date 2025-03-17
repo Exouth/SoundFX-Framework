@@ -18,11 +18,6 @@ namespace SoundFX {
             return 4000.0f;
         }
 
-        static float
-            GetSoundRadius() {
-            return 100.0f;
-        }
-
         static bool
             GetObstructionEffectEnabled() {
             return true;

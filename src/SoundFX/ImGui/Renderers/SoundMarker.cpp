@@ -7,7 +7,6 @@ namespace SoundFX {
     bool   SoundMarker::showSoundMarkers         = DefaultSettings::GetShowSoundMarkers();
     bool   SoundMarker::distanceFilterEnabled    = DefaultSettings::GetDistanceFilterEnabled();
     float  SoundMarker::maxRenderDistance        = DefaultSettings::GetMaxRenderDistance();
-    float  SoundMarker::soundRadius              = DefaultSettings::GetSoundRadius();
     bool   SoundMarker::obstructionEffectEnabled = DefaultSettings::GetObstructionEffectEnabled();
     float  SoundMarker::obstructionThreshold     = DefaultSettings::GetObstructionThreshold();
     bool   SoundMarker::radiusIndicator          = DefaultSettings::GetRadiusIndicator();
@@ -100,7 +99,7 @@ namespace SoundFX {
 
         const bool isObstructed =
             obstructionEffectEnabled
-            && RenderObject::IsObjectObstructed(soundPos, soundRadius, 16, obstructionThreshold);
+            && RenderObject::IsObjectObstructed(soundPos, maxDistance, 16, obstructionThreshold);
 
         const ImU32 markerColorConv =
             isObstructed ? IM_COL32(128, 128, 128, 255) : ConvertColor(markerColor);
@@ -207,11 +206,6 @@ namespace SoundFX {
     float
         SoundMarker::GetMaxRenderDistance() {
         return maxRenderDistance;
-    }
-
-    void
-        SoundMarker::SetSoundRadius(float radius) {
-        soundRadius = radius;
     }
 
     void

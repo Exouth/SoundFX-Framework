@@ -18,8 +18,6 @@ namespace SoundFX {
         static float
             GetMaxRenderDistance();
         static void
-            SetSoundRadius(float radius);
-        static void
             EnableObstructionEffect(bool enable);
         static bool
             IsObstructionEffectEnabled();
@@ -97,7 +95,6 @@ namespace SoundFX {
         static bool   distanceFilterEnabled;
         static bool   obstructionEffectEnabled;
         static float  maxRenderDistance;
-        static float  soundRadius;
         static float  obstructionThreshold;
         static bool   radiusIndicator;
         static float  radiusOutlineThickness;

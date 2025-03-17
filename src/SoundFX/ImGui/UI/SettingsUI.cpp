@@ -78,12 +78,6 @@ namespace SoundFX {
             "A thicker outline makes the radius more prominent, while a thinner one keeps it "
             "subtle."));
 
-        // Testing Purpose (Delete later)
-        settings.push_back(std::make_unique<FloatSliderSetting>(
-            "Sound Radius", DefaultSettings::GetSoundRadius(), 0.0f, 1000.0f, [](float value) {
-                SoundMarker::SetSoundRadius(value);
-            }));
-
         settings.push_back(std::make_unique<FloatSliderSetting>(
             "Obstruction Threshold",
             DefaultSettings::GetObstructionThreshold(),
