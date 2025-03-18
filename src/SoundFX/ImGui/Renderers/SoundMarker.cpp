@@ -114,20 +114,16 @@ namespace SoundFX {
             RenderObject::DrawTracerLine(soundPos, playerPos, drawList, tracerColorConv, 2.0f);
         }
 
-        ImVec2 screenPos;
-        float  depth;
-        if (RenderObject::WorldToScreen(soundPos, screenPos, &depth)) {
-            DrawSoundMarker(soundPos,
-                            distance,
-                            drawList,
-                            markerColorConv,
-                            radiusIndicatorColorConv,
-                            textColorConv,
-                            name,
-                            soundEffect,
-                            maxDistance,
-                            isObstructed);
-        }
+        DrawSoundMarker(soundPos,
+                        distance,
+                        drawList,
+                        markerColorConv,
+                        radiusIndicatorColorConv,
+                        textColorConv,
+                        name,
+                        soundEffect,
+                        maxDistance,
+                        isObstructed);
     }
 
     void
