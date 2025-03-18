@@ -17,10 +17,11 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "SoundFX/EventHandlerManager.h"
-#include "SoundFX/Hooks/HookManager.h"
-#include "SoundFX/JSONLoader.h"
-#include "SoundFX/Logger.h"
+#include "Events/EventHandlerManager.h"
+#include "Hooks/HookManager.h"
+#include "JSONLoader.h"
+#include "Logger.h"
+#include "Sound/SoundManager.h"
 
 void
     OnSKSEMessage(SKSE::MessagingInterface::Message *msg) {
@@ -31,6 +32,8 @@ void
             eventManager.InitializeEventHandlers();
 
             SoundFX::HookManager::GetInstance().InstallHooks();
+
+            SoundFX::SoundManager::GetInstance().Initialize();
 
             // For autoload Testing Save (Creating AutoExec File for SKSE)
             auto scriptFactory = RE::IFormFactory::GetConcreteFormFactoryByType<RE::Script>();

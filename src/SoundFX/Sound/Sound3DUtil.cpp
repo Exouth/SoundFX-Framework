@@ -9,6 +9,15 @@ namespace {
 
 namespace SoundFX {
 
+    bool
+        Sound3DUtil::InitializeOpenAL() {
+        if (!InitializeSharedContext()) {
+            spdlog::error("OpenAL could not be initialized.");
+            return false;
+        }
+        return true;
+    }
+
     RE::NiPoint3
         Sound3DUtil::GetForwardVector(const RE::NiAVObject *object) {
         if (!object) {
@@ -54,7 +63,7 @@ namespace SoundFX {
     ALuint
         Sound3DUtil::LoadAudioBuffer(const std::string &filePath) {
 
-        if (bufferCache.find(filePath) != bufferCache.end()) {
+        if (bufferCache.contains(filePath)) {
             return bufferCache[filePath];
         }
 
@@ -126,7 +135,7 @@ namespace SoundFX {
         return true;
     }
 
-    bool
+    ALuint
         Sound3DUtil::Play3DSound(const std::string  &filePath,
                                  const RE::NiPoint3 &worldSourcePos,
                                  float               referenceDistance,
@@ -135,18 +144,15 @@ namespace SoundFX {
                                  float               gain,
                                  float               minGain) {
 
-        if (!InitializeSharedContext())
-            return false;
-
         const ALuint buffer = LoadAudioBuffer(filePath);
         if (buffer == 0) {
             spdlog::error("Failed to load audio buffer.");
-            return false;
+            return 0;
         }
 
         ALuint source;
         alGenSources(1, &source);
-        alSourcei(source, AL_BUFFER, buffer);
+        alSourcei(source, AL_BUFFER, static_cast<ALint>(buffer));
         alSourcef(source, AL_REFERENCE_DISTANCE, referenceDistance);
         alSourcef(source, AL_MAX_DISTANCE, maxDistance);
         alSourcef(source, AL_ROLLOFF_FACTOR, rolloffFactor);
@@ -162,8 +168,8 @@ namespace SoundFX {
             bool         isInitialized = false;
 
             while (state == AL_PLAYING) {
-                const auto *player = RE::PlayerCharacter::GetSingleton();
-                if (player && player->Get3D()) {
+                if (const auto *player = RE::PlayerCharacter::GetSingleton();
+                    player && player->Get3D()) {
                     const RE::NiPoint3 currentPlayerPosition = player->GetPosition();
 
                     if (!isInitialized) {
@@ -201,7 +207,25 @@ namespace SoundFX {
             alDeleteSources(1, &source);
         }).detach();
 
-        return true;
+        return source;
+    }
+
+    void
+        Sound3DUtil::Shutdown() {
+        for (auto &buffer : bufferCache | std::views::values) {
+            alDeleteBuffers(1, &buffer);
+        }
+        bufferCache.clear();
+
+        if (sharedContext) {
+            alcDestroyContext(sharedContext);
+            sharedContext = nullptr;
+        }
+
+        if (sharedDevice) {
+            alcCloseDevice(sharedDevice);
+            sharedDevice = nullptr;
+        }
     }
 
 }

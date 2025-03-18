@@ -23,4 +23,10 @@ namespace SoundFX {
                             float minSize     = 5.0f,
                             float maxSize     = 10.0f,
                             float scaleFactor = 3000.0f);
+
+    ImU32
+        ConvertColor(const ImVec4 &color);
+
+    bool
+        NaturalStringCompare(const std::string &a, const std::string &b);
 }

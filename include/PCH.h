@@ -56,9 +56,9 @@
 
 #include "Logger.h"
 #include "JSONLoader.h"
-#include "EventHandlerManager.h"
-#include "CustomSoundDescriptor.h"
-#include "SoundUtil.h"
+#include "Events/EventHandlerManager.h"
+#include "Sound/CustomSoundDescriptor.h"
+#include "Sound/SoundUtil.h"
 #include "Utility.h"
 #include "TaskScheduler.h"
 
