@@ -36,15 +36,10 @@ namespace SoundFX {
             return;
         }
 
-        auto activeSounds = SoundManager::GetActiveSounds();
+        auto activeSounds = SoundManager::GetSortedActiveSounds();
         if (activeSounds.empty()) {
             return;
         }
-
-        std::ranges::sort(activeSounds, [player](const auto &a, const auto &b) {
-            return player->GetPosition().GetDistance(a.GetPosition())
-                 < player->GetPosition().GetDistance(b.GetPosition());
-        });
 
         if (maxSoundMarkers != -1 && activeSounds.size() > static_cast<size_t>(maxSoundMarkers)) {
             activeSounds.resize(maxSoundMarkers);
@@ -149,10 +144,11 @@ namespace SoundFX {
         const float markerSize = CalculateMarkerSize(distance);
 
         if (radiusIndicator) {
-            ImU32 outlineColor = (enableRadiusOutlineColorChange
-                                  && IsPlayerInSoundRadius(soundPos, playerPos, maxDistance))
-                                   ? ConvertColor(radiusOutlineColor)
-                                   : IM_COL32(0, 0, 0, 255);
+            const ImU32 outlineColor =
+                enableRadiusOutlineColorChange
+                        && IsPlayerInSoundRadius(soundPos, playerPos, maxDistance)
+                    ? ConvertColor(radiusOutlineColor)
+                    : IM_COL32(0, 0, 0, 255);
 
             RenderObject::Draw3DCircleOutline(soundPos,
                                               maxDistance,

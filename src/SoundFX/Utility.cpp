@@ -94,4 +94,15 @@ namespace SoundFX {
                         static_cast<int>(color.z * 255.0f),
                         static_cast<int>(color.w * 255.0f));
     }
+
+    int
+        ExtractNumberFromString(const std::string &str) {
+        std::string numStr;
+        for (const char ch : str) {
+            if (std::isdigit(ch)) {
+                numStr += ch;
+            }
+        }
+        return numStr.empty() ? 0 : std::stoi(numStr);
+    }
 }

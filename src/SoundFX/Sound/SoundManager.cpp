@@ -127,6 +127,23 @@ namespace SoundFX {
         return activeSounds;
     }
 
+    std::vector<SoundManager::ActiveSound>
+        SoundManager::GetSortedActiveSounds() {
+        auto sounds = GetActiveSounds();
+
+        const auto *player = RE::PlayerCharacter::GetSingleton();
+        if (!player) {
+            return sounds;
+        }
+
+        std::ranges::sort(sounds, [player](const auto &a, const auto &b) {
+            return player->GetPosition().GetDistance(a.GetPosition())
+                 < player->GetPosition().GetDistance(b.GetPosition());
+        });
+
+        return sounds;
+    }
+
     RE::NiPoint3
         SoundManager::ActiveSound::GetPosition() const {
         return std::visit(

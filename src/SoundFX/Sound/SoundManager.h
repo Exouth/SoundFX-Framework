@@ -52,6 +52,8 @@ namespace SoundFX {
             Update();
         static const std::vector<ActiveSound> &
             GetActiveSounds();
+        static std::vector<ActiveSound>
+            GetSortedActiveSounds();
         static bool
             Is3DSoundEnabled();
 

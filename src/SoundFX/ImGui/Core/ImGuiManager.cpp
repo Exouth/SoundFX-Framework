@@ -2,9 +2,11 @@
 #include "Font_Awesome_6_Free_Solid_900.otf.h"
 #include "ImGui/Renderers/SoundMarker.h"
 #include "ImGui/UI/MainWindow.h"
+#include "ImGui/UI/SoundMarkerListWindow.h"
 
 namespace SoundFX {
-    bool ImGuiManager::showDebugUI = false;
+    bool ImGuiManager::showDebugUI         = false;
+    bool ImGuiManager::showSoundMarkerList = true;
 
     void
         ImGuiManager::Initialize(HWND hwnd, ID3D11Device *device, ID3D11DeviceContext *context) {
@@ -50,6 +52,9 @@ namespace SoundFX {
 
         if (showDebugUI) {
             MainWindow::Render();
+            if (showSoundMarkerList) {
+                SoundMarkerListWindow::Render();
+            }
         }
 
         RenderForeground();
@@ -101,6 +106,11 @@ namespace SoundFX {
     void
         ImGuiManager::ToggleUI() {
         showDebugUI = !showDebugUI;
+
+        if (showDebugUI) {
+            showSoundMarkerList = true;
+        }
+
         spdlog::debug("ImGui UI {}", showDebugUI ? "activated" : "disabled");
     }
 
