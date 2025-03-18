@@ -51,6 +51,7 @@ namespace SoundFX {
                                drawList,
                                camera->pos,
                                sound.name,
+                               sound.eventType,
                                sound.soundEffect,
                                sound.maxDistance);
         }
@@ -84,6 +85,7 @@ namespace SoundFX {
                                         ImDrawList         *drawList,
                                         const RE::NiPoint3 &cameraPos,
                                         const std::string  &name,
+                                        const std::string  &eventType,
                                         const std::string  &soundEffect,
                                         float               maxDistance) {
         if (!drawList) {
@@ -120,6 +122,7 @@ namespace SoundFX {
                         radiusIndicatorColorConv,
                         textColorConv,
                         name,
+                        eventType,
                         soundEffect,
                         maxDistance,
                         isObstructed);
@@ -134,6 +137,7 @@ namespace SoundFX {
                                      ImU32               localRadiusIndicatorColor,
                                      ImU32               localTextColor,
                                      const std::string  &name,
+                                     const std::string  &eventType,
                                      const std::string  &soundEffect,
                                      float               maxDistance,
                                      bool                isObstructed) {
@@ -169,6 +173,7 @@ namespace SoundFX {
                                               localTextColor,
                                               drawList,
                                               name,
+                                              eventType,
                                               soundEffect,
                                               obstructionEffectEnabled && isObstructed);
         }

@@ -248,6 +248,7 @@ namespace SoundFX {
                                           ImU32               color,
                                           ImDrawList         *drawList,
                                           const std::string  &name,
+                                          const std::string  &eventType,
                                           const std::string  &soundEffect,
                                           bool                isObstructed) {
         if (!drawList) {
@@ -258,13 +259,15 @@ namespace SoundFX {
         float  depth;
         if (WorldToScreen({center.x, center.y, center.z + radius + 10.0f}, screenPos, &depth)) {
             const ImVec2 textSizeName       = ImGui::CalcTextSize(name.c_str());
+            const ImVec2 textSizeEvent      = ImGui::CalcTextSize(eventType.c_str());
             const ImVec2 textSizeEffect     = ImGui::CalcTextSize(soundEffect.c_str());
             const ImVec2 textSizeObstructed = ImGui::CalcTextSize("Is Obstructed");
 
             constexpr float bgPadding = 5.0f;
-            float           bgHeight  = textSizeName.y + textSizeEffect.y + 2 * bgPadding;
-            const float     bgWidth =
-                std::max({textSizeName.x, textSizeEffect.x, textSizeObstructed.x}) + 2 * bgPadding;
+            float bgHeight = textSizeName.y + textSizeEvent.y + textSizeEffect.y + 3 * bgPadding;
+            const float bgWidth =
+                std::max({textSizeName.x, textSizeEvent.x, textSizeEffect.x, textSizeObstructed.x})
+                + 2 * bgPadding;
 
             if (isObstructed) {
                 bgHeight += textSizeObstructed.y + bgPadding;
@@ -287,8 +290,11 @@ namespace SoundFX {
 
             drawList->AddText(
                 ImVec2(screenPos.x - textSizeName.x * 0.5f, textPosY), color, name.c_str());
-
             textPosY += textSizeName.y;
+
+            drawList->AddText(
+                ImVec2(screenPos.x - textSizeEvent.x * 0.5f, textPosY), color, eventType.c_str());
+            textPosY += textSizeEvent.y;
 
             drawList->AddText(ImVec2(screenPos.x - textSizeEffect.x * 0.5f, textPosY),
                               color,

@@ -28,30 +28,33 @@ namespace SoundFX {
 
     std::size_t
         SoundManager::GenerateSoundID(const std::string  &name,
+                                      const std::string  &eventType,
                                       const std::string  &soundEffect,
                                       const RE::NiPoint3 &position) {
         constexpr std::hash<std::string> strHash;
         constexpr std::hash<float>       floatHash;
         const auto now = std::chrono::system_clock::now().time_since_epoch().count();
 
-        return strHash(name) ^ strHash(soundEffect) ^ floatHash(position.x) ^ floatHash(position.y)
-             ^ floatHash(position.z) ^ now;
+        return strHash(name) ^ strHash(eventType) ^ strHash(soundEffect) ^ floatHash(position.x)
+             ^ floatHash(position.y) ^ floatHash(position.z) ^ now;
     }
 
     void
         SoundManager::PlaySound(const std::string  &name,
+                                const std::string  &eventType,
                                 const std::string  &soundEffect,
                                 const RE::NiPoint3 &position,
                                 float               referenceDistance,
                                 float               maxDistance,
                                 bool                is3D) {
-        const std::size_t soundID = GenerateSoundID(name, soundEffect, position);
+        const std::size_t soundID = GenerateSoundID(name, eventType, soundEffect, position);
 
         if (is3D && is3DSoundEnabled) {
             if (const ALuint sourceID = Sound3DUtil::Play3DSound(
                     soundEffect, position, referenceDistance, maxDistance)) {
                 activeSounds.push_back({.id                = soundID,
                                         .name              = name,
+                                        .eventType         = eventType,
                                         .soundEffect       = soundEffect,
                                         .position          = position,
                                         .referenceDistance = referenceDistance,
@@ -66,6 +69,7 @@ namespace SoundFX {
                 descriptor->Play()) {
                 activeSounds.push_back({.id          = soundID,
                                         .name        = name,
+                                        .eventType   = eventType,
                                         .soundEffect = soundEffect,
                                         .position =
                                             [] {

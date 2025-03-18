@@ -16,6 +16,7 @@ namespace SoundFX {
         struct ActiveSound {
             std::size_t                                               id;
             std::string                                               name;
+            std::string                                               eventType;
             std::string                                               soundEffect;
             std::variant<RE::NiPoint3, std::function<RE::NiPoint3()>> position;
             float                                                     referenceDistance;
@@ -41,6 +42,7 @@ namespace SoundFX {
 
         static void
             PlaySound(const std::string  &name,
+                      const std::string  &eventType,
                       const std::string  &soundEffect,
                       const RE::NiPoint3 &position,
                       float               referenceDistance,
@@ -63,6 +65,7 @@ namespace SoundFX {
 
         static std::size_t
             GenerateSoundID(const std::string  &name,
+                            const std::string  &eventType,
                             const std::string  &soundEffect,
                             const RE::NiPoint3 &position);
 

@@ -85,6 +85,7 @@ namespace SoundFX {
                                ImDrawList         *drawList,
                                const RE::NiPoint3 &cameraPos,
                                const std::string  &name,
+                               const std::string  &eventType,
                                const std::string  &soundEffect,
                                float               maxDistance);
         static void
@@ -96,6 +97,7 @@ namespace SoundFX {
                             ImU32               localRadiusIndicatorColor,
                             ImU32               localTextColor,
                             const std::string  &name,
+                            const std::string  &eventType,
                             const std::string  &soundEffect,
                             float               maxDistance,
                             bool                isObstructed);

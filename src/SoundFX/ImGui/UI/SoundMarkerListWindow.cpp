@@ -34,11 +34,32 @@ namespace SoundFX {
         if (ImGui::RadioButton("Name", sortMode == 1)) {
             sortMode = 1;
         }
+        ImGui::SameLine();
+        if (ImGui::RadioButton("Event Type", sortMode == 2)) {
+            sortMode = 2;
+        }
+        ImGui::SameLine();
+        if (ImGui::RadioButton("Sound Effect", sortMode == 3)) {
+            sortMode = 3;
+        }
 
-        if (sortMode == 1) {
+        switch (sortMode) {
+        case 1:
             std::ranges::sort(activeSounds, [](const auto &a, const auto &b) {
-                return ExtractNumberFromString(a.name) < ExtractNumberFromString(b.name);
+                return NaturalStringCompare(a.name, b.name);
             });
+            break;
+        case 2:
+            std::ranges::sort(activeSounds, [](const auto &a, const auto &b) {
+                return NaturalStringCompare(a.eventType, b.eventType);
+            });
+            break;
+        case 3:
+            std::ranges::sort(activeSounds, [](const auto &a, const auto &b) {
+                return NaturalStringCompare(a.soundEffect, b.soundEffect);
+            });
+            break;
+        default: break;
         }
 
         if (activeSounds.empty()) {
@@ -50,8 +71,9 @@ namespace SoundFX {
         ImGui::Separator();
 
         if (ImGui::BeginTable(
-                "SoundMarkersTable", 7, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg)) {
+                "SoundMarkersTable", 8, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg)) {
             ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthStretch);
+            ImGui::TableSetupColumn("EventType", ImGuiTableColumnFlags_WidthStretch);
             ImGui::TableSetupColumn("Effect", ImGuiTableColumnFlags_WidthStretch);
             ImGui::TableSetupColumn("Position (X, Y, Z)", ImGuiTableColumnFlags_WidthStretch);
             ImGui::TableSetupColumn("Max Distance", ImGuiTableColumnFlags_WidthStretch);
@@ -67,6 +89,8 @@ namespace SoundFX {
                 ImGui::TableNextRow();
                 ImGui::TableNextColumn();
                 ImGui::Text("%s", sound.name.c_str());
+                ImGui::TableNextColumn();
+                ImGui::Text("%s", sound.eventType.c_str());
                 ImGui::TableNextColumn();
                 ImGui::Text("%s", sound.soundEffect.c_str());
                 ImGui::TableNextColumn();

@@ -27,6 +27,6 @@ namespace SoundFX {
     ImU32
         ConvertColor(const ImVec4 &color);
 
-    int
-        ExtractNumberFromString(const std::string &str);
+    bool
+        NaturalStringCompare(const std::string &a, const std::string &b);
 }
