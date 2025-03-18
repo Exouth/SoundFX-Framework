@@ -82,5 +82,15 @@ namespace SoundFX {
             GetTextHoverColor() {
             return {1.0f, 1.0f, 1.0f, 1.0f};
         }
+
+        static bool
+            GetEnableRadiusOutlineColorChange() {
+            return true;
+        }
+
+        static ImVec4
+            GetRadiusOutlineColor() {
+            return {1.0f, 0.0f, 0.0f, 1.0f};
+        }
     };
 }

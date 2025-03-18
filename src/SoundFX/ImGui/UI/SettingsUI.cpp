@@ -45,6 +45,14 @@ namespace SoundFX {
             "sounds)"));
 
         settings.push_back(std::make_unique<BoolCheckboxSetting>(
+            "Enable Radius Outline Color Change",
+            DefaultSettings::GetEnableRadiusOutlineColorChange(),
+            [](bool value) { SoundMarker::SetEnableRadiusColorChange(value); },
+            "Changes the radius outline color to a certain color if the player is within range of "
+            "the sound "
+            "marker."));
+
+        settings.push_back(std::make_unique<BoolCheckboxSetting>(
             "Enable Tracers",
             DefaultSettings::GetTracers(),
             [](bool value) { SoundMarker::EnableTracers(value); },
@@ -124,6 +132,12 @@ namespace SoundFX {
             DefaultSettings::GetRadiusIndicatorColor(),
             [](const ImVec4 &color) { SoundMarker::SetRadiusIndicatorColor(color); },
             "Sets the color of the radius indicator visualizing sound area."));
+
+        colorSettings.push_back(std::make_unique<ColorSetting>(
+            "Radius Outline Color",
+            DefaultSettings::GetRadiusOutlineColor(),
+            [](const ImVec4 &color) { SoundMarker::SetRadiusOutlineColor(color); },
+            "Sets the outline color of the sound radius when the player is inside the range."));
 
         colorSettings.push_back(std::make_unique<ColorSetting>(
             "Tracer Color",

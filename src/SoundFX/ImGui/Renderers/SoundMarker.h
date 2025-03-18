@@ -67,6 +67,14 @@ namespace SoundFX {
             SetTextHoverColor(ImVec4 color);
         static ImVec4
             GetTextHoverColor();
+        static void
+            SetEnableRadiusColorChange(bool enable);
+        static bool
+            IsEnableRadiusColorChange();
+        static void
+            SetRadiusOutlineColor(ImVec4 color);
+        static ImVec4
+            GetRadiusOutlineColor();
 
       private:
         static std::vector<std::tuple<RE::NiPoint3, std::string, std::string>>
@@ -81,6 +89,7 @@ namespace SoundFX {
                                float               maxDistance);
         static void
             DrawSoundMarker(const RE::NiPoint3 &soundPos,
+                            const RE::NiPoint3 &playerPos,
                             float               distance,
                             ImDrawList         *drawList,
                             ImU32               localMarkerColor,
@@ -90,6 +99,11 @@ namespace SoundFX {
                             const std::string  &soundEffect,
                             float               maxDistance,
                             bool                isObstructed);
+
+        static bool
+            IsPlayerInSoundRadius(const RE::NiPoint3 &soundPos,
+                                  const RE::NiPoint3 &playerPos,
+                                  float               maxDistance);
 
         static bool   showSoundMarkers;
         static bool   distanceFilterEnabled;
@@ -107,5 +121,7 @@ namespace SoundFX {
         static ImVec4 radiusIndicatorColor;
         static ImVec4 tracerColor;
         static ImVec4 textHoverColor;
+        static bool   enableRadiusOutlineColorChange;
+        static ImVec4 radiusOutlineColor;
     };
 }

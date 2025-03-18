@@ -20,6 +20,9 @@ namespace SoundFX {
     ImVec4 SoundMarker::radiusIndicatorColor     = DefaultSettings::GetRadiusIndicatorColor();
     ImVec4 SoundMarker::tracerColor              = DefaultSettings::GetTracerColor();
     ImVec4 SoundMarker::textHoverColor           = DefaultSettings::GetTextHoverColor();
+    bool   SoundMarker::enableRadiusOutlineColorChange =
+        DefaultSettings::GetEnableRadiusOutlineColorChange();
+    ImVec4 SoundMarker::radiusOutlineColor = DefaultSettings::GetRadiusOutlineColor();
 
     void
         SoundMarker::Render(ImDrawList *drawList) {
@@ -115,6 +118,7 @@ namespace SoundFX {
         }
 
         DrawSoundMarker(soundPos,
+                        playerPos,
                         distance,
                         drawList,
                         markerColorConv,
@@ -128,6 +132,7 @@ namespace SoundFX {
 
     void
         SoundMarker::DrawSoundMarker(const RE::NiPoint3 &soundPos,
+                                     const RE::NiPoint3 &playerPos,
                                      float               distance,
                                      ImDrawList         *drawList,
                                      ImU32               localMarkerColor,
@@ -144,10 +149,15 @@ namespace SoundFX {
         const float markerSize = CalculateMarkerSize(distance);
 
         if (radiusIndicator) {
+            ImU32 outlineColor = (enableRadiusOutlineColorChange
+                                  && IsPlayerInSoundRadius(soundPos, playerPos, maxDistance))
+                                   ? ConvertColor(radiusOutlineColor)
+                                   : IM_COL32(0, 0, 0, 255);
+
             RenderObject::Draw3DCircleOutline(soundPos,
                                               maxDistance,
                                               drawList,
-                                              IM_COL32(0, 0, 0, 255),
+                                              outlineColor,
                                               radiusOutlineThickness,
                                               numSegmentsCircle);
             RenderObject::Draw3DCircle(
@@ -166,6 +176,13 @@ namespace SoundFX {
                                               soundEffect,
                                               obstructionEffectEnabled && isObstructed);
         }
+    }
+
+    bool
+        SoundMarker::IsPlayerInSoundRadius(const RE::NiPoint3 &soundPos,
+                                           const RE::NiPoint3 &playerPos,
+                                           float               maxDistance) {
+        return soundPos.GetDistance(playerPos) <= maxDistance;
     }
 
     void
@@ -327,5 +344,25 @@ namespace SoundFX {
     ImVec4
         SoundMarker::GetTextHoverColor() {
         return textHoverColor;
+    }
+
+    void
+        SoundMarker::SetEnableRadiusColorChange(bool enable) {
+        enableRadiusOutlineColorChange = enable;
+    }
+
+    bool
+        SoundMarker::IsEnableRadiusColorChange() {
+        return enableRadiusOutlineColorChange;
+    }
+
+    void
+        SoundMarker::SetRadiusOutlineColor(const ImVec4 color) {
+        radiusOutlineColor = color;
+    }
+
+    ImVec4
+        SoundMarker::GetRadiusOutlineColor() {
+        return radiusOutlineColor;
     }
 }
