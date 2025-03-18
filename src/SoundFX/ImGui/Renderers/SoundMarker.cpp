@@ -92,7 +92,7 @@ namespace SoundFX {
             return;
         }
 
-        const float distance = cameraPos.GetDistance(soundPos);
+        const float distance = playerPos.GetDistance(soundPos);
         if (distanceFilterEnabled && distance > maxRenderDistance) {
             return;
         }
