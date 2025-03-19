@@ -8,6 +8,10 @@
 
 An SKSE plugin that allows modders to add custom sound effects to various in-game events via an easy-to-use JSON configuration. Supports flexible settings like playback chance, volume, and repeat frequency.
 
+<p align="center">
+  <img src="media/preview.gif" width="500px">
+</p>
+
 ## :warning: Work in Progress :warning:
 
 **This project is currently under development and not ready for production use.**  
