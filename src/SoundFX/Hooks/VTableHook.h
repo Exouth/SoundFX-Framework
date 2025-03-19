@@ -21,11 +21,11 @@ namespace SoundFX {
         static void *
             GetSwapChainVTable();
 
-        static inline Microsoft::WRL::ComPtr<ID3D11Device> device                  = nullptr;
-        static inline Microsoft::WRL::ComPtr<ID3D11DeviceContext> context          = nullptr;
+        static inline Microsoft::WRL::ComPtr<ID3D11Device>           device           = nullptr;
+        static inline Microsoft::WRL::ComPtr<ID3D11DeviceContext>    context          = nullptr;
         static inline Microsoft::WRL::ComPtr<ID3D11RenderTargetView> renderTargetView = nullptr;
         static inline HRESULT(__stdcall *originalPresent)(IDXGISwapChain *pSwapChain,
                                                           UINT            SyncInterval,
-                                                          UINT            Flags) = nullptr;
+                                                          UINT            Flags)                 = nullptr;
     };
 }

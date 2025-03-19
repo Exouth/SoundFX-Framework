@@ -1,6 +1,16 @@
 # SoundFX-Framework
 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Exouth_SoundFX-Framework&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Exouth_SoundFX-Framework)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=Exouth_SoundFX-Framework&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=Exouth_SoundFX-Framework)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=Exouth_SoundFX-Framework&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=Exouth_SoundFX-Framework)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=Exouth_SoundFX-Framework&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=Exouth_SoundFX-Framework)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=Exouth_SoundFX-Framework&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=Exouth_SoundFX-Framework)
+
 An SKSE plugin that allows modders to add custom sound effects to various in-game events via an easy-to-use JSON configuration. Supports flexible settings like playback chance, volume, and repeat frequency.
+
+<p align="center">
+  <img src="media/preview.gif" width="500px">
+</p>
 
 ## :warning: Work in Progress :warning:
 
@@ -40,6 +50,7 @@ Please do not use this in live mod releases until an official stable version is 
 - [openal-soft](https://github.com/kcat/openal-soft).
 - [libsndfile](https://github.com/libsndfile/libsndfile).
 - [ImGui](https://github.com/ocornut/imgui).
+- [Font Awesome 6 (Free)](https://fontawesome.com/)
 - [Vcpkg](https://vcpkg.io/) for dependency management.
 
 Make sure you have the **“Desktop development with C++”** workload installed in Visual Studio so that `cl.exe`, CMake, and Ninja are available.

@@ -81,16 +81,24 @@ add_custom_command(
 )
 
 # OPTIONAL Copy output folder to MO2 mod folder after build
-add_custom_command(
-    TARGET "${PROJECT_NAME}"
-    POST_BUILD
-    COMMAND "${CMAKE_COMMAND}" -E copy_directory "${OUTPUT_FOLDER}" "${MO2_MOD_FOLDER}"
-    VERBATIM
-)
+if (EXISTS "${MO2_MOD_FOLDER}")
+    add_custom_command(
+        TARGET "${PROJECT_NAME}"
+        POST_BUILD
+        COMMAND "${CMAKE_COMMAND}" -E copy_directory "${OUTPUT_FOLDER}" "${MO2_MOD_FOLDER}"
+        VERBATIM
+    )
+else()
+    message(WARNING "MO2 folder not found, skipping deployment.")
+endif()
 
 # Optional message for output folder configuration
 message(STATUS "SKSE plugin output folder: ${DLL_FOLDER}")
 message(STATUS "Copying dist folder to output: ${OUTPUT_FOLDER}")
 
-# OPTIONAL 
-message(STATUS "Copying output to MO2 mod folder: ${MO2_MOD_FOLDER}")
+# OPTIONAL
+if (EXISTS "${MO2_MOD_FOLDER}")
+    message(STATUS "Copying output to MO2 mod folder: ${MO2_MOD_FOLDER}")
+else()
+    message(WARNING "MO2 folder not found, skipping message.")
+endif()
