@@ -1,5 +1,5 @@
 #include "ImGuiManager.h"
-#include "Font_Awesome_6_Free_Solid_900.otf.h"
+#include "Font_Awesome_6_Free_Solid_900_Edited.otf.h"
 #include "ImGui/Renderers/SoundMarker.h"
 #include "ImGui/UI/MainWindow.h"
 #include "ImGui/UI/SoundMarkerListWindow.h"
@@ -21,8 +21,8 @@ namespace SoundFX {
         icons_config.MergeMode  = true;
         icons_config.PixelSnapH = true;
         io.Fonts->AddFontFromMemoryTTF(
-            const_cast<void *>(reinterpret_cast<const void *>(Font_Awesome_6_Free_Solid_900_otf)),
-            sizeof(Font_Awesome_6_Free_Solid_900_otf),
+            const_cast<void *>(reinterpret_cast<const void *>(FontAwesome6Free_Solid_Edited_otf)),
+            sizeof(FontAwesome6Free_Solid_Edited_otf),
             16.0f,
             &icons_config,
             icons_ranges);
