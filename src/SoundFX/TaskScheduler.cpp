@@ -23,7 +23,6 @@ namespace SoundFX {
                     // Tasks were sometimes executed consecutively within the same interval, causing
                     // a delay. By using std::async, each task runs independently
                     std::async(std::launch::async, [task, this] {
-
                         if (!stopFlag) {
                             task();
                         }
@@ -33,8 +32,7 @@ namespace SoundFX {
                         task = nullptr;
                     }
                 }
-                std::erase_if(tasks,
-                              [](const auto &t) { return t.first == nullptr; });
+                std::erase_if(tasks, [](const auto &t) { return t.first == nullptr; });
 
                 auto end = std::chrono::steady_clock::now();
                 std::this_thread::sleep_for(std::chrono::milliseconds(intervalMilliseconds)

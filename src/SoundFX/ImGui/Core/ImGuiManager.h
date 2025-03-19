@@ -16,7 +16,13 @@ namespace SoundFX {
         static void
             UpdateInputState();
 
+        static bool showSoundMarkerList;
+
       private:
+        static void
+            RenderBackground();
+        static void
+                    RenderForeground();
         static bool showDebugUI;
     };
 }

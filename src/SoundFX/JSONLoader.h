@@ -19,6 +19,7 @@ namespace SoundFX {
     };
 
     struct ItemEvents {
+        std::string        name;
         std::string        editorID;
         std::string        pluginName;
         std::vector<Event> events;
@@ -37,8 +38,7 @@ namespace SoundFX {
             getItems(const std::string &category) const;
 
       private:
-        explicit
-            JSONLoader(const std::string &filePath);
+        explicit JSONLoader(const std::string &filePath);
         bool
                                                                                      loadJSON();
         std::string                                                                  filePath;
