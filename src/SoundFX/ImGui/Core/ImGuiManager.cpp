@@ -1,4 +1,5 @@
 #include "ImGuiManager.h"
+#include "Config/ConfigManager.h"
 #include "Font_Awesome_6_Free_Solid_900_Edited.otf.h"
 #include "ImGui/Renderers/SoundMarker.h"
 #include "ImGui/UI/MainWindow.h"
@@ -7,12 +8,16 @@
 namespace SoundFX {
     bool ImGuiManager::showDebugUI         = false;
     bool ImGuiManager::showSoundMarkerList = true;
+    int  ImGuiManager::debugUIKey          = VK_F1;
 
     void
         ImGuiManager::Initialize(HWND hwnd, ID3D11Device *device, ID3D11DeviceContext *context) {
         ImGui::CreateContext();
         ImGui_ImplDX11_Init(device, context);
         ImGui_ImplWin32_Init(hwnd);
+
+        debugUIKey = Config::ConfigManager::GetInstance().GetValue<int>(
+            "GeneralSettings", "DebugUIKey", VK_F1);
 
         ImGuiIO &io = ImGui::GetIO();
         io.Fonts->AddFontDefault();
@@ -31,7 +36,7 @@ namespace SoundFX {
 
     void
         ImGuiManager::Render() {
-        if (GetAsyncKeyState(VK_F1) & 1) {
+        if (GetAsyncKeyState(debugUIKey) & 1) {
             ToggleUI();
         }
 

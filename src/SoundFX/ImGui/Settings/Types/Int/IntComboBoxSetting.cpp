@@ -3,11 +3,13 @@
 namespace SoundFX {
 
     IntComboBoxSetting::IntComboBoxSetting(std::string              settingName,
+                                           std::string              paramIniKey,
                                            int                      initialDefaultValue,
                                            std::vector<int>         options,
                                            std::function<void(int)> onValueChange,
                                            std::string              desc) :
         IntSetting(std::move(settingName),
+                   std::move(paramIniKey),
                    initialDefaultValue,
                    std::move(onValueChange),
                    std::move(desc)),
@@ -24,6 +26,7 @@ namespace SoundFX {
                 if (ImGui::Selectable(std::to_string(option).c_str(), isSelected)) {
                     value = option;
                     onChange(value);
+                    Save();
                 }
                 if (isSelected) {
                     ImGui::SetItemDefaultFocus();
@@ -41,8 +44,7 @@ namespace SoundFX {
         if (value != defaultValue) {
             ImGui::SameLine();
             if (ImGui::Button((std::string(ICON_FA_UNDO) + "##" + name).c_str())) {
-                value = defaultValue;
-                onChange(value);
+                Reset();
             }
         }
     }

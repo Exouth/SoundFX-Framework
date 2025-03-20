@@ -6,6 +6,7 @@ namespace SoundFX {
     class IntSetting : public BaseSetting {
       public:
         IntSetting(std::string              name,
+                   std::string              iniKey,
                    int                      defaultValue,
                    std::function<void(int)> onChange,
                    std::string              desc = "");
@@ -16,8 +17,14 @@ namespace SoundFX {
 
       protected:
         std::string              name;
+        std::string              iniKey;
         int                      value;
         int                      defaultValue;
         std::function<void(int)> onChange;
+
+        void
+            Load();
+        void
+            Save() const;
     };
 }

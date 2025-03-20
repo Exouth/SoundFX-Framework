@@ -3,12 +3,14 @@
 namespace SoundFX {
 
     IntSliderSetting::IntSliderSetting(std::string              settingName,
+                                       std::string              paramIniKey,
                                        int                      initialDefaultValue,
                                        int                      minRangeValue,
                                        int                      maxRangeValue,
                                        std::function<void(int)> onValueChange,
                                        std::string              desc) :
         IntSetting(std::move(settingName),
+                   std::move(paramIniKey),
                    initialDefaultValue,
                    std::move(onValueChange),
                    std::move(desc)),
@@ -22,6 +24,7 @@ namespace SoundFX {
 
         if (ImGui::SliderInt(("##" + name).c_str(), &value, minValue, maxValue)) {
             onChange(value);
+            Save();
         }
 
         ImGui::SameLine();
@@ -33,8 +36,7 @@ namespace SoundFX {
         if (value != defaultValue) {
             ImGui::SameLine();
             if (ImGui::Button((std::string(ICON_FA_UNDO) + "##" + name).c_str())) {
-                value = defaultValue;
-                onChange(value);
+                Reset();
             }
         }
     }

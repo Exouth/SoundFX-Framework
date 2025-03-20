@@ -1,20 +1,24 @@
 #pragma once
 
+#include "Config/ConfigManager.h"
+
 #define ICON_FA_UNDO "\xef\x8b\xaa"      // Unicode: f2ea / fa-rotate-left
 #define ICON_FA_QUESTION "\xef\x81\x99"  // Unicode: f059 / fa-circle-question
 
 namespace SoundFX {
     class BaseSetting {
       public:
+        inline static auto INI_SECTION = "UISettings";
+
         virtual ~BaseSetting() = default;
 
-        BaseSetting(const BaseSetting &other) = default;
+        BaseSetting(const BaseSetting &other) = delete;
         BaseSetting &
-            operator=(const BaseSetting &other) = default;
+            operator=(const BaseSetting &other) = delete;
 
-        BaseSetting(BaseSetting &&other) noexcept = default;
+        BaseSetting(BaseSetting &&other) noexcept = delete;
         BaseSetting &
-            operator=(BaseSetting &&other) noexcept = default;
+            operator=(BaseSetting &&other) noexcept = delete;
 
         virtual void
             Render() = 0;
@@ -36,9 +40,11 @@ namespace SoundFX {
         }
 
       protected:
-        explicit BaseSetting(std::string desc = "") : description(std::move(desc)) {
+        explicit BaseSetting(std::string desc = "") :
+            description(std::move(desc)), config(Config::ConfigManager::GetInstance()) {
         }
 
-        std::string description;
+        std::string            description;
+        Config::ConfigManager &config;
     };
 }

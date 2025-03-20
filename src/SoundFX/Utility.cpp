@@ -126,4 +126,40 @@ namespace SoundFX {
 
         return a.substr(lastPosA) < b.substr(lastPosB);
     }
+
+    std::string
+        ImVec4ToHex(const ImVec4 &color) {
+        const int r = static_cast<int>(std::round(color.x * 255.0f));
+        const int g = static_cast<int>(std::round(color.y * 255.0f));
+        const int b = static_cast<int>(std::round(color.z * 255.0f));
+        const int a = static_cast<int>(std::round(color.w * 255.0f));
+
+        std::stringstream ss;
+        ss << std::hex << std::setw(2) << std::setfill('0') << r << std::setw(2)
+           << std::setfill('0') << g << std::setw(2) << std::setfill('0') << b << std::setw(2)
+           << std::setfill('0') << a;
+
+        return ss.str();
+    }
+
+    ImVec4
+        HexToImVec4(const std::string &hex) {
+        std::stringstream ss;
+        ss << std::hex << hex;
+        unsigned int color;
+        ss >> color;
+
+        const unsigned int r = color >> 24 & 0xFF;
+        const unsigned int g = color >> 16 & 0xFF;
+        const unsigned int b = color >> 8 & 0xFF;
+        const unsigned int a = color & 0xFF;
+
+        float alpha = a == 128 ? 0.5f : static_cast<float>(a) / 255.0f;
+
+        return {static_cast<float>(r) / 255.0f,
+                static_cast<float>(g) / 255.0f,
+                static_cast<float>(b) / 255.0f,
+                alpha};
+    }
+
 }
