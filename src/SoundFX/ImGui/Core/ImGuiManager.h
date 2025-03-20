@@ -24,5 +24,6 @@ namespace SoundFX {
         static void
                     RenderForeground();
         static bool showDebugUI;
+        static int  debugUIKey;
     };
 }
