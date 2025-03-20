@@ -125,7 +125,7 @@ namespace SoundFX::Config {
         ConfigManager::SetValue<ImVec4>(const char *section, const char *key, const ImVec4 &value) {
         std::lock_guard lock(iniMutex_);
 
-        ini_.SetValue(section, key, ColorToHex(value).c_str());
+        ini_.SetValue(section, key, ImVec4ToHex(value).c_str());
     }
 
     bool
