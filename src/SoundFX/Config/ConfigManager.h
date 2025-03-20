@@ -2,8 +2,7 @@
 
 #include "Utility.h"
 #include <SimpleIni.h>
-#include <mutex>
-#include <string>
+#include <imgui.h>
 
 namespace SoundFX::Config {
 

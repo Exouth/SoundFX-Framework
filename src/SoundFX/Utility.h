@@ -1,5 +1,7 @@
 #pragma once
 
+#include <imgui.h>
+
 namespace SoundFX {
 
     std::string

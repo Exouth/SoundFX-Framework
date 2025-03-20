@@ -1,4 +1,5 @@
 #include "TaskScheduler.h"
+#include <future>
 
 namespace SoundFX {
 

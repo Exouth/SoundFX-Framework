@@ -2,6 +2,7 @@
 #include "ImGui/Settings/DefaultSettings.h"
 #include "RenderObject.h"
 #include "Sound/SoundManager.h"
+#include "Utility.h"
 
 namespace SoundFX {
     bool   SoundMarker::showSoundMarkers         = DefaultSettings::GetShowSoundMarkers();

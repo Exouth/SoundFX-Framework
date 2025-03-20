@@ -4,6 +4,8 @@
 #include "ImGui/Renderers/SoundMarker.h"
 #include "ImGui/UI/MainWindow.h"
 #include "ImGui/UI/SoundMarkerListWindow.h"
+#include <imgui.h>
+#include <imgui_impl_win32.h>
 
 namespace SoundFX {
     bool ImGuiManager::showDebugUI         = false;

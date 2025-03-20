@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Sound/SoundManager.h"
-
 namespace SoundFX {
     class SoundMarkerListWindow {
       public:

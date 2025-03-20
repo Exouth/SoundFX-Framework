@@ -1,4 +1,6 @@
 #include "CellEventHandler.h"
+#include "Sound/SoundUtil.h"
+#include "Utility.h"
 
 namespace SoundFX {
 

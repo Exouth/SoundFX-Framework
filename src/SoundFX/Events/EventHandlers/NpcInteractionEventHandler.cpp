@@ -1,4 +1,7 @@
 #include "NpcInteractionEventHandler.h"
+#include "Sound/SoundUtil.h"
+#include "Utility.h"
+#include <numbers>
 
 namespace SoundFX {
 
@@ -62,7 +65,7 @@ namespace SoundFX {
                         const auto resolvedFormID = GetFormIDFromEditorIDAndPluginName(
                             npcInteractionEvents.editorID, npcInteractionEvents.pluginName);
 
-                        if (npcs.find(resolvedFormID) != npcs.end()) {
+                        if (npcs.contains(resolvedFormID)) {
                             for (const auto &jsonEvent : npcInteractionEvents.events) {
                                 if (jsonEvent.type == "DialogOpen") {
                                     const float randomValue = GenerateRandomFloat();
@@ -116,7 +119,7 @@ namespace SoundFX {
                             const std::string  key =
                                 (onlyAtOriginal != "All") ? "EditorID" : onlyAtOriginal;
 
-                            if (actionMap.find(key) != actionMap.end()) {
+                            if (actionMap.contains(key)) {
                                 const float randomValue = GenerateRandomFloat();
                                 if (randomValue <= jsonEvent.chance) {
                                     const auto *selectedNode = menuTopicManager->currentTopicInfo;

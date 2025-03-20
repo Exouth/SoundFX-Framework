@@ -1,5 +1,7 @@
 #pragma once
 
+#include "JSONLoader.h"
+
 namespace SoundFX {
 
     class ArmorEventHandler final :

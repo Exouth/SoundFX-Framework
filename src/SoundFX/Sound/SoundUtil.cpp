@@ -1,3 +1,6 @@
+#include "SoundUtil.h"
+#include "CustomSoundDescriptor.h"
+
 namespace SoundFX {
 
     bool

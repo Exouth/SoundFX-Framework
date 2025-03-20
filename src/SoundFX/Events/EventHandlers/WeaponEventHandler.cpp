@@ -1,4 +1,7 @@
 #include "WeaponEventHandler.h"
+#include "Events/EventHandlerManager.h"
+#include "Sound/SoundUtil.h"
+#include "Utility.h"
 
 namespace SoundFX {
 
@@ -176,8 +179,7 @@ namespace SoundFX {
                 if (resolvedFormID == event->source) {
                     for (const auto &jsonEvent : weaponEvents.events) {
                         if (jsonEvent.type == "Hit") {
-                            if (actionMap.find(jsonEvent.details.hitType.value())
-                                != actionMap.end()) {
+                            if (actionMap.contains(jsonEvent.details.hitType.value())) {
                                 const float randomValue = GenerateRandomFloat();
                                 if (randomValue <= jsonEvent.chance) {
                                     actionMap[jsonEvent.details.hitType.value()](

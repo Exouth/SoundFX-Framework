@@ -1,5 +1,7 @@
 #pragma once
 
+#include "JSONLoader.h"
+
 namespace SoundFX {
 
     class MiscItemEventHandler final : public RE::BSTEventSink<RE::TESContainerChangedEvent> {

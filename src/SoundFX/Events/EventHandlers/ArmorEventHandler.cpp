@@ -1,4 +1,7 @@
 #include "ArmorEventHandler.h"
+#include "Events/EventHandlerManager.h"
+#include "Sound/SoundUtil.h"
+#include "Utility.h"
 
 namespace SoundFX {
 

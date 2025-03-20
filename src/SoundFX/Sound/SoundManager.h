@@ -1,6 +1,8 @@
 #pragma once
 
 #include "CustomSoundDescriptor.h"
+#include "TaskScheduler.h"
+#include <AL/al.h>
 
 namespace SoundFX {
 

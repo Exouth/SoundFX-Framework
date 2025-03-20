@@ -1,5 +1,6 @@
 #pragma once
 
+#include "JSONLoader.h"
 #include "TaskScheduler.h"
 
 namespace SoundFX {

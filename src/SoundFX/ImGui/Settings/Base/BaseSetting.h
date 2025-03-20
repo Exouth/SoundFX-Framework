@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Config/ConfigManager.h"
+#include <imgui.h>
 
 #define ICON_FA_UNDO "\xef\x8b\xaa"      // Unicode: f2ea / fa-rotate-left
 #define ICON_FA_QUESTION "\xef\x81\x99"  // Unicode: f059 / fa-circle-question

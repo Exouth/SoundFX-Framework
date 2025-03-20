@@ -1,5 +1,8 @@
 #pragma once
 
+#include <Windows.h>
+#include <imgui_impl_dx11.h>
+
 namespace SoundFX {
     class ImGuiManager {
       public:

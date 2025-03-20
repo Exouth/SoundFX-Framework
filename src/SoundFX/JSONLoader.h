@@ -1,5 +1,7 @@
 #pragma once
 
+#include <nlohmann/json.hpp>
+
 namespace SoundFX {
 
     struct EventDetails {
@@ -32,6 +34,7 @@ namespace SoundFX {
             static JSONLoader instance("Data/SKSE/Plugins/SoundFXFramework.json");
             return instance;
         }
+
         bool
             load();
         const std::unordered_map<std::string, ItemEvents> &
