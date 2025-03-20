@@ -6,6 +6,7 @@ namespace SoundFX {
     class FloatSetting : public BaseSetting {
       public:
         FloatSetting(std::string                name,
+                     std::string                iniKey,
                      float                      defaultValue,
                      std::function<void(float)> onChange,
                      std::string                desc = "");
@@ -16,8 +17,14 @@ namespace SoundFX {
 
       protected:
         std::string                name;
+        std::string                iniKey;
         float                      value;
         float                      defaultValue;
         std::function<void(float)> onChange;
+
+        void
+            Load();
+        void
+            Save() const;
     };
 }

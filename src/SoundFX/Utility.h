@@ -29,4 +29,10 @@ namespace SoundFX {
 
     bool
         NaturalStringCompare(const std::string &a, const std::string &b);
+
+    std::string
+        ImVec4ToHex(const ImVec4 &color);
+
+    ImVec4
+        HexToImVec4(const std::string &hex);
 }

@@ -2,20 +2,36 @@
 
 namespace SoundFX {
     ColorSetting::ColorSetting(std::string                 settingName,
+                               std::string                 iniKey,
                                const ImVec4               &defaultColor,
                                std::function<void(ImVec4)> onValueChange,
                                std::string                 desc) :
         BaseSetting(std::move(desc)),
         name(std::move(settingName)),
+        iniKey(std::move(iniKey)),
         value(defaultColor),
         defaultValue(defaultColor),
         onChange(std::move(onValueChange)) {
+        Load();
+    }
+
+    void
+        ColorSetting::Load() {
+        value = config.GetValue<ImVec4>(INI_SECTION, iniKey.c_str(), defaultValue);
+        onChange(value);
+    }
+
+    void
+        ColorSetting::Save() const {
+        config.SetValue<ImVec4>(INI_SECTION, iniKey.c_str(), value);
+        config.Save();
     }
 
     void
         ColorSetting::Reset() {
         value = defaultValue;
         onChange(value);
+        Save();
     }
 
     std::string
@@ -29,6 +45,7 @@ namespace SoundFX {
 
         if (ImGui::ColorEdit4(("##" + name).c_str(), reinterpret_cast<float *>(&value))) {
             onChange(value);
+            Save();
         }
 
         ImGui::SameLine();

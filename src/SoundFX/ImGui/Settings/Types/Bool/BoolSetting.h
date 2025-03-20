@@ -6,6 +6,7 @@ namespace SoundFX {
     class BoolSetting : public BaseSetting {
       public:
         BoolSetting(std::string               name,
+                    std::string               iniKey,
                     bool                      defaultValue,
                     std::function<void(bool)> onChange,
                     std::string               desc = "");
@@ -16,8 +17,14 @@ namespace SoundFX {
 
       protected:
         std::string               name;
+        std::string               iniKey;
         bool                      value;
         bool                      defaultValue;
         std::function<void(bool)> onChange;
+
+        void
+            Load();
+        void
+            Save() const;
     };
 }

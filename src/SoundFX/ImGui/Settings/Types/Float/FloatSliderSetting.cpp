@@ -3,12 +3,14 @@
 namespace SoundFX {
 
     FloatSliderSetting::FloatSliderSetting(std::string                settingName,
+                                           std::string                paramIniKey,
                                            float                      initialDefaultValue,
                                            float                      minRangeValue,
                                            float                      maxRangeValue,
                                            std::function<void(float)> onValueChange,
                                            std::string                desc) :
         FloatSetting(std::move(settingName),
+                     std::move(paramIniKey),
                      initialDefaultValue,
                      std::move(onValueChange),
                      std::move(desc)),
@@ -22,6 +24,7 @@ namespace SoundFX {
 
         if (ImGui::SliderFloat(("##" + name).c_str(), &value, minValue, maxValue)) {
             onChange(value);
+            Save();
         }
 
         ImGui::SameLine();
@@ -33,8 +36,7 @@ namespace SoundFX {
         if (constexpr float epsilon = 0.01f; std::fabs(value - defaultValue) > epsilon) {
             ImGui::SameLine();
             if (ImGui::Button((std::string(ICON_FA_UNDO) + "##" + name).c_str())) {
-                value = defaultValue;
-                onChange(value);
+                Reset();
             }
         }
     }

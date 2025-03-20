@@ -17,6 +17,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "Config/ConfigManager.h"
 #include "Events/EventHandlerManager.h"
 #include "Hooks/HookManager.h"
 #include "JSONLoader.h"
@@ -56,6 +57,8 @@ SKSEPluginLoad(const SKSE::LoadInterface *skse) {
     Init(skse);
 
     SoundFX::Logger::Initialize();
+
+    SoundFX::Config::ConfigManager::GetInstance().Load();
 
     SKSE::AllocTrampoline(64);  // For 2 Hooks
 

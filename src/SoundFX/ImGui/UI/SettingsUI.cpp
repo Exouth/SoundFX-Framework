@@ -16,6 +16,7 @@ namespace SoundFX {
         SettingsUI::InitializeSettings() {
         settings.push_back(std::make_unique<BoolCheckboxSetting>(
             "Show Sound Markers",
+            "SoundMarkers",
             DefaultSettings::GetShowSoundMarkers(),
             [](bool value) { SoundMarker::ToggleVisibility(value); },
             "Toggles the visibility of sound markers in the world. When enabled, "
@@ -23,6 +24,7 @@ namespace SoundFX {
 
         settings.push_back(std::make_unique<BoolCheckboxSetting>(
             "Enable Distance Filter",
+            "DistanceFilter",
             DefaultSettings::GetDistanceFilterEnabled(),
             [](bool value) { SoundMarker::EnableDistanceFilter(value); },
             "When enabled, sound markers will only be displayed if they are within the "
@@ -30,6 +32,7 @@ namespace SoundFX {
 
         settings.push_back(std::make_unique<BoolCheckboxSetting>(
             "Enable Obstruction Effect",
+            "ObstructionEffect",
             DefaultSettings::GetObstructionEffectEnabled(),
             [](bool value) { SoundMarker::EnableObstructionEffect(value); },
             "When enabled, sound markers will turn gray when they are obstructed "
@@ -38,6 +41,7 @@ namespace SoundFX {
 
         settings.push_back(std::make_unique<BoolCheckboxSetting>(
             "Enable Radius Indicator",
+            "RadiusIndicator",
             DefaultSettings::GetRadiusIndicator(),
             [](bool value) { SoundMarker::SetRadiusIndicator(value); },
             "Displays a visual representation of the sound's radius around each marker. "
@@ -46,6 +50,7 @@ namespace SoundFX {
 
         settings.push_back(std::make_unique<BoolCheckboxSetting>(
             "Enable Radius Outline Color Change",
+            "RadiusOutlineColorChange",
             DefaultSettings::GetEnableRadiusOutlineColorChange(),
             [](bool value) { SoundMarker::SetEnableRadiusColorChange(value); },
             "Changes the radius outline color to a certain color if the player is within range of "
@@ -54,6 +59,7 @@ namespace SoundFX {
 
         settings.push_back(std::make_unique<BoolCheckboxSetting>(
             "Enable Tracers",
+            "Tracers",
             DefaultSettings::GetTracers(),
             [](bool value) { SoundMarker::EnableTracers(value); },
             "Displays a visual line from the player to each sound marker, helping to identify "
@@ -61,6 +67,7 @@ namespace SoundFX {
 
         settings.push_back(std::make_unique<BoolCheckboxSetting>(
             "Enable Text Hover",
+            "TextHover",
             DefaultSettings::GetTextHover(),
             [](bool value) { SoundMarker::EnableTextHover(value); },
             "Displays the name and sound effect above each sound marker when enabled. "
@@ -69,6 +76,7 @@ namespace SoundFX {
 
         settings.push_back(std::make_unique<FloatSliderSetting>(
             "Max Render Distance",
+            "MaxRenderDistance",
             DefaultSettings::GetMaxRenderDistance(),
             0.0f,
             10000.0f,
@@ -78,6 +86,7 @@ namespace SoundFX {
 
         settings.push_back(std::make_unique<FloatSliderSetting>(
             "Radius Outline Thickness",
+            "RadiusOutlineThickness",
             DefaultSettings::GetRadiusOutlineThickness(),
             0.0f,
             25.0f,
@@ -88,6 +97,7 @@ namespace SoundFX {
 
         settings.push_back(std::make_unique<FloatSliderSetting>(
             "Obstruction Threshold",
+            "ObstructionThreshold",
             DefaultSettings::GetObstructionThreshold(),
             0.0f,
             1.0f,
@@ -97,6 +107,7 @@ namespace SoundFX {
 
         settings.push_back(std::make_unique<IntComboBoxSetting>(
             "Max Sound Markers",
+            "MaxSoundMarkers",
             DefaultSettings::GetMaxSoundMarkers(),
             std::vector {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, -1},
             [](int value) { SoundMarker::SetMaxSoundMarkers(value); },
@@ -105,6 +116,7 @@ namespace SoundFX {
 
         settings.push_back(std::make_unique<IntSliderSetting>(
             "Circle Segments",
+            "CircleSegments",
             DefaultSettings::GetNumSegmentsCircle(),
             10,
             300,
@@ -114,6 +126,7 @@ namespace SoundFX {
 
         settings.push_back(std::make_unique<IntSliderSetting>(
             "Sphere Segments",
+            "SphereSegments",
             DefaultSettings::GetNumSegmentsSphere(),
             10,
             150,
@@ -123,30 +136,35 @@ namespace SoundFX {
 
         colorSettings.push_back(std::make_unique<ColorSetting>(
             "Marker Color",
+            "MarkerColor",
             DefaultSettings::GetMarkerColor(),
             [](const ImVec4 &color) { SoundMarker::SetMarkerColor(color); },
             "Sets the color of the sound markers."));
 
         colorSettings.push_back(std::make_unique<ColorSetting>(
             "Radius Indicator Color",
+            "RadiusIndicatorColor",
             DefaultSettings::GetRadiusIndicatorColor(),
             [](const ImVec4 &color) { SoundMarker::SetRadiusIndicatorColor(color); },
             "Sets the color of the radius indicator visualizing sound area."));
 
         colorSettings.push_back(std::make_unique<ColorSetting>(
             "Radius Outline Color",
+            "RadiusOutlineColor",
             DefaultSettings::GetRadiusOutlineColor(),
             [](const ImVec4 &color) { SoundMarker::SetRadiusOutlineColor(color); },
             "Sets the outline color of the sound radius when the player is inside the range."));
 
         colorSettings.push_back(std::make_unique<ColorSetting>(
             "Tracer Color",
+            "TracerColor",
             DefaultSettings::GetTracerColor(),
             [](const ImVec4 &color) { SoundMarker::SetTracerColor(color); },
             "Sets the color of tracer lines connecting markers to the player."));
 
         colorSettings.push_back(std::make_unique<ColorSetting>(
             "Text Hover Color",
+            "TextHoverColor",
             DefaultSettings::GetTextHoverColor(),
             [](const ImVec4 &color) { SoundMarker::SetTextHoverColor(color); },
             "Sets the color of the text displayed above sound markers. This includes the sound "

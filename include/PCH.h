@@ -28,6 +28,8 @@
 
 #include <nlohmann/json.hpp>
 
+#include <SimpleIni.h>
+
 #include <AL/al.h>
 #include <AL/alc.h>
 #include <sndfile.h>
