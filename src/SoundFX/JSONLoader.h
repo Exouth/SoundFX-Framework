@@ -37,8 +37,16 @@ namespace SoundFX {
 
         bool
             load();
-        const std::unordered_map<std::string, ItemEvents> &
+        [[nodiscard]] const std::unordered_map<std::string, ItemEvents> &
             getItems(const std::string &category) const;
+
+        JSONLoader(const JSONLoader &) = delete;
+        JSONLoader &
+            operator=(const JSONLoader &) = delete;
+        JSONLoader(JSONLoader &&)         = delete;
+        JSONLoader &
+            operator=(JSONLoader &&) = delete;
+        ~JSONLoader()                = default;
 
       private:
         explicit JSONLoader(const std::string &filePath);
@@ -53,10 +61,6 @@ namespace SoundFX {
             parseCategory(const std::string &category);
         static Event
             parseEvent(const nlohmann::json &jsonEvent);
-
-        JSONLoader(const JSONLoader &) = delete;
-        JSONLoader &
-            operator=(const JSONLoader &) = delete;
     };
 
 }

@@ -10,17 +10,17 @@ namespace SoundFX {
         public RE::BSTEventSink<RE::TESEquipEvent>,
         public RE::BSTEventSink<RE::TESHitEvent>,
         public RE::BSTEventSink<SKSE::ActionEvent> {
-        JSONLoader   &jsonLoader;
+        JSONLoader   *jsonLoader;
         TaskScheduler scheduler;
 
       public:
-        explicit WeaponEventHandler(JSONLoader &loader) : jsonLoader(loader) {
+        explicit WeaponEventHandler(JSONLoader *loader) : jsonLoader(loader) {
         }
 
         void
             SetupWeaponTasks();
 
-        static void
+        void
             InitializeAttackTypeHandlers();
 
         RE::BSEventNotifyControl

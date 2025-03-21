@@ -12,6 +12,6 @@ namespace SoundFX {
         static void
             DispatchInputEvent(RE::BSTEventSource<RE::InputEvent *> *dispatcher,
                                RE::InputEvent                      **event);
-        static inline REL::Relocation<decltype(&DispatchInputEvent)> _DispatchInputEvent;
+        static inline REL::Relocation<decltype(&DispatchInputEvent)> s_DispatchInputEvent;
     };
 }

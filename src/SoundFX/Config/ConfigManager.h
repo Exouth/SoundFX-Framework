@@ -113,8 +113,8 @@ namespace SoundFX::Config {
         ConfigManager::GetValue<ImVec4>(const char   *section,
                                         const char   *key,
                                         const ImVec4 &defaultValue) const {
-        std::lock_guard lock(iniMutex_);
-        std::string     value = ini_.GetValue(section, key, "");
+        std::lock_guard   lock(iniMutex_);
+        const std::string value = ini_.GetValue(section, key, "");
 
         return value.empty() ? defaultValue : HexToImVec4(value);
     }

@@ -5,10 +5,10 @@
 namespace SoundFX {
 
     class QuestEventHandler final : public RE::BSTEventSink<RE::TESQuestStageEvent> {
-        JSONLoader &jsonLoader;
+        JSONLoader *jsonLoader;
 
       public:
-        explicit QuestEventHandler(JSONLoader &loader) : jsonLoader(loader) {
+        explicit QuestEventHandler(JSONLoader *loader) : jsonLoader(loader) {
         }
 
         RE::BSEventNotifyControl

@@ -6,11 +6,11 @@
 namespace SoundFX {
 
     class CombatEventHandler final : public RE::BSTEventSink<RE::TESCombatEvent> {
-        JSONLoader   &jsonLoader;
+        JSONLoader   *jsonLoader;
         TaskScheduler scheduler;
 
       public:
-        explicit CombatEventHandler(JSONLoader &loader) : jsonLoader(loader) {
+        explicit CombatEventHandler(JSONLoader *loader) : jsonLoader(loader) {
         }
 
         RE::BSEventNotifyControl

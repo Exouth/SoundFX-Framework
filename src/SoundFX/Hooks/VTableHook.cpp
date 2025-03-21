@@ -9,15 +9,13 @@
 namespace SoundFX {
     void
         VTableHook::Install() {
-        void *vTable = GetSwapChainVTable();
-        if (vTable) {
-            HookVTable(static_cast<void **>(vTable));
+        if (void **vTable = GetSwapChainVTable()) {
+            HookVTable(vTable);
         }
     }
 
-    HRESULT __stdcall VTableHook::hkPresent(IDXGISwapChain *pSwapChain,
-                                            UINT            SyncInterval,
-                                            UINT            Flags) {
+    HRESULT
+    __stdcall VTableHook::hkPresent(IDXGISwapChain *pSwapChain, UINT SyncInterval, UINT Flags) {
         static bool initialized = false;
 
         if (!initialized) {
@@ -52,8 +50,7 @@ namespace SoundFX {
         }
         device->GetImmediateContext(&context);
 
-        const auto renderer = RE::BSGraphics::Renderer::GetSingleton();
-        if (!renderer) {
+        if (const auto renderer = RE::BSGraphics::Renderer::GetSingleton(); !renderer) {
             spdlog::error("Renderer::GetSingleton() returned null");
             return false;
         }
@@ -79,7 +76,7 @@ namespace SoundFX {
         spdlog::info("VTable hook installed for Present");
     }
 
-    void *
+    void **
         VTableHook::GetSwapChainVTable() {
         const auto renderer = RE::BSGraphics::Renderer::GetSingleton();
         if (!renderer) {

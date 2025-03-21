@@ -78,7 +78,7 @@ namespace SoundFX {
 
     void
         ImGuiManager::RenderForeground() {
-        ImDrawList *foregroundDrawList = ImGui::GetForegroundDrawList();
+        // ImDrawList *foregroundDrawList = ImGui::GetForegroundDrawList();
         // For Later maybe if there comes more
     }
 

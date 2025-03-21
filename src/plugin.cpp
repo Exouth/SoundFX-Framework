@@ -29,7 +29,7 @@ void
     if (msg->type == SKSE::MessagingInterface::kDataLoaded) {
         {
             auto                               &jsonLoader = SoundFX::JSONLoader::GetInstance();
-            static SoundFX::EventHandlerManager eventManager(jsonLoader);
+            static SoundFX::EventHandlerManager eventManager(&jsonLoader);
             eventManager.InitializeEventHandlers();
 
             SoundFX::HookManager::GetInstance().InstallHooks();

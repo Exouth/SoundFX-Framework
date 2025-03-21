@@ -18,7 +18,7 @@ namespace SoundFX {
             InitializeResources(IDXGISwapChain *pSwapChain);
         static void
             HookVTable(void **vTable);
-        static void *
+        static void **
             GetSwapChainVTable();
 
         static inline Microsoft::WRL::ComPtr<ID3D11Device>           device           = nullptr;

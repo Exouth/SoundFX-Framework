@@ -26,7 +26,7 @@ namespace SoundFX {
 
     void
         NpcInteractionEventHandler::SetupNpcInteractionTasks() {
-        StartNpcInteractionTask([this]() { ProcessDialogTopicTask(); }, true);
+        StartNpcInteractionTask([this] { ProcessDialogTopicTask(); }, true);
         scheduler.Start(100);  // Run every 0.1 Second
     }
 
@@ -58,18 +58,18 @@ namespace SoundFX {
                     constexpr float range    = 300.0f;
                     constexpr float fovAngle = 90.0f;
 
-                    auto npcs = GetNpcsInPlayerFOV(player, range, fovAngle);
+                    const auto npcs = GetNpcsInPlayerFOV(player, range, fovAngle);
 
-                    const auto &npcInteractions = jsonLoader.getItems("npcInteractions");
-                    for (const auto &npcInteractionEvents : npcInteractions | std::views::values) {
+                    for (const auto &npcInteractions = jsonLoader->getItems("npcInteractions");
+                         const auto &npcInteractionEvents : npcInteractions | std::views::values) {
                         const auto resolvedFormID = GetFormIDFromEditorIDAndPluginName(
                             npcInteractionEvents.editorID, npcInteractionEvents.pluginName);
 
                         if (npcs.contains(resolvedFormID)) {
                             for (const auto &jsonEvent : npcInteractionEvents.events) {
                                 if (jsonEvent.type == "DialogOpen") {
-                                    const float randomValue = GenerateRandomFloat();
-                                    if (randomValue <= jsonEvent.chance) {
+                                    if (const float randomValue = GenerateRandomFloat();
+                                        randomValue <= jsonEvent.chance) {
                                         PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                                     }
                                     return RE::BSEventNotifyControl::kContinue;
@@ -106,8 +106,8 @@ namespace SoundFX {
                 return;
             }
 
-            const auto &npcInteractions = jsonLoader.getItems("npcInteractions");
-            for (const auto &npcInteractionEvents : npcInteractions | std::views::values) {
+            for (const auto &npcInteractions = jsonLoader->getItems("npcInteractions");
+                 const auto &npcInteractionEvents : npcInteractions | std::views::values) {
                 const auto resolvedFormID = GetFormIDFromEditorIDAndPluginName(
                     npcInteractionEvents.editorID, npcInteractionEvents.pluginName);
 
@@ -117,13 +117,13 @@ namespace SoundFX {
 
                             const std::string &onlyAtOriginal = jsonEvent.details.onlyAt.value();
                             const std::string  key =
-                                (onlyAtOriginal != "All") ? "EditorID" : onlyAtOriginal;
+                                onlyAtOriginal != "All" ? "EditorID" : onlyAtOriginal;
 
                             if (actionMap.contains(key)) {
-                                const float randomValue = GenerateRandomFloat();
-                                if (randomValue <= jsonEvent.chance) {
-                                    const auto *selectedNode = menuTopicManager->currentTopicInfo;
-                                    if (selectedNode) {
+                                if (const float randomValue = GenerateRandomFloat();
+                                    randomValue <= jsonEvent.chance) {
+                                    if (const auto *selectedNode =
+                                            menuTopicManager->currentTopicInfo) {
                                         auto *selectedDialogue = selectedNode->parentTopic;
 
                                         if (!selectedDialogue->GetFormEditorID()
@@ -199,8 +199,7 @@ namespace SoundFX {
 
             RE::NiPoint3 directionToActor = actor->GetPosition() - player->GetPosition();
 
-            const float distance = directionToActor.Length();
-            if (distance > range) {
+            if (const float distance = directionToActor.Length(); distance > range) {
                 continue;
             }
 
@@ -211,8 +210,7 @@ namespace SoundFX {
                 std::acos(dotProduct) * (180.0f / std::numbers::pi_v<float>);  // Angle in degrees
 
             if (angle <= fovAngle / 2.0f) {
-                const auto baseform = actor->GetBaseObject();
-                if (baseform) {
+                if (const auto baseform = actor->GetBaseObject()) {
                     auto baseFormID         = baseform->formID;
                     npcsInRange[baseFormID] = actor;
                 }

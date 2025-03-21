@@ -6,8 +6,8 @@ namespace SoundFX {
 
     void
         CellEventHandler::SetupCellTasks() {
-        StartCellTask([this]() { ProcessCellEnterTask(); }, true);
-        StartCellTask([this]() { ProcessAmbienceSoundTask(); }, true);
+        StartCellTask([this] { ProcessCellEnterTask(); }, true);
+        StartCellTask([this] { ProcessAmbienceSoundTask(); }, true);
         scheduler.Start(500);  // Run every 0.5 Second
     }
 
@@ -39,16 +39,16 @@ namespace SoundFX {
         if (!menuManager->IsMenuOpen(RE::LoadingMenu::MENU_NAME) && currentCell != lastCell) {
             lastCell = currentCell;
 
-            const auto &cells = jsonLoader.getItems("cells");
-            for (const auto &cellEvents : cells | std::views::values) {
+            for (const auto &cells = jsonLoader->getItems("cells");
+                 const auto &cellEvents : cells | std::views::values) {
                 const auto resolvedFormID =
                     GetFormIDFromEditorIDAndPluginName(cellEvents.editorID, cellEvents.pluginName);
 
                 if (resolvedFormID == currentCell->formID) {
                     for (const auto &jsonEvent : cellEvents.events) {
                         if (jsonEvent.type == "Enter") {
-                            const float randomValue = GenerateRandomFloat();
-                            if (randomValue <= jsonEvent.chance) {
+                            if (const float randomValue = GenerateRandomFloat();
+                                randomValue <= jsonEvent.chance) {
                                 PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                             }
                             return;
@@ -80,16 +80,16 @@ namespace SoundFX {
 
         if (!menuManager->IsMenuOpen(RE::LoadingMenu::MENU_NAME)) {
 
-            const auto &cells = jsonLoader.getItems("cells");
-            for (const auto &cellEvents : cells | std::views::values) {
+            for (const auto &cells = jsonLoader->getItems("cells");
+                 const auto &cellEvents : cells | std::views::values) {
                 const auto resolvedFormID =
                     GetFormIDFromEditorIDAndPluginName(cellEvents.editorID, cellEvents.pluginName);
 
                 if (resolvedFormID == currentCell->formID) {
                     for (const auto &jsonEvent : cellEvents.events) {
                         if (jsonEvent.type == "Ambience") {
-                            const float randomValue = GenerateRandomFloat();
-                            if (randomValue <= jsonEvent.chance) {
+                            if (const float randomValue = GenerateRandomFloat();
+                                randomValue <= jsonEvent.chance) {
                                 PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                             }
                             return;

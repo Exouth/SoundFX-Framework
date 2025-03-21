@@ -25,16 +25,16 @@ namespace SoundFX {
             return RE::BSEventNotifyControl::kContinue;
         }
 
-        const auto &miscitems = jsonLoader.getItems("miscItems");
-        for (const auto &miscitemEvents : miscitems | std::views::values) {
+        for (const auto &miscitems = jsonLoader->getItems("miscItems");
+             const auto &miscitemEvents : miscitems | std::views::values) {
             const auto resolvedFormID = GetFormIDFromEditorIDAndPluginName(
                 miscitemEvents.editorID, miscitemEvents.pluginName);
 
             if (resolvedFormID == item->formID) {
                 for (const auto &jsonEvent : miscitemEvents.events) {
                     if (jsonEvent.type == "PickUp") {
-                        float randomValue = GenerateRandomFloat();
-                        if (randomValue <= jsonEvent.chance) {
+                        if (const float randomValue = GenerateRandomFloat();
+                            randomValue <= jsonEvent.chance) {
                             PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                         }
                         return RE::BSEventNotifyControl::kContinue;
@@ -58,16 +58,16 @@ namespace SoundFX {
             return RE::BSEventNotifyControl::kContinue;
         }
 
-        const auto &miscitems = jsonLoader.getItems("miscItems");
-        for (const auto &miscitemEvents : miscitems | std::views::values) {
+        for (const auto &miscitems = jsonLoader->getItems("miscItems");
+             const auto &miscitemEvents : miscitems | std::views::values) {
             const auto resolvedFormID = GetFormIDFromEditorIDAndPluginName(
                 miscitemEvents.editorID, miscitemEvents.pluginName);
 
             if (resolvedFormID == item->formID) {
                 for (const auto &jsonEvent : miscitemEvents.events) {
                     if (jsonEvent.type == "Drop") {
-                        float randomValue = GenerateRandomFloat();
-                        if (randomValue <= jsonEvent.chance) {
+                        if (const float randomValue = GenerateRandomFloat();
+                            randomValue <= jsonEvent.chance) {
                             PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                         }
                         return RE::BSEventNotifyControl::kContinue;

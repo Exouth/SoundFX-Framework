@@ -7,7 +7,7 @@ namespace SoundFX {
 
     void
         SpellEventHandler::SetupSpellTasks() {
-        StartSpellTask([this]() { ProcessIdleTask(); }, true);
+        StartSpellTask([this] { ProcessIdleTask(); }, true);
         scheduler.Start(500);  // Run every 0.5 Second
     }
 
@@ -32,8 +32,8 @@ namespace SoundFX {
             return RE::BSEventNotifyControl::kContinue;
         }
 
-        const auto *actorState = player->AsActorState();
-        if (!actorState && !actorState->IsWeaponDrawn()) {
+        if (const auto *actorState = player->AsActorState();
+            !actorState && !actorState->IsWeaponDrawn()) {
             return RE::BSEventNotifyControl::kContinue;
         }
 
@@ -49,8 +49,8 @@ namespace SoundFX {
                 return RE::BSEventNotifyControl::kContinue;
             }
 
-            const auto &magic = jsonLoader.getItems("magicEffects");
-            for (const auto &magicEvents : magic | std::views::values) {
+            for (const auto &magic = jsonLoader->getItems("magicEffects");
+                 const auto &magicEvents : magic | std::views::values) {
                 const auto resolvedFormID = GetFormIDFromEditorIDAndPluginName(
                     magicEvents.editorID, magicEvents.pluginName);
 
@@ -58,8 +58,8 @@ namespace SoundFX {
                     for (const auto &jsonEvent : magicEvents.events) {
                         if (jsonEvent.type == "Draw"
                             && event->type == SKSE::ActionEvent::Type::kEndDraw) {
-                            const float randomValue = GenerateRandomFloat();
-                            if (randomValue <= jsonEvent.chance) {
+                            if (const float randomValue = GenerateRandomFloat();
+                                randomValue <= jsonEvent.chance) {
                                 PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                             }
                             return RE::BSEventNotifyControl::kContinue;
@@ -89,8 +89,8 @@ namespace SoundFX {
             return RE::BSEventNotifyControl::kContinue;
         }
 
-        const auto *actorState = player->AsActorState();
-        if (!actorState && !actorState->IsWeaponDrawn()) {
+        if (const auto *actorState = player->AsActorState();
+            !actorState && !actorState->IsWeaponDrawn()) {
             return RE::BSEventNotifyControl::kContinue;
         }
 
@@ -106,8 +106,8 @@ namespace SoundFX {
                 return RE::BSEventNotifyControl::kContinue;
             }
 
-            const auto &magic = jsonLoader.getItems("magicEffects");
-            for (const auto &magicEvents : magic | std::views::values) {
+            for (const auto &magic = jsonLoader->getItems("magicEffects");
+                 const auto &magicEvents : magic | std::views::values) {
                 const auto resolvedFormID = GetFormIDFromEditorIDAndPluginName(
                     magicEvents.editorID, magicEvents.pluginName);
 
@@ -115,8 +115,8 @@ namespace SoundFX {
                     for (const auto &jsonEvent : magicEvents.events) {
                         if (jsonEvent.type == "Sheathe"
                             && event->type == SKSE::ActionEvent::Type::kEndSheathe) {
-                            const float randomValue = GenerateRandomFloat();
-                            if (randomValue <= jsonEvent.chance) {
+                            if (const float randomValue = GenerateRandomFloat();
+                                randomValue <= jsonEvent.chance) {
                                 PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                             }
                             return RE::BSEventNotifyControl::kContinue;
@@ -146,8 +146,8 @@ namespace SoundFX {
             return RE::BSEventNotifyControl::kContinue;
         }
 
-        const auto *actorState = player->AsActorState();
-        if (!actorState && !actorState->IsWeaponDrawn()) {
+        if (const auto *actorState = player->AsActorState();
+            !actorState && !actorState->IsWeaponDrawn()) {
             return RE::BSEventNotifyControl::kContinue;
         }
 
@@ -163,8 +163,8 @@ namespace SoundFX {
                 return RE::BSEventNotifyControl::kContinue;
             }
 
-            const auto &magic = jsonLoader.getItems("magicEffects");
-            for (const auto &magicEvents : magic | std::views::values) {
+            for (const auto &magic = jsonLoader->getItems("magicEffects");
+                 const auto &magicEvents : magic | std::views::values) {
                 const auto resolvedFormID = GetFormIDFromEditorIDAndPluginName(
                     magicEvents.editorID, magicEvents.pluginName);
 
@@ -172,8 +172,8 @@ namespace SoundFX {
                     for (const auto &jsonEvent : magicEvents.events) {
                         if (jsonEvent.type == "Fire"
                             && event->type == SKSE::ActionEvent::Type::kSpellFire) {
-                            const float randomValue = GenerateRandomFloat();
-                            if (randomValue <= jsonEvent.chance) {
+                            if (const float randomValue = GenerateRandomFloat();
+                                randomValue <= jsonEvent.chance) {
                                 PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                             }
                             return RE::BSEventNotifyControl::kContinue;
@@ -203,8 +203,8 @@ namespace SoundFX {
             return RE::BSEventNotifyControl::kContinue;
         }
 
-        const auto *actorState = player->AsActorState();
-        if (!actorState && !actorState->IsWeaponDrawn()) {
+        if (const auto *actorState = player->AsActorState();
+            !actorState && !actorState->IsWeaponDrawn()) {
             return RE::BSEventNotifyControl::kContinue;
         }
 
@@ -220,8 +220,8 @@ namespace SoundFX {
                 return RE::BSEventNotifyControl::kContinue;
             }
 
-            const auto &magic = jsonLoader.getItems("magicEffects");
-            for (const auto &magicEvents : magic | std::views::values) {
+            for (const auto &magic = jsonLoader->getItems("magicEffects");
+                 const auto &magicEvents : magic | std::views::values) {
                 const auto resolvedFormID = GetFormIDFromEditorIDAndPluginName(
                     magicEvents.editorID, magicEvents.pluginName);
 
@@ -229,8 +229,8 @@ namespace SoundFX {
                     for (const auto &jsonEvent : magicEvents.events) {
                         if (jsonEvent.type == "Cast"
                             && event->type == SKSE::ActionEvent::Type::kSpellCast) {
-                            const float randomValue = GenerateRandomFloat();
-                            if (randomValue <= jsonEvent.chance) {
+                            if (const float randomValue = GenerateRandomFloat();
+                                randomValue <= jsonEvent.chance) {
                                 PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                             }
                             return RE::BSEventNotifyControl::kContinue;
@@ -273,16 +273,16 @@ namespace SoundFX {
                 return;
             }
 
-            const auto &magic = jsonLoader.getItems("magicEffects");
-            for (const auto &magicEvents : magic | std::views::values) {
+            for (const auto &magic = jsonLoader->getItems("magicEffects");
+                 const auto &magicEvents : magic | std::views::values) {
                 const auto resolvedFormID = GetFormIDFromEditorIDAndPluginName(
                     magicEvents.editorID, magicEvents.pluginName);
 
                 if (resolvedFormID == handData->formID) {
                     for (const auto &jsonEvent : magicEvents.events) {
                         if (jsonEvent.type == "Idle" && actorState->IsWeaponDrawn()) {
-                            const float randomValue = GenerateRandomFloat();
-                            if (randomValue <= jsonEvent.chance) {
+                            if (const float randomValue = GenerateRandomFloat();
+                                randomValue <= jsonEvent.chance) {
                                 PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                             }
                             return;

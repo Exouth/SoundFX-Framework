@@ -10,9 +10,9 @@ namespace SoundFX {
             Play();
         void
             Stop();
-        RE::BSSoundHandle &
+        [[nodiscard]] RE::BSSoundHandle &
             GetSoundHandle();
-        bool
+        [[nodiscard]] bool
             IsPlaying() const;
         bool
             FadeInPlay(std::uint16_t fadeTimeMS);

@@ -13,7 +13,7 @@ namespace SoundFX {
     void
         HookManager::InstallHooks() {
 
-        bool debugUI =
+        const bool debugUI =
             Config::ConfigManager::GetInstance().GetValue<bool>("GeneralSettings", "DebugUI", true);
         if (!debugUI) {
             spdlog::warn("DebugUI disabled via INI setting.");
