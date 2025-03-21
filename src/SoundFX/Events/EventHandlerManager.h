@@ -36,7 +36,7 @@ namespace SoundFX {
         void
             RegisterMultipleEventHandlers(EventSourceType *eventSource,
                                           HandlerType     *handler,
-                                          const EventTypes&... events);
+                                          const EventTypes &...events);
 
         template <typename EventSourceType, typename EventType, typename HandlerType>
         static void
@@ -47,7 +47,7 @@ namespace SoundFX {
     void
         EventHandlerManager::RegisterMultipleEventHandlers(EventSourceType *eventSource,
                                                            HandlerType     *handler,
-                                                           const EventTypes&... events) {
+                                                           const EventTypes &...events) {
         (RegisterEventHandler<EventSourceType, EventTypes>(eventSource, handler), ...);
     }
 
