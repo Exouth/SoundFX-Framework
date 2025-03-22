@@ -3,10 +3,12 @@
 namespace SoundFX {
 
     BoolCheckboxSetting::BoolCheckboxSetting(std::string               settingName,
+                                             std::string               paramIniKey,
                                              bool                      initialDefaultValue,
                                              std::function<void(bool)> onValueChange,
                                              std::string               desc) :
         BoolSetting(std::move(settingName),
+                    std::move(paramIniKey),
                     initialDefaultValue,
                     std::move(onValueChange),
                     std::move(desc)) {
@@ -14,8 +16,10 @@ namespace SoundFX {
 
     void
         BoolCheckboxSetting::Render() {
-        if (ImGui::Checkbox(name.c_str(), &value)) {
-            onChange(value);
+        bool currentValue = GetValue();
+        if (ImGui::Checkbox(GetNameRef().c_str(), &currentValue)) {
+            SetValue(currentValue);
+            Save();
         }
 
         ImGui::SameLine();
@@ -24,11 +28,10 @@ namespace SoundFX {
             RenderTooltip();
         }
 
-        if (value != defaultValue) {
+        if (GetValue() != GetDefaultValue()) {
             ImGui::SameLine();
-            if (ImGui::Button((std::string(ICON_FA_UNDO) + "##" + name).c_str())) {
-                value = defaultValue;
-                onChange(value);
+            if (ImGui::Button((std::string(ICON_FA_UNDO) + "##" + GetNameRef()).c_str())) {
+                Reset();
             }
         }
     }

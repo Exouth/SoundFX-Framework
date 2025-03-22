@@ -1,4 +1,5 @@
 #include "TaskScheduler.h"
+#include <future>
 
 namespace SoundFX {
 
@@ -22,7 +23,7 @@ namespace SoundFX {
 
                     // Tasks were sometimes executed consecutively within the same interval, causing
                     // a delay. By using std::async, each task runs independently
-                    std::async(std::launch::async, [task, this] {
+                    auto future = std::async(std::launch::async, [task, this] {
                         if (!stopFlag) {
                             task();
                         }

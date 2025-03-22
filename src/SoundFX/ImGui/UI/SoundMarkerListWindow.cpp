@@ -1,5 +1,7 @@
 #include "SoundMarkerListWindow.h"
 #include "ImGui/Core/ImGuiManager.h"
+#include "Sound/SoundManager.h"
+#include "Utility.h"
 
 namespace SoundFX {
 

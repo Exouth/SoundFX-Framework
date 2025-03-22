@@ -1,4 +1,6 @@
 #include "Sound3DUtil.h"
+#include <ranges>
+#include <sndfile.h>
 
 namespace {
     ALCdevice  *sharedDevice  = nullptr;

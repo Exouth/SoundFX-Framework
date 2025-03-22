@@ -2,6 +2,7 @@
 #include "ImGui/Settings/DefaultSettings.h"
 #include "RenderObject.h"
 #include "Sound/SoundManager.h"
+#include "Utility.h"
 
 namespace SoundFX {
     bool   SoundMarker::showSoundMarkers         = DefaultSettings::GetShowSoundMarkers();
@@ -49,7 +50,6 @@ namespace SoundFX {
             ProcessSoundMarker(sound.GetPosition(),
                                player->GetPosition(),
                                drawList,
-                               camera->pos,
                                sound.name,
                                sound.eventType,
                                sound.soundEffect,
@@ -83,7 +83,6 @@ namespace SoundFX {
         SoundMarker::ProcessSoundMarker(const RE::NiPoint3 &soundPos,
                                         const RE::NiPoint3 &playerPos,
                                         ImDrawList         *drawList,
-                                        const RE::NiPoint3 &cameraPos,
                                         const std::string  &name,
                                         const std::string  &eventType,
                                         const std::string  &soundEffect,

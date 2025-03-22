@@ -1,10 +1,13 @@
 #include "CombatEventHandler.h"
+#include "Events/EventHandlerManager.h"
+#include "Sound/SoundUtil.h"
+#include "Utility.h"
 
 namespace SoundFX {
 
     void
         CombatEventHandler::SetupCombatTasks() {
-        StartCombatTask([this]() { ProcessKillMoveCombatTask(); }, true);
+        StartCombatTask([this] { ProcessKillMoveCombatTask(); }, true);
         scheduler.Start(500);  // Run every 0.5 Second
     }
 
@@ -39,8 +42,8 @@ namespace SoundFX {
             return RE::BSEventNotifyControl::kContinue;
         }
 
-        const auto &combats = jsonLoader.getItems("combats");
-        for (const auto &combatEvents : combats | std::views::values) {
+        for (const auto &combats = jsonLoader->getItems("combats");
+             const auto &combatEvents : combats | std::views::values) {
             const auto resolvedFormID =
                 GetFormIDFromEditorIDAndPluginName(combatEvents.editorID, combatEvents.pluginName);
 
@@ -48,8 +51,8 @@ namespace SoundFX {
                 for (const auto &jsonEvent : combatEvents.events) {
                     if (jsonEvent.type == "Start"
                         && event->newState.any(RE::ACTOR_COMBAT_STATE::kCombat)) {
-                        const float randomValue = GenerateRandomFloat();
-                        if (randomValue <= jsonEvent.chance) {
+                        if (const float randomValue = GenerateRandomFloat();
+                            randomValue <= jsonEvent.chance) {
                             PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                         }
                         return RE::BSEventNotifyControl::kContinue;
@@ -82,8 +85,8 @@ namespace SoundFX {
             return RE::BSEventNotifyControl::kContinue;
         }
 
-        const auto &combats = jsonLoader.getItems("combats");
-        for (const auto &combatEvents : combats | std::views::values) {
+        for (const auto &combats = jsonLoader->getItems("combats");
+             const auto &combatEvents : combats | std::views::values) {
             const auto resolvedFormID =
                 GetFormIDFromEditorIDAndPluginName(combatEvents.editorID, combatEvents.pluginName);
 
@@ -91,8 +94,8 @@ namespace SoundFX {
                 for (const auto &jsonEvent : combatEvents.events) {
                     if (jsonEvent.type == "Searching"
                         && event->newState.any(RE::ACTOR_COMBAT_STATE::kSearching)) {
-                        const float randomValue = GenerateRandomFloat();
-                        if (randomValue <= jsonEvent.chance) {
+                        if (const float randomValue = GenerateRandomFloat();
+                            randomValue <= jsonEvent.chance) {
                             PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                         }
                         return RE::BSEventNotifyControl::kContinue;
@@ -125,8 +128,8 @@ namespace SoundFX {
             return RE::BSEventNotifyControl::kContinue;
         }
 
-        const auto &combats = jsonLoader.getItems("combats");
-        for (const auto &combatEvents : combats | std::views::values) {
+        for (const auto &combats = jsonLoader->getItems("combats");
+             const auto &combatEvents : combats | std::views::values) {
             const auto resolvedFormID =
                 GetFormIDFromEditorIDAndPluginName(combatEvents.editorID, combatEvents.pluginName);
 
@@ -134,8 +137,8 @@ namespace SoundFX {
                 for (const auto &jsonEvent : combatEvents.events) {
                     if (jsonEvent.type == "Stop"
                         && event->newState == RE::ACTOR_COMBAT_STATE::kNone) {
-                        const float randomValue = GenerateRandomFloat();
-                        if (randomValue <= jsonEvent.chance) {
+                        if (const float randomValue = GenerateRandomFloat();
+                            randomValue <= jsonEvent.chance) {
                             PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                         }
                         return RE::BSEventNotifyControl::kContinue;
@@ -176,8 +179,8 @@ namespace SoundFX {
             return RE::BSEventNotifyControl::kContinue;
         }
 
-        const auto &combats = jsonLoader.getItems("combats");
-        for (const auto &combatEvents : combats | std::views::values) {
+        for (const auto &combats = jsonLoader->getItems("combats");
+             const auto &combatEvents : combats | std::views::values) {
             const auto resolvedFormID =
                 GetFormIDFromEditorIDAndPluginName(combatEvents.editorID, combatEvents.pluginName);
 
@@ -185,8 +188,8 @@ namespace SoundFX {
                 for (const auto &jsonEvent : combatEvents.events) {
                     if (jsonEvent.type == "Die"
                         && event->newState == RE::ACTOR_COMBAT_STATE::kNone) {
-                        const float randomValue = GenerateRandomFloat();
-                        if (randomValue <= jsonEvent.chance) {
+                        if (const float randomValue = GenerateRandomFloat();
+                            randomValue <= jsonEvent.chance) {
                             PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                         }
                         return RE::BSEventNotifyControl::kContinue;
@@ -206,28 +209,28 @@ namespace SoundFX {
             return RE::BSEventNotifyControl::kContinue;
         }
 
-        auto       *eventActor = event->actor->As<RE::Actor>();
-        const auto *player     = RE::PlayerCharacter::GetSingleton();
+        auto *eventActor = event->actor->As<RE::Actor>();
 
         // Currently Only Play when Player is involved, skip if Combat is between NPCs
-        if (!eventActor || !player || player->GetFormID() != event->targetActor->GetFormID()) {
+        if (const auto *player = RE::PlayerCharacter::GetSingleton();
+            !eventActor || !player || player->GetFormID() != event->targetActor->GetFormID()) {
             return RE::BSEventNotifyControl::kContinue;
         }
 
-        DelayExec(0.3f, [this, eventActor]() {
+        DelayExec(0.3f, [this, eventActor] {
             if (!eventActor || !IsActorFleeing(eventActor))
                 return;
 
-            const auto &combats = jsonLoader.getItems("combats");
-            for (const auto &combatEvents : combats | std::views::values) {
+            for (const auto &combats = jsonLoader->getItems("combats");
+                 const auto &combatEvents : combats | std::views::values) {
                 const auto resolvedFormID = GetFormIDFromEditorIDAndPluginName(
                     combatEvents.editorID, combatEvents.pluginName);
 
                 if (resolvedFormID == eventActor->GetBaseObject()->formID) {
                     for (const auto &jsonEvent : combatEvents.events) {
                         if (jsonEvent.type == "Flee") {
-                            const float randomValue = GenerateRandomFloat();
-                            if (randomValue <= jsonEvent.chance) {
+                            if (const float randomValue = GenerateRandomFloat();
+                                randomValue <= jsonEvent.chance) {
                                 PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                             }
                             return;
@@ -254,8 +257,8 @@ namespace SoundFX {
 
         if (player->IsInKillMove()) {
             if (!wasInKillMove) {
-                const auto &combats = jsonLoader.getItems("combats");
-                for (const auto &combatEvents : combats | std::views::values) {
+                for (const auto &combats = jsonLoader->getItems("combats");
+                     const auto &combatEvents : combats | std::views::values) {
                     const auto resolvedFormID = GetFormIDFromEditorIDAndPluginName(
                         combatEvents.editorID, combatEvents.pluginName);
 
@@ -269,8 +272,8 @@ namespace SoundFX {
                     if (resolvedFormID == foundActor->GetBaseObject()->formID) {
                         for (const auto &jsonEvent : combatEvents.events) {
                             if (jsonEvent.type == "KillMove") {
-                                const float randomValue = GenerateRandomFloat();
-                                if (randomValue <= jsonEvent.chance) {
+                                if (const float randomValue = GenerateRandomFloat();
+                                    randomValue <= jsonEvent.chance) {
                                     wasInKillMove = true;
                                     PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                                 }
@@ -288,8 +291,7 @@ namespace SoundFX {
     bool
         CombatEventHandler::IsPlayerInvolvedInCombat(const RE::Actor           *eventActor,
                                                      const RE::PlayerCharacter *player) {
-        auto *combatGroup = eventActor->GetCombatGroup();
-        if (combatGroup) {
+        if (auto *combatGroup = eventActor->GetCombatGroup()) {
             for (const auto &target : combatGroup->targets) {
                 RE::NiPointer<RE::Actor> targetActorPtr = target.targetHandle.get();
                 if (!targetActorPtr)
@@ -335,8 +337,7 @@ namespace SoundFX {
             return targets;
         }
 
-        const auto *combatGroup = eventActor->GetCombatGroup();
-        if (combatGroup) {
+        if (const auto *combatGroup = eventActor->GetCombatGroup()) {
             for (const auto &target : combatGroup->targets) {
                 RE::NiPointer<RE::Actor> targetActorPtr = target.targetHandle.get();
                 if (targetActorPtr) {
@@ -354,7 +355,7 @@ namespace SoundFX {
 
     RE::Actor *
         CombatEventHandler::FindActorByFormID(const RE::Actor                *playerActor,
-                                              RE::FormID                      formID,
+                                              const RE::FormID                formID,
                                               const std::vector<RE::Actor *> &actors) {
         RE::Actor *closestActor    = nullptr;
         float      closestDistance = FLT_MAX;

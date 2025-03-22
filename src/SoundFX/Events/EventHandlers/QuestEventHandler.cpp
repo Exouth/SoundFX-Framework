@@ -1,4 +1,7 @@
 #include "QuestEventHandler.h"
+#include "Events/EventHandlerManager.h"
+#include "Sound/SoundUtil.h"
+#include "Utility.h"
 
 namespace SoundFX {
 
@@ -24,8 +27,7 @@ namespace SoundFX {
                 continue;
             }
 
-            const auto stageIndex = stage.data.index;
-            if (stageIndex == 0) {
+            if (const auto stageIndex = stage.data.index; stageIndex == 0) {
                 fallbackStage = 10;
             } else if (fallbackStage == 0 || stageIndex < fallbackStage) {
                 fallbackStage = stageIndex;
@@ -47,8 +49,8 @@ namespace SoundFX {
             return RE::BSEventNotifyControl::kContinue;
         }
 
-        const auto &quests = jsonLoader.getItems("quests");
-        for (const auto &questEvents : quests | std::views::values) {
+        for (const auto &quests = jsonLoader->getItems("quests");
+             const auto &questEvents : quests | std::views::values) {
             const auto resolvedFormID =
                 GetFormIDFromEditorIDAndPluginName(questEvents.editorID, questEvents.pluginName);
 
@@ -56,8 +58,8 @@ namespace SoundFX {
                 for (const auto &jsonEvent : questEvents.events) {
                     const auto startStage = GetFirstActiveStage(quest);
                     if (jsonEvent.type == "Start" && event->stage == startStage) {
-                        const float randomValue = GenerateRandomFloat();
-                        if (randomValue <= jsonEvent.chance) {
+                        if (const float randomValue = GenerateRandomFloat();
+                            randomValue <= jsonEvent.chance) {
                             PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                         }
                         return RE::BSEventNotifyControl::kContinue;
@@ -80,16 +82,16 @@ namespace SoundFX {
             return RE::BSEventNotifyControl::kContinue;
         }
 
-        const auto &quests = jsonLoader.getItems("quests");
-        for (const auto &questEvents : quests | std::views::values) {
+        for (const auto &quests = jsonLoader->getItems("quests");
+             const auto &questEvents : quests | std::views::values) {
             const auto resolvedFormID =
                 GetFormIDFromEditorIDAndPluginName(questEvents.editorID, questEvents.pluginName);
 
             if (resolvedFormID == event->formID) {
                 for (const auto &jsonEvent : questEvents.events) {
                     if (jsonEvent.type == "End" && quest->IsCompleted()) {
-                        const float randomValue = GenerateRandomFloat();
-                        if (randomValue <= jsonEvent.chance) {
+                        if (const float randomValue = GenerateRandomFloat();
+                            randomValue <= jsonEvent.chance) {
                             PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                         }
                         return RE::BSEventNotifyControl::kContinue;

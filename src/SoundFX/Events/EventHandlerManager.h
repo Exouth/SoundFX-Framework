@@ -13,7 +13,7 @@ namespace SoundFX {
 
     class EventHandlerManager {
       public:
-        explicit EventHandlerManager(JSONLoader &jsonLoader);
+        explicit EventHandlerManager(JSONLoader *jsonLoader);
 
         void
             InitializeEventHandlers();
@@ -22,7 +22,7 @@ namespace SoundFX {
             ProcessMultipleEvents(std::initializer_list<RE::BSEventNotifyControl> events);
 
       private:
-        JSONLoader                                 &jsonLoader;
+        JSONLoader                                 *jsonLoader;
         std::unique_ptr<WeaponEventHandler>         weaponEventHandler;
         std::unique_ptr<SpellEventHandler>          spellEventHandler;
         std::unique_ptr<ArmorEventHandler>          armorEventHandler;
@@ -36,7 +36,7 @@ namespace SoundFX {
         void
             RegisterMultipleEventHandlers(EventSourceType *eventSource,
                                           HandlerType     *handler,
-                                          EventTypes... events);
+                                          const EventTypes &...events);
 
         template <typename EventSourceType, typename EventType, typename HandlerType>
         static void
@@ -47,7 +47,7 @@ namespace SoundFX {
     void
         EventHandlerManager::RegisterMultipleEventHandlers(EventSourceType *eventSource,
                                                            HandlerType     *handler,
-                                                           EventTypes... events) {
+                                                           const EventTypes &...events) {
         (RegisterEventHandler<EventSourceType, EventTypes>(eventSource, handler), ...);
     }
 

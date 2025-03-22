@@ -1,12 +1,14 @@
 #pragma once
 
+#include "JSONLoader.h"
+
 namespace SoundFX {
 
     class MiscItemEventHandler final : public RE::BSTEventSink<RE::TESContainerChangedEvent> {
-        JSONLoader &jsonLoader;
+        JSONLoader *jsonLoader;
 
       public:
-        explicit MiscItemEventHandler(JSONLoader &loader) : jsonLoader(loader) {
+        explicit MiscItemEventHandler(JSONLoader *loader) : jsonLoader(loader) {
         }
 
         RE::BSEventNotifyControl

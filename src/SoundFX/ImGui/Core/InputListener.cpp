@@ -1,8 +1,6 @@
 #include "InputListener.h"
 #include "ImGui/Core/ImGuiManager.h"
 
-#define IM_VK_KEYPAD_ENTER (VK_RETURN + 256)
-
 namespace {
     constexpr ImGuiKey
         VirtualKeyToImGuiKey(const WPARAM wParam) {
@@ -23,6 +21,7 @@ namespace {
         }
     }
 }
+
 namespace SoundFX {
     InputListener *
         InputListener::GetSingleton() {

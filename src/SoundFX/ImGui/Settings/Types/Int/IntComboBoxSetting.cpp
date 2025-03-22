@@ -3,11 +3,13 @@
 namespace SoundFX {
 
     IntComboBoxSetting::IntComboBoxSetting(std::string              settingName,
+                                           std::string              paramIniKey,
                                            int                      initialDefaultValue,
                                            std::vector<int>         options,
                                            std::function<void(int)> onValueChange,
                                            std::string              desc) :
         IntSetting(std::move(settingName),
+                   std::move(paramIniKey),
                    initialDefaultValue,
                    std::move(onValueChange),
                    std::move(desc)),
@@ -16,14 +18,15 @@ namespace SoundFX {
 
     void
         IntComboBoxSetting::Render() {
-        ImGui::Text("%s", name.c_str());
+        ImGui::Text("%s", GetName().c_str());
 
-        if (ImGui::BeginCombo("", std::to_string(value).c_str())) {
+        int currentValue = GetValue();
+        if (ImGui::BeginCombo("", std::to_string(currentValue).c_str())) {
             for (const auto &option : options) {
-                const bool isSelected = value == option;
+                const bool isSelected = currentValue == option;
                 if (ImGui::Selectable(std::to_string(option).c_str(), isSelected)) {
-                    value = option;
-                    onChange(value);
+                    SetValue(option);
+                    Save();
                 }
                 if (isSelected) {
                     ImGui::SetItemDefaultFocus();
@@ -38,11 +41,10 @@ namespace SoundFX {
             RenderTooltip();
         }
 
-        if (value != defaultValue) {
+        if (GetValue() != GetDefaultValue()) {
             ImGui::SameLine();
-            if (ImGui::Button((std::string(ICON_FA_UNDO) + "##" + name).c_str())) {
-                value = defaultValue;
-                onChange(value);
+            if (ImGui::Button((std::string(ICON_FA_UNDO) + "##" + GetName()).c_str())) {
+                Reset();
             }
         }
     }

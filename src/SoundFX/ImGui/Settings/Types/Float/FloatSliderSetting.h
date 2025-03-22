@@ -6,6 +6,7 @@ namespace SoundFX {
     class FloatSliderSetting final : public FloatSetting {
       public:
         FloatSliderSetting(std::string                settingName,
+                           std::string                paramIniKey,
                            float                      initialDefaultValue,
                            float                      minRangeValue,
                            float                      maxRangeValue,

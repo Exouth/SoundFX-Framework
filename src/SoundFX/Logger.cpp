@@ -29,7 +29,7 @@ void
 #endif
 
     logger->flush_on(spdlog::level::info);
-    spdlog::set_default_logger(std::move(logger));
+    set_default_logger(std::move(logger));
     spdlog::set_pattern("[%H:%M:%S] [%^%l%$] %v");
     spdlog::info("Logger initialized");
 }

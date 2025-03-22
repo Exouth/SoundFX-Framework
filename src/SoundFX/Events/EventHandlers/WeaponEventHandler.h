@@ -1,5 +1,6 @@
 #pragma once
 
+#include "JSONLoader.h"
 #include "TaskScheduler.h"
 
 namespace SoundFX {
@@ -9,17 +10,17 @@ namespace SoundFX {
         public RE::BSTEventSink<RE::TESEquipEvent>,
         public RE::BSTEventSink<RE::TESHitEvent>,
         public RE::BSTEventSink<SKSE::ActionEvent> {
-        JSONLoader   &jsonLoader;
+        JSONLoader   *jsonLoader;
         TaskScheduler scheduler;
 
       public:
-        explicit WeaponEventHandler(JSONLoader &loader) : jsonLoader(loader) {
+        explicit WeaponEventHandler(JSONLoader *loader) : jsonLoader(loader) {
         }
 
         void
             SetupWeaponTasks();
 
-        static void
+        void
             InitializeAttackTypeHandlers();
 
         RE::BSEventNotifyControl
@@ -57,6 +58,13 @@ namespace SoundFX {
             StartWeaponTask(const std::function<void()> &task, bool repeat = false) {
             scheduler.AddTask(task, repeat);
         }
+
+        void
+            HandleAttackEvent(const EventVariant   &event,
+                              const std::string    &soundEffect,
+                              RE::TESHitEvent::Flag flag);
+        void
+            HandleNormalAttack(const EventVariant &event, const std::string &soundEffect);
     };
 
 }

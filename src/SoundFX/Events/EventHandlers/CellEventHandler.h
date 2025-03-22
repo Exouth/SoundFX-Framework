@@ -1,15 +1,16 @@
 #pragma once
 
+#include "JSONLoader.h"
 #include "TaskScheduler.h"
 
 namespace SoundFX {
 
     class CellEventHandler {
-        JSONLoader   &jsonLoader;
+        JSONLoader   *jsonLoader;
         TaskScheduler scheduler;
 
       public:
-        explicit CellEventHandler(JSONLoader &loader) : jsonLoader(loader) {
+        explicit CellEventHandler(JSONLoader *loader) : jsonLoader(loader) {
         }
 
         void

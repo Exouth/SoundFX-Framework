@@ -13,6 +13,13 @@ namespace SoundFX {
         TaskScheduler();
         ~TaskScheduler();
 
+        TaskScheduler(const TaskScheduler &) = delete;
+        TaskScheduler &
+            operator=(const TaskScheduler &) = delete;
+        TaskScheduler(TaskScheduler &&)      = delete;
+        TaskScheduler &
+            operator=(TaskScheduler &&) = delete;
+
         void
             Start(int intervalMilliseconds = 500);
 
