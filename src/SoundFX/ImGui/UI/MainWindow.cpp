@@ -1,5 +1,6 @@
 #include "MainWindow.h"
 #include "ImGui/Core/ImGuiManager.h"
+#include "LogViewer.h"
 #include "SettingsUI.h"
 
 namespace SoundFX {
@@ -16,6 +17,14 @@ namespace SoundFX {
         ImGui::Spacing();
 
         SettingsUI::RenderSettingsUI();
+        ImGui::Spacing();
+
+        ImGui::SeparatorText("Extra");
+
+        ImGui::Spacing();
+        if (ImGui::Button("Open LogView") && !LogViewer::IsVisible()) {
+            LogViewer::ToggleVisibility();
+        }
 
         ImGui::End();
 

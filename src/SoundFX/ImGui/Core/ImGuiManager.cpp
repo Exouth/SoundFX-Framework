@@ -2,6 +2,7 @@
 #include "Config/ConfigManager.h"
 #include "Font_Awesome_6_Free_Solid_900_Edited.otf.h"
 #include "ImGui/Renderers/SoundMarker.h"
+#include "ImGui/UI/LogViewer.h"
 #include "ImGui/UI/MainWindow.h"
 #include "ImGui/UI/SoundMarkerListWindow.h"
 #include <imgui.h>
@@ -20,6 +21,8 @@ namespace SoundFX {
 
         debugUIKey = Config::ConfigManager::GetInstance().GetValue<int>(
             "GeneralSettings", "DebugUIKey", VK_F1);
+
+        LogViewer::Initialize();
 
         ImGuiIO &io = ImGui::GetIO();
         io.Fonts->AddFontDefault();
@@ -61,6 +64,7 @@ namespace SoundFX {
             if (showSoundMarkerList) {
                 SoundMarkerListWindow::Render();
             }
+            LogViewer::Render();
         }
 
         RenderForeground();
@@ -104,6 +108,7 @@ namespace SoundFX {
     void
         ImGuiManager::Shutdown() {
 
+        LogViewer::Shutdown();
         ImGui_ImplDX11_Shutdown();
         ImGui_ImplWin32_Shutdown();
         ImGui::DestroyContext();
