@@ -18,20 +18,19 @@ namespace SoundFX {
 
     void
         BoolSetting::Load() {
-        value = config.GetValue<bool>(INI_SECTION, iniKey.c_str(), defaultValue);
+        value = GetConfigManager().GetValue<bool>(INI_SECTION, iniKey.c_str(), defaultValue);
         onChange(value);
     }
 
     void
         BoolSetting::Save() const {
-        config.SetValue<bool>(INI_SECTION, iniKey.c_str(), value);
-        config.Save();
+        GetConfigManager().SetValue<bool>(INI_SECTION, iniKey.c_str(), value);
+        GetConfigManager().Save();
     }
 
     void
         BoolSetting::Reset() {
-        value = defaultValue;
-        onChange(value);
+        SetValue(defaultValue);
         Save();
     }
 

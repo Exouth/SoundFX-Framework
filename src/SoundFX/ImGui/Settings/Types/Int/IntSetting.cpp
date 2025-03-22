@@ -18,20 +18,19 @@ namespace SoundFX {
 
     void
         IntSetting::Load() {
-        value = config.GetValue<int>(INI_SECTION, iniKey.c_str(), defaultValue);
+        value = GetConfigManager().GetValue<int>(INI_SECTION, iniKey.c_str(), defaultValue);
         onChange(value);
     }
 
     void
         IntSetting::Save() const {
-        config.SetValue<int>(INI_SECTION, iniKey.c_str(), value);
-        config.Save();
+        GetConfigManager().SetValue<int>(INI_SECTION, iniKey.c_str(), value);
+        GetConfigManager().Save();
     }
 
     void
         IntSetting::Reset() {
-        value = defaultValue;
-        onChange(value);
+        SetValue(defaultValue);
         Save();
     }
 

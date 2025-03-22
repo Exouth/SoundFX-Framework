@@ -3,8 +3,8 @@
 #include "Config/ConfigManager.h"
 #include <imgui.h>
 
-#define ICON_FA_UNDO "\xef\x8b\xaa"      // Unicode: f2ea / fa-rotate-left
-#define ICON_FA_QUESTION "\xef\x81\x99"  // Unicode: f059 / fa-circle-question
+constexpr auto ICON_FA_UNDO     = "\xef\x8b\xaa";  // Unicode: f2ea / fa-rotate-left
+constexpr auto ICON_FA_QUESTION = "\xef\x81\x99";  // Unicode: f059 / fa-circle-question
 
 namespace SoundFX {
     class BaseSetting {
@@ -41,10 +41,26 @@ namespace SoundFX {
         }
 
       protected:
+        [[nodiscard]] const std::string &
+            GetDescription() const {
+            return description;
+        }
+
+        void
+            SetDescription(const std::string &desc) {
+            description = desc;
+        }
+
+        Config::ConfigManager &
+            GetConfigManager() const {
+            return config;
+        }
+
         explicit BaseSetting(std::string desc = "") :
             description(std::move(desc)), config(Config::ConfigManager::GetInstance()) {
         }
 
+      private:
         std::string            description;
         Config::ConfigManager &config;
     };

@@ -27,12 +27,11 @@ namespace SoundFX {
         ImFontConfig             icons_config;
         icons_config.MergeMode  = true;
         icons_config.PixelSnapH = true;
-        io.Fonts->AddFontFromMemoryTTF(
-            const_cast<void *>(reinterpret_cast<const void *>(FontAwesome6Free_Solid_Edited_otf)),
-            sizeof(FontAwesome6Free_Solid_Edited_otf),
-            16.0f,
-            &icons_config,
-            icons_ranges);
+        io.Fonts->AddFontFromMemoryTTF(FontAwesome6Free_Solid_Edited_otf,
+                                       sizeof(FontAwesome6Free_Solid_Edited_otf),
+                                       16.0f,
+                                       &icons_config,
+                                       icons_ranges);
         io.Fonts->Build();
     }
 

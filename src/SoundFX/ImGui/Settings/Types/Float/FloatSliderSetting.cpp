@@ -20,10 +20,11 @@ namespace SoundFX {
 
     void
         FloatSliderSetting::Render() {
-        ImGui::Text("%s", name.c_str());
+        float currentValue = GetValue();
+        ImGui::Text("%s", GetNameRef().c_str());
 
-        if (ImGui::SliderFloat(("##" + name).c_str(), &value, minValue, maxValue)) {
-            onChange(value);
+        if (ImGui::SliderFloat(("##" + GetNameRef()).c_str(), &currentValue, minValue, maxValue)) {
+            SetValue(currentValue);
             Save();
         }
 
@@ -33,9 +34,9 @@ namespace SoundFX {
             RenderTooltip();
         }
 
-        if (constexpr float epsilon = 0.01f; std::fabs(value - defaultValue) > epsilon) {
+        if (constexpr float epsilon = 0.01f; std::fabs(GetValue() - GetDefaultValue()) > epsilon) {
             ImGui::SameLine();
-            if (ImGui::Button((std::string(ICON_FA_UNDO) + "##" + name).c_str())) {
+            if (ImGui::Button((std::string(ICON_FA_UNDO) + "##" + GetNameRef()).c_str())) {
                 Reset();
             }
         }

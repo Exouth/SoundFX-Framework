@@ -43,9 +43,9 @@ namespace SoundFX {
             GetPlaybackCharacteristics();
 
         void
-            Unk_01() override;
+            Unk_01() override;  // 01
         void
-            Unk_02() override;
+            Unk_02() override;  // 02
 
       private:
         RE::BSSoundHandle             soundHandle;

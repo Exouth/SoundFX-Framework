@@ -104,7 +104,8 @@ namespace SoundFX {
 
         std::sregex_iterator end;
 
-        size_t lastPosA = 0, lastPosB = 0;
+        size_t lastPosA = 0;
+        size_t lastPosB = 0;
         while (aIt != end && bIt != end) {
             std::string aPart = a.substr(lastPosA, aIt->position() - lastPosA);
             std::string bPart = b.substr(lastPosB, bIt->position() - lastPosB);

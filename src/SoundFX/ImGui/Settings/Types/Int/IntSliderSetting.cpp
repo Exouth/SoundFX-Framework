@@ -20,10 +20,11 @@ namespace SoundFX {
 
     void
         IntSliderSetting::Render() {
-        ImGui::Text("%s", name.c_str());
+        ImGui::Text("%s", GetName().c_str());
 
-        if (ImGui::SliderInt(("##" + name).c_str(), &value, minValue, maxValue)) {
-            onChange(value);
+        int currentValue = GetValue();
+        if (ImGui::SliderInt(("##" + GetName()).c_str(), &currentValue, minValue, maxValue)) {
+            SetValue(currentValue);
             Save();
         }
 
@@ -33,9 +34,9 @@ namespace SoundFX {
             RenderTooltip();
         }
 
-        if (value != defaultValue) {
+        if (currentValue != GetDefaultValue()) {
             ImGui::SameLine();
-            if (ImGui::Button((std::string(ICON_FA_UNDO) + "##" + name).c_str())) {
+            if (ImGui::Button((std::string(ICON_FA_UNDO) + "##" + GetName()).c_str())) {
                 Reset();
             }
         }

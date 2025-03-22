@@ -17,20 +17,19 @@ namespace SoundFX {
 
     void
         ColorSetting::Load() {
-        value = config.GetValue<ImVec4>(INI_SECTION, iniKey.c_str(), defaultValue);
+        value = GetConfigManager().GetValue<ImVec4>(INI_SECTION, iniKey.c_str(), defaultValue);
         onChange(value);
     }
 
     void
         ColorSetting::Save() const {
-        config.SetValue<ImVec4>(INI_SECTION, iniKey.c_str(), value);
-        config.Save();
+        GetConfigManager().SetValue<ImVec4>(INI_SECTION, iniKey.c_str(), value);
+        GetConfigManager().Save();
     }
 
     void
         ColorSetting::Reset() {
-        value = defaultValue;
-        onChange(value);
+        SetValue(defaultValue);
         Save();
     }
 
@@ -41,10 +40,12 @@ namespace SoundFX {
 
     void
         ColorSetting::Render() {
-        ImGui::Text("%s", name.c_str());
+        ImGui::Text("%s", GetNameRef().c_str());
 
-        if (ImGui::ColorEdit4(("##" + name).c_str(), reinterpret_cast<float *>(&value))) {
-            onChange(value);
+        ImVec4 currentValue = GetValue();
+        if (ImGui::ColorEdit4(("##" + GetNameRef()).c_str(),
+                              reinterpret_cast<float *>(&currentValue))) {
+            SetValue(currentValue);
             Save();
         }
 
@@ -59,7 +60,7 @@ namespace SoundFX {
                                                || std::fabs(value.z - defaultValue.z) > EPSILON
                                                || std::fabs(value.w - defaultValue.w) > EPSILON) {
             ImGui::SameLine();
-            if (ImGui::Button((std::string(ICON_FA_UNDO) + "##" + name).c_str())) {
+            if (ImGui::Button((std::string(ICON_FA_UNDO) + "##" + GetNameRef()).c_str())) {
                 Reset();
             }
         }

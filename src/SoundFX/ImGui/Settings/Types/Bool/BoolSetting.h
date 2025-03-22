@@ -12,10 +12,36 @@ namespace SoundFX {
                     std::string               desc = "");
         void
             Reset() override;
+
         [[nodiscard]] std::string
             GetName() const override;
 
+        [[nodiscard]] bool
+            GetValue() const {
+            return value;
+        }
+
+        void
+            SetValue(bool newValue) {
+            value = newValue;
+            onChange(value);
+        }
+
+        [[nodiscard]] bool
+            GetDefaultValue() const {
+            return defaultValue;
+        }
+
+        [[nodiscard]] const std::string &
+            GetNameRef() const {
+            return name;
+        }
+
       protected:
+        void
+            Save() const;
+
+      private:
         std::string               name;
         std::string               iniKey;
         bool                      value;
@@ -24,7 +50,5 @@ namespace SoundFX {
 
         void
             Load();
-        void
-            Save() const;
     };
 }

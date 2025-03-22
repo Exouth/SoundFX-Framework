@@ -9,7 +9,7 @@
 namespace SoundFX {
     void
         VTableHook::Install() {
-        if (void **vTable = GetSwapChainVTable()) {
+        if (VTableEntry *vTable = GetSwapChainVTable()) {
             HookVTable(vTable);
         }
     }
@@ -64,19 +64,21 @@ namespace SoundFX {
     }
 
     void
-        VTableHook::HookVTable(void **vTable) {
+        VTableHook::HookVTable(VTableEntry *vTable) {
         spdlog::info("Attempting to hook Present using VTable");
 
-        originalPresent = reinterpret_cast<decltype(originalPresent)>(vTable[8]);
+        originalPresent = vTable[8];
         DWORD oldProtect;
-        VirtualProtect(&vTable[8], sizeof(void *), PAGE_EXECUTE_READWRITE, &oldProtect);
-        vTable[8] = reinterpret_cast<void *>(&hkPresent);
-        VirtualProtect(&vTable[8], sizeof(void *), oldProtect, &oldProtect);
-
-        spdlog::info("VTable hook installed for Present");
+        if (VirtualProtect(&vTable[8], sizeof(void *), PAGE_EXECUTE_READWRITE, &oldProtect)) {
+            vTable[8] = &hkPresent;
+            VirtualProtect(&vTable[8], sizeof(void *), oldProtect, &oldProtect);
+            spdlog::info("VTable hook installed for Present");
+        } else {
+            spdlog::error("Failed to change VTable protection");
+        }
     }
 
-    void **
+    VTableEntry *
         VTableHook::GetSwapChainVTable() {
         const auto renderer = RE::BSGraphics::Renderer::GetSingleton();
         if (!renderer) {
@@ -86,7 +88,7 @@ namespace SoundFX {
 
         for (const auto &window : renderer->data.renderWindows) {
             if (window.swapChain) {
-                void **vTable = *reinterpret_cast<void ***>(window.swapChain);
+                VTableEntry *vTable = *reinterpret_cast<VTableEntry **>(window.swapChain);
                 return vTable;
             }
         }

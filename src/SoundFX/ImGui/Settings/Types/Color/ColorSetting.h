@@ -14,8 +14,34 @@ namespace SoundFX {
             Render() override;
         void
             Reset() override;
+
         [[nodiscard]] std::string
             GetName() const override;
+
+        [[nodiscard]] ImVec4
+            GetValue() const {
+            return value;
+        }
+
+        void
+            SetValue(const ImVec4 &newValue) {
+            value = newValue;
+            onChange(value);
+        }
+
+        [[nodiscard]] ImVec4
+            GetDefaultValue() const {
+            return defaultValue;
+        }
+
+        [[nodiscard]] const std::string &
+            GetNameRef() const {
+            return name;
+        }
+
+      protected:
+        void
+            Save() const;
 
       private:
         std::string                 name;
@@ -26,7 +52,5 @@ namespace SoundFX {
 
         void
             Load();
-        void
-            Save() const;
     };
 }

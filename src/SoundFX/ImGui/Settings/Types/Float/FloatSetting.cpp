@@ -18,20 +18,19 @@ namespace SoundFX {
 
     void
         FloatSetting::Load() {
-        value = config.GetValue<float>(INI_SECTION, iniKey.c_str(), defaultValue);
+        value = GetConfigManager().GetValue<float>(INI_SECTION, iniKey.c_str(), defaultValue);
         onChange(value);
     }
 
     void
         FloatSetting::Save() const {
-        config.SetValue<float>(INI_SECTION, iniKey.c_str(), value);
-        config.Save();
+        GetConfigManager().SetValue<float>(INI_SECTION, iniKey.c_str(), value);
+        GetConfigManager().Save();
     }
 
     void
         FloatSetting::Reset() {
-        value = defaultValue;
-        onChange(value);
+        SetValue(defaultValue);
         Save();
     }
 

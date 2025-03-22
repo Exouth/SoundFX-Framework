@@ -21,7 +21,9 @@ namespace SoundFX {
             const auto &[worldToCam] = niCamera->GetRuntimeData();
             const auto &viewport     = niCamera->GetRuntimeData2().port;
 
-            float      x, y, z;
+            float      x;
+            float      y;
+            float      z;
             const bool visible =
                 RE::NiCamera::WorldPtToScreenPt3(worldToCam, viewport, worldPos, x, y, z, 0.0001f);
 
@@ -199,7 +201,8 @@ namespace SoundFX {
         if (!drawList)
             return;
 
-        ImVec2     screenStart, screenEnd;
+        ImVec2     screenStart;
+        ImVec2     screenEnd;
         float      depth;
         const bool startVisible = WorldToScreen(playerPos, screenStart, &depth);
         const bool endVisible   = WorldToScreen(markerPos, screenEnd, &depth);

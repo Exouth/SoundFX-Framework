@@ -16,8 +16,9 @@ namespace SoundFX {
 
     void
         FloatInputSetting::Render() {
-        if (ImGui::InputFloat(name.c_str(), &value)) {
-            onChange(value);
+        float currentValue = GetValue();
+        if (ImGui::InputFloat(GetNameRef().c_str(), &currentValue)) {
+            SetValue(currentValue);
             Save();
         }
 
@@ -27,9 +28,9 @@ namespace SoundFX {
             RenderTooltip();
         }
 
-        if (constexpr float epsilon = 0.01f; std::fabs(value - defaultValue) > epsilon) {
+        if (constexpr float epsilon = 0.01f; std::fabs(GetValue() - GetDefaultValue()) > epsilon) {
             ImGui::SameLine();
-            if (ImGui::Button((std::string(ICON_FA_UNDO) + "##" + name).c_str())) {
+            if (ImGui::Button((std::string(ICON_FA_UNDO) + "##" + GetNameRef()).c_str())) {
                 Reset();
             }
         }

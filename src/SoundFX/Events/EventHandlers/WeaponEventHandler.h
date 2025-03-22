@@ -58,6 +58,13 @@ namespace SoundFX {
             StartWeaponTask(const std::function<void()> &task, bool repeat = false) {
             scheduler.AddTask(task, repeat);
         }
+
+        void
+            HandleAttackEvent(const EventVariant   &event,
+                              const std::string    &soundEffect,
+                              RE::TESHitEvent::Flag flag);
+        void
+            HandleNormalAttack(const EventVariant &event, const std::string &soundEffect);
     };
 
 }
