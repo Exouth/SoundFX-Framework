@@ -1,5 +1,8 @@
 #pragma once
 
+#include <AL/al.h>
+#include <AL/alc.h>
+
 namespace SoundFX {
 
     class Sound3DUtil {

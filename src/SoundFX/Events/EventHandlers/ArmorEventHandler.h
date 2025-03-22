@@ -1,14 +1,16 @@
 #pragma once
 
+#include "JSONLoader.h"
+
 namespace SoundFX {
 
     class ArmorEventHandler final :
         public RE::BSTEventSink<RE::TESContainerChangedEvent>,
         public RE::BSTEventSink<RE::TESEquipEvent> {
-        JSONLoader &jsonLoader;
+        JSONLoader *jsonLoader;
 
       public:
-        explicit ArmorEventHandler(JSONLoader &loader) : jsonLoader(loader) {
+        explicit ArmorEventHandler(JSONLoader *loader) : jsonLoader(loader) {
         }
 
         RE::BSEventNotifyControl

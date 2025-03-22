@@ -1,5 +1,8 @@
 #pragma once
 
+#include <Windows.h>
+#include <imgui_impl_dx11.h>
+
 namespace SoundFX {
     class ImGuiManager {
       public:
@@ -24,5 +27,6 @@ namespace SoundFX {
         static void
                     RenderForeground();
         static bool showDebugUI;
+        static int  debugUIKey;
     };
 }

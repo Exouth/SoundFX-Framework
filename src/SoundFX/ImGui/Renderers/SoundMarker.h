@@ -1,5 +1,7 @@
 #pragma once
 
+#include <imgui.h>
+
 namespace SoundFX {
     class SoundMarker {
       public:
@@ -83,7 +85,6 @@ namespace SoundFX {
             ProcessSoundMarker(const RE::NiPoint3 &soundPos,
                                const RE::NiPoint3 &playerPos,
                                ImDrawList         *drawList,
-                               const RE::NiPoint3 &cameraPos,
                                const std::string  &name,
                                const std::string  &eventType,
                                const std::string  &soundEffect,

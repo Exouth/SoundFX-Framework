@@ -6,6 +6,7 @@ namespace SoundFX {
     class IntSliderSetting final : public IntSetting {
       public:
         IntSliderSetting(std::string              settingName,
+                         std::string              paramIniKey,
                          int                      initialDefaultValue,
                          int                      minRangeValue,
                          int                      maxRangeValue,

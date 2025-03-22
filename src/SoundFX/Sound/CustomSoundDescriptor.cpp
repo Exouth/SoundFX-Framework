@@ -89,10 +89,14 @@ namespace SoundFX {
 
     void
         CustomSoundDescriptor::Unk_01() {
+        // This Method is a placeholder function that is used in derived classes
+        // It is currently empty and has no implementation.
     }
 
     void
         CustomSoundDescriptor::Unk_02() {
+        // This Method is a placeholder function that is used in derived classes
+        // It is currently empty and has no implementation.
     }
 
     std::uint8_t

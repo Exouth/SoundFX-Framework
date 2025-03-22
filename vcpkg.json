@@ -17,6 +17,7 @@
         "nlohmann-json",
         "openal-soft",
         "libsndfile",
+        "simpleini",
         {
           "name": "imgui",
           "features": [

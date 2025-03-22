@@ -51,6 +51,7 @@ Please do not use this in live mod releases until an official stable version is 
 - [libsndfile](https://github.com/libsndfile/libsndfile).
 - [ImGui](https://github.com/ocornut/imgui).
 - [Font Awesome 6 (Free)](https://fontawesome.com/)
+- [simpleini](https://github.com/brofield/simpleini)
 - [Vcpkg](https://vcpkg.io/) for dependency management.
 
 Make sure you have the **“Desktop development with C++”** workload installed in Visual Studio so that `cl.exe`, CMake, and Ninja are available.

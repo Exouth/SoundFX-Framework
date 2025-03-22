@@ -5,6 +5,9 @@
 #include <wrl/client.h>
 
 namespace SoundFX {
+
+    using VTableEntry = HRESULT(__stdcall *)(IDXGISwapChain *, UINT, UINT);
+
     class VTableHook final : public BaseHook {
       public:
         void
@@ -17,8 +20,8 @@ namespace SoundFX {
         static bool
             InitializeResources(IDXGISwapChain *pSwapChain);
         static void
-            HookVTable(void **vTable);
-        static void *
+            HookVTable(VTableEntry *vTable);
+        static VTableEntry *
             GetSwapChainVTable();
 
         static inline Microsoft::WRL::ComPtr<ID3D11Device>           device           = nullptr;

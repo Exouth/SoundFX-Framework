@@ -6,7 +6,7 @@ namespace SoundFX {
     void
         InputEventHook::Install() {
         const REL::Relocation hook {RELOCATION_ID(67315, 68617)};
-        _DispatchInputEvent = SKSE::GetTrampoline().write_call<5>(
+        s_DispatchInputEvent = SKSE::GetTrampoline().write_call<5>(
             hook.address() + REL::VariantOffset(0x7B, 0x7B, 0).offset(), DispatchInputEvent);
     }
 
@@ -16,16 +16,18 @@ namespace SoundFX {
         static RE::InputEvent *dummy[] = {nullptr};
 
         if (!event) {
-            _DispatchInputEvent(dispatcher, event);
+            s_DispatchInputEvent(dispatcher, event);
             return;
         }
 
-        InputListener::GetSingleton()->ProcessEvent(event);
+        if (const auto *listener = InputListener::GetSingleton()) {
+            listener->ProcessEvent(event);
+        }
 
         if (ImGuiManager::IsUIVisible()) {
-            _DispatchInputEvent(dispatcher, dummy);
+            s_DispatchInputEvent(dispatcher, dummy);
         } else {
-            _DispatchInputEvent(dispatcher, event);
+            s_DispatchInputEvent(dispatcher, event);
         }
     }
 }

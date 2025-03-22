@@ -1,4 +1,7 @@
 #include "ArmorEventHandler.h"
+#include "Events/EventHandlerManager.h"
+#include "Sound/SoundUtil.h"
+#include "Utility.h"
 
 namespace SoundFX {
 
@@ -28,16 +31,16 @@ namespace SoundFX {
             return RE::BSEventNotifyControl::kContinue;
         }
 
-        const auto &armors = jsonLoader.getItems("armors");
-        for (const auto &armorEvents : armors | std::views::values) {
+        for (const auto &armors = jsonLoader->getItems("armors");
+             const auto &armorEvents : armors | std::views::values) {
             const auto resolvedFormID =
                 GetFormIDFromEditorIDAndPluginName(armorEvents.editorID, armorEvents.pluginName);
 
             if (resolvedFormID == item->formID) {
                 for (const auto &jsonEvent : armorEvents.events) {
                     if (jsonEvent.type == "PickUp") {
-                        float randomValue = GenerateRandomFloat();
-                        if (randomValue <= jsonEvent.chance) {
+                        if (const float randomValue = GenerateRandomFloat();
+                            randomValue <= jsonEvent.chance) {
                             PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                         }
                         return RE::BSEventNotifyControl::kContinue;
@@ -67,16 +70,16 @@ namespace SoundFX {
 
         if (event->actor->GetObjectReference()
             == RE::PlayerCharacter::GetSingleton()->GetObjectReference()) {
-            const auto &armors = jsonLoader.getItems("armors");
-            for (const auto &armorEvents : armors | std::views::values) {
+            for (const auto &armors = jsonLoader->getItems("armors");
+                 const auto &armorEvents : armors | std::views::values) {
                 const auto resolvedFormID = GetFormIDFromEditorIDAndPluginName(
                     armorEvents.editorID, armorEvents.pluginName);
 
                 if (resolvedFormID == item->formID) {
                     for (const auto &jsonEvent : armorEvents.events) {
                         if (jsonEvent.type == "Equip") {
-                            float randomValue = GenerateRandomFloat();
-                            if (randomValue <= jsonEvent.chance) {
+                            if (const float randomValue = GenerateRandomFloat();
+                                randomValue <= jsonEvent.chance) {
                                 PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                             }
                             return RE::BSEventNotifyControl::kContinue;
@@ -109,16 +112,16 @@ namespace SoundFX {
 
         if (event->actor->GetObjectReference()
             == RE::PlayerCharacter::GetSingleton()->GetObjectReference()) {
-            const auto &armors = jsonLoader.getItems("armors");
-            for (const auto &armorEvents : armors | std::views::values) {
+            for (const auto &armors = jsonLoader->getItems("armors");
+                 const auto &armorEvents : armors | std::views::values) {
                 const auto resolvedFormID = GetFormIDFromEditorIDAndPluginName(
                     armorEvents.editorID, armorEvents.pluginName);
 
                 if (resolvedFormID == item->formID) {
                     for (const auto &jsonEvent : armorEvents.events) {
                         if (jsonEvent.type == "Unequip") {
-                            float randomValue = GenerateRandomFloat();
-                            if (randomValue <= jsonEvent.chance) {
+                            if (const float randomValue = GenerateRandomFloat();
+                                randomValue <= jsonEvent.chance) {
                                 PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
                             }
                             return RE::BSEventNotifyControl::kContinue;

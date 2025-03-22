@@ -2,7 +2,7 @@
 
 namespace SoundFX {
 
-    EventHandlerManager::EventHandlerManager(JSONLoader &jsonLoader) : jsonLoader(jsonLoader) {
+    EventHandlerManager::EventHandlerManager(JSONLoader *jsonLoader) : jsonLoader(jsonLoader) {
     }
 
     void
@@ -90,7 +90,7 @@ namespace SoundFX {
 
     RE::BSEventNotifyControl
         EventHandlerManager::ProcessMultipleEvents(
-            std::initializer_list<RE::BSEventNotifyControl> events) {
+            const std::initializer_list<RE::BSEventNotifyControl> events) {
         for (const auto eventResult : events) {
             if (eventResult == RE::BSEventNotifyControl::kStop) {
                 return RE::BSEventNotifyControl::kStop;

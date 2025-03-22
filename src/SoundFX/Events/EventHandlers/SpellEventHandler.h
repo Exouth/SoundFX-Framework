@@ -1,15 +1,16 @@
 #pragma once
 
+#include "JSONLoader.h"
 #include "TaskScheduler.h"
 
 namespace SoundFX {
 
     class SpellEventHandler final : public RE::BSTEventSink<SKSE::ActionEvent> {
-        JSONLoader   &jsonLoader;
+        JSONLoader   *jsonLoader;
         TaskScheduler scheduler;
 
       public:
-        explicit SpellEventHandler(JSONLoader &loader) : jsonLoader(loader) {
+        explicit SpellEventHandler(JSONLoader *loader) : jsonLoader(loader) {
         }
 
         void
