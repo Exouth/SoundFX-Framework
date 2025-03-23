@@ -102,3 +102,12 @@ if (EXISTS "${MO2_MOD_FOLDER}")
 else()
     message(WARNING "MO2 folder not found, skipping message.")
 endif()
+
+# Launch Mod Organizer 2 with SKSE immediately after successful compilation
+add_custom_target(RunGame
+    COMMAND cmd /C start "" "M:/ADT Skyrim Developement/ModOrganizer.exe" -p "ADT15 - Without ENB" "moshortcut://Portable:SKSE 1.5"
+    VERBATIM
+    DEPENDS ${PROJECT_NAME}
+    COMMENT "Running Skyrim Special Edition with SKSE via Mod Organizer"
+    COMMAND IF %ERRORLEVEL% NEQ 0 (echo "Game launch failed!" && exit 1)
+)
