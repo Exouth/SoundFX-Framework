@@ -161,6 +161,15 @@ namespace SoundFX {
             Config::ConfigManager::GetInstance().Save();
         }
 
+        if (ImGui::IsItemHovered()) {
+            ImGui::BeginTooltip();
+            ImGui::TextUnformatted(
+                "Keeps the log up-to-date during the game.\n"
+                "When enabled, the log viewer continuously shows the latest entries.\n"
+                "If disabled, use 'Reload Log' to manually refresh the log.");
+            ImGui::EndTooltip();
+        }
+
         ImGui::Separator();
 
         ImGui::BeginChild(
