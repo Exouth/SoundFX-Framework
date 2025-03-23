@@ -146,6 +146,15 @@ namespace SoundFX {
         }
 
         ImGui::SameLine();
+        if (ImGui::Button((std::string(ICON_FA_COPY) + " Copy All").c_str())) {
+            std::string allLogText;
+            for (const auto &line : logLines) {
+                allLogText += line + "\n";
+            }
+            ImGui::SetClipboardText(allLogText.c_str());
+        }
+
+        ImGui::SameLine();
         if (ImGui::Checkbox("Auto-Update", &autoUpdate)) {
             Config::ConfigManager::GetInstance().SetValue(
                 "UISettings", "LogViewerAutoUpdate", autoUpdate);
