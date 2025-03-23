@@ -2,6 +2,7 @@
 #include "Config/ConfigManager.h"
 #include "Font_Awesome_6_Free_Solid_900_Edited.otf.h"
 #include "ImGui/Renderers/SoundMarker.h"
+#include "ImGui/Styles/Theme.h"
 #include "ImGui/UI/LogViewer.h"
 #include "ImGui/UI/MainWindow.h"
 #include "ImGui/UI/SoundMarkerListWindow.h"
@@ -18,6 +19,8 @@ namespace SoundFX {
         ImGui::CreateContext();
         ImGui_ImplDX11_Init(device, context);
         ImGui_ImplWin32_Init(hwnd);
+
+        Theme::ApplyTheme();
 
         debugUIKey = Config::ConfigManager::GetInstance().GetValue<int>(
             "GeneralSettings", "DebugUIKey", VK_F1);

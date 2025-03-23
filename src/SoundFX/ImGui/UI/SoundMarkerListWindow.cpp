@@ -1,5 +1,6 @@
 #include "SoundMarkerListWindow.h"
 #include "ImGui/Core/ImGuiManager.h"
+#include "ImGui/Styles/Theme.h"
 #include "Sound/SoundManager.h"
 #include "Utility.h"
 
@@ -66,6 +67,9 @@ namespace SoundFX {
 
         if (activeSounds.empty()) {
             ImGui::Text("No active sound markers.");
+
+            ImGui::Spacing();
+            Theme::RenderFooterLine();
             ImGui::End();
             return;
         }
@@ -110,6 +114,8 @@ namespace SoundFX {
             ImGui::EndTable();
         }
 
+        ImGui::Spacing();
+        Theme::RenderFooterLine();
         ImGui::End();
     }
 

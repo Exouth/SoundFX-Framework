@@ -1,5 +1,6 @@
 #include "LogViewer.h"
 #include "Config/ConfigManager.h"
+#include "ImGui/Styles/Theme.h"
 #include "Logger.h"
 
 namespace SoundFX {
@@ -176,6 +177,9 @@ namespace SoundFX {
         }
 
         ImGui::EndChild();
+
+        ImGui::Spacing();
+        Theme::RenderFooterLine();
         ImGui::End();
     }
 

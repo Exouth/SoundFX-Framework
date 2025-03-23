@@ -1,5 +1,6 @@
 #include "MainWindow.h"
 #include "ImGui/Core/ImGuiManager.h"
+#include "ImGui/Styles/Theme.h"
 #include "LogViewer.h"
 #include "SettingsUI.h"
 
@@ -26,6 +27,8 @@ namespace SoundFX {
             LogViewer::ToggleVisibility();
         }
 
+        ImGui::Spacing();
+        Theme::RenderFooterLine();
         ImGui::End();
 
         if (!open) {
