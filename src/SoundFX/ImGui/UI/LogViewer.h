@@ -4,7 +4,7 @@
 #include <string>
 
 constexpr auto ICON_FA_RELOAD = "\xef\x8b\xb1";  // Unicode: f2f1 / fa-rotate
-constexpr auto ICON_FA_COPY = "\xef\x83\x85";  // Unicode: f0c5 / fa-copy
+constexpr auto ICON_FA_COPY   = "\xef\x83\x85";  // Unicode: f0c5 / fa-copy
 
 namespace SoundFX {
     class LogViewer {
