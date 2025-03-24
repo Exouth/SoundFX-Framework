@@ -202,6 +202,26 @@ namespace SoundFX {
     }
 
     void
+        LogViewer::DisplayLogLines() {
+        const size_t startIdx =
+            logLines.size() > MAX_LOG_LINES ? logLines.size() - MAX_LOG_LINES : 0;
+
+        for (size_t i = startIdx; i < logLines.size(); ++i) {
+            const std::string &line = logLines[i];
+            if (!line.empty() && ShouldDisplayLine(line)) {
+                ImVec4 color = GetLogLineColor(line);
+                ImGui::PushStyleColor(ImGuiCol_Text, color);
+                ImGui::TextUnformatted(line.c_str());
+                ImGui::PopStyleColor();
+            }
+        }
+
+        if (autoUpdate) {
+            ImGui::SetScrollHereY(1.0f);
+        }
+    }
+
+    void
         LogViewer::Render() {
         if (!IsVisible()) {
             return;
@@ -271,23 +291,7 @@ namespace SoundFX {
             "LogScroll", ImVec2(0, 0), true, ImGuiWindowFlags_AlwaysVerticalScrollbar);
 
         if (!logLines.empty()) {
-            const size_t startIdx =
-                logLines.size() > MAX_LOG_LINES ? logLines.size() - MAX_LOG_LINES : 0;
-
-            for (size_t i = startIdx; i < logLines.size(); ++i) {
-                const std::string &line = logLines[i];
-                if (!line.empty() && ShouldDisplayLine(line)) {
-                    ImVec4 color = GetLogLineColor(line);
-                    ImGui::PushStyleColor(ImGuiCol_Text, color);
-                    ImGui::TextUnformatted(line.c_str());
-                    ImGui::PopStyleColor();
-                }
-            }
-
-            if (autoUpdate) {
-                ImGui::SetScrollHereY(1.0f);
-            }
-
+            DisplayLogLines();
         } else {
             ImGui::Text("No log entries available.");
         }

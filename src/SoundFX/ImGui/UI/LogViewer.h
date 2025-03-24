@@ -51,5 +51,7 @@ namespace SoundFX {
                 std::string                                   &filterTypeParam);
         static void
             CopyLogsToClipboard();
+        static void
+            DisplayLogLines();
     };
 }
