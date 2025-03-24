@@ -2,6 +2,7 @@
 #include "Config/ConfigManager.h"
 #include "ImGui/Styles/Theme.h"
 #include "Logger.h"
+#include <algorithm>
 
 namespace SoundFX {
 
@@ -10,6 +11,13 @@ namespace SoundFX {
     std::deque<std::string> LogViewer::logLines;
     size_t                  LogViewer::lastReadSize = 0;
     std::ifstream           LogViewer::logFile;
+
+    const std::unordered_map<std::string, ImVec4> logTypeToColor = {
+        {"[critical]", ImVec4(0.75f, 0.1f, 0.1f, 1.0f)},
+        {"[error]", ImVec4(1.0f, 0.2f, 0.2f, 1.0f)},
+        {"[warning]", ImVec4(1.0f, 0.65f, 0.0f, 1.0f)},
+        {"[info]", ImVec4(0.25f, 0.58f, 0.96f, 1.0f)},
+        {"default", ImVec4(0.9f, 0.9f, 0.9f, 1.0f)}};
 
     void
         LogViewer::Initialize() {
@@ -117,6 +125,15 @@ namespace SoundFX {
         }
     }
 
+    ImVec4
+        LogViewer::GetLogLineColor(const std::string &line) {
+        const auto it = std::ranges::find_if(logTypeToColor, [&line](const auto &pair) {
+            return line.find(pair.first) != std::string::npos;
+        });
+
+        return it != logTypeToColor.end() ? it->second : logTypeToColor.at("default");
+    }
+
     void
         LogViewer::Render() {
         if (!IsVisible()) {
@@ -182,7 +199,10 @@ namespace SoundFX {
             for (size_t i = startIdx; i < logLines.size(); ++i) {
                 const std::string &line = logLines[i];
                 if (!line.empty()) {
+                    ImVec4 color = GetLogLineColor(line);
+                    ImGui::PushStyleColor(ImGuiCol_Text, color);
                     ImGui::TextUnformatted(line.c_str());
+                    ImGui::PopStyleColor();
                 }
             }
 

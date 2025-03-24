@@ -1,4 +1,5 @@
 #pragma once
+#include "imgui.h"
 #include <deque>
 #include <fstream>
 #include <string>
@@ -39,5 +40,7 @@ namespace SoundFX {
             ReloadLogFile();
         static void
             LoadSettings();
+        static ImVec4
+            GetLogLineColor(const std::string &line);
     };
 }
