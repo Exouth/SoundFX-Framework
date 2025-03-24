@@ -11,13 +11,16 @@ namespace SoundFX {
     std::deque<std::string> LogViewer::logLines;
     size_t                  LogViewer::lastReadSize = 0;
     std::ifstream           LogViewer::logFile;
+    std::string             LogViewer::filterType = "All";
 
     const std::unordered_map<std::string, ImVec4> logTypeToColor = {
-        {"[critical]", ImVec4(0.75f, 0.1f, 0.1f, 1.0f)},
-        {"[error]", ImVec4(1.0f, 0.2f, 0.2f, 1.0f)},
-        {"[warning]", ImVec4(1.0f, 0.65f, 0.0f, 1.0f)},
-        {"[info]", ImVec4(0.25f, 0.58f, 0.96f, 1.0f)},
-        {"default", ImVec4(0.9f, 0.9f, 0.9f, 1.0f)}};
+        {"[All]", ImVec4(0.9f, 0.9f, 0.9f, 1.0f)},        // All (White in Combobox)
+        {"[critical]", ImVec4(0.75f, 0.1f, 0.1f, 1.0f)},  // Red
+        {"[error]", ImVec4(1.0f, 0.2f, 0.2f, 1.0f)},      // Light Red
+        {"[warning]", ImVec4(1.0f, 0.65f, 0.0f, 1.0f)},   // Orange
+        {"[info]", ImVec4(0.25f, 0.58f, 0.96f, 1.0f)},    // Blue
+        {"other", ImVec4(0.5f, 0.5f, 0.5f, 1.0f)}         // Grey
+    };
 
     void
         LogViewer::Initialize() {
@@ -44,6 +47,8 @@ namespace SoundFX {
             "UISettings", "LogViewerAutoUpdate", true);
         visible = Config::ConfigManager::GetInstance().GetValue<bool>(
             "UISettings", "LogViewerVisible", true);
+        filterType = Config::ConfigManager::GetInstance().GetValue<std::string>(
+            "UISettings", "LogViewerFilterType", "All");
     }
 
     void
@@ -131,7 +136,69 @@ namespace SoundFX {
             return line.find(pair.first) != std::string::npos;
         });
 
-        return it != logTypeToColor.end() ? it->second : logTypeToColor.at("default");
+        return it != logTypeToColor.end() ? it->second : logTypeToColor.at("other");
+    }
+
+    bool
+        LogViewer::ShouldDisplayLine(const std::string &line) {
+        if (filterType == "All") {
+            return true;
+        }
+
+        if (line.find("[" + filterType + "]") != std::string::npos) {
+            return true;
+        }
+
+        if (filterType == "other" && line.find('[') == std::string::npos) {
+            return true;
+        }
+
+        return false;
+    }
+
+    void
+        LogViewer::RenderLogTypeComboBox(
+            const std::unordered_map<std::string, ImVec4> &logTypeToColorParam,
+            std::string                                   &filterTypeParam) {
+
+        if (ImGui::BeginCombo("Filter by Type", filterTypeParam.c_str())) {
+            for (const auto &[fst, snd] : logTypeToColorParam) {
+                const std::string &formattedType = fst;
+
+                std::string displayType = formattedType;
+                if (formattedType.front() == '[' && formattedType.back() == ']') {
+                    displayType = formattedType.substr(1, formattedType.size() - 2);
+                }
+
+                const bool isSelected = filterTypeParam == displayType;
+                ImVec4     color      = snd;
+
+                ImGui::PushStyleColor(ImGuiCol_Text, color);
+                if (ImGui::Selectable(displayType.c_str(), isSelected)) {
+                    filterTypeParam = displayType;
+                    Config::ConfigManager::GetInstance().SetValue(
+                        "UISettings", "LogViewerFilterType", filterTypeParam);
+                    Config::ConfigManager::GetInstance().Save();
+                }
+                ImGui::PopStyleColor();
+
+                if (isSelected) {
+                    ImGui::SetItemDefaultFocus();
+                }
+            }
+            ImGui::EndCombo();
+        }
+    }
+
+    void
+        LogViewer::CopyLogsToClipboard() {
+        std::string filteredLogText;
+        for (const auto &line : logLines) {
+            if (!line.empty() && ShouldDisplayLine(line)) {
+                filteredLogText += line + "\n";
+            }
+        }
+        ImGui::SetClipboardText(filteredLogText.c_str());
     }
 
     void
@@ -164,11 +231,22 @@ namespace SoundFX {
 
         ImGui::SameLine();
         if (ImGui::Button((std::string(ICON_FA_COPY) + " Copy All").c_str())) {
-            std::string allLogText;
-            for (const auto &line : logLines) {
-                allLogText += line + "\n";
-            }
-            ImGui::SetClipboardText(allLogText.c_str());
+            CopyLogsToClipboard();
+        }
+
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(150);
+        RenderLogTypeComboBox(logTypeToColor, filterType);
+
+        if (ImGui::IsItemHovered()) {
+            ImGui::BeginTooltip();
+            ImGui::TextUnformatted(
+                "Select a log type to filter the displayed log entries.\n"
+                "Options: All, info, warning, error, critical, other.");
+            ImGui::Spacing();
+            ImGui::TextUnformatted(
+                "(other: Displays log entries that do not contain a specific log type prefix.)");
+            ImGui::EndTooltip();
         }
 
         ImGui::SameLine();
@@ -198,7 +276,7 @@ namespace SoundFX {
 
             for (size_t i = startIdx; i < logLines.size(); ++i) {
                 const std::string &line = logLines[i];
-                if (!line.empty()) {
+                if (!line.empty() && ShouldDisplayLine(line)) {
                     ImVec4 color = GetLogLineColor(line);
                     ImGui::PushStyleColor(ImGuiCol_Text, color);
                     ImGui::TextUnformatted(line.c_str());

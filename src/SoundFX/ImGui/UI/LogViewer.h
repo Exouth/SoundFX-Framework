@@ -31,6 +31,7 @@ namespace SoundFX {
         static std::deque<std::string> logLines;
         static size_t                  lastReadSize;
         static std::ifstream           logFile;
+        static std::string             filterType;
 
         static constexpr size_t MAX_LOG_LINES = 1000;
 
@@ -42,5 +43,13 @@ namespace SoundFX {
             LoadSettings();
         static ImVec4
             GetLogLineColor(const std::string &line);
+        static bool
+            ShouldDisplayLine(const std::string &line);
+        static void
+            RenderLogTypeComboBox(
+                const std::unordered_map<std::string, ImVec4> &logTypeToColorParam,
+                std::string                                   &filterTypeParam);
+        static void
+            CopyLogsToClipboard();
     };
 }
