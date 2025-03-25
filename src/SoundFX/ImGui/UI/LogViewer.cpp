@@ -28,7 +28,7 @@ namespace SoundFX {
         LoadSettings();
 
         if (const auto logDirectoryOpt = Logger::GetLogDirectory(); logDirectoryOpt.has_value()) {
-            const auto logFilePath = logDirectoryOpt.value() / "SoundFXFramework.log";
+            const auto logFilePath = logDirectoryOpt.value() / LOG_FILE_NAME;
             logFile.open(logFilePath, std::ios::in);
             if (logFile.is_open()) {
                 lastReadSize = logFile.tellg();
@@ -120,7 +120,7 @@ namespace SoundFX {
             return;
         }
 
-        const auto logFilePath = logDirectoryOpt.value() / "SoundFXFramework.log";
+        const auto logFilePath = logDirectoryOpt.value() / LOG_FILE_NAME;
 
         if (!is_regular_file(logFilePath)) {
             const std::string errorMessage =
@@ -272,6 +272,33 @@ namespace SoundFX {
     }
 
     void
+        LogViewer::ClearLogs() {
+        logLines.clear();
+        lastReadSize = 0;
+
+        if (logFile.is_open()) {
+            logFile.close();
+        }
+
+        if (const auto logDirectoryOpt = Logger::GetLogDirectory(); logDirectoryOpt.has_value()) {
+            const auto    logFilePath = logDirectoryOpt.value() / LOG_FILE_NAME;
+            std::ofstream ofs(logFilePath, std::ios::trunc);
+            if (!ofs) {
+                spdlog::error("Failed to clear log file: {}", logFilePath.string());
+                return;
+            }
+            ofs.close();
+
+            logFile.open(logFilePath, std::ios::in);
+            if (!logFile.is_open()) {
+                spdlog::error("Failed to reopen log file after clearing.");
+            }
+        } else {
+            spdlog::error("Log directory not found.");
+        }
+    }
+
+    void
         LogViewer::Render() {
         if (!IsVisible()) {
             return;
@@ -302,6 +329,11 @@ namespace SoundFX {
         ImGui::SameLine();
         if (ImGui::Button((std::string(ICON_FA_COPY) + " Copy All").c_str())) {
             CopyLogsToClipboard();
+        }
+
+        ImGui::SameLine();
+        if (ImGui::Button((std::string(ICON_FA_ERASER) + " Clear Log").c_str())) {
+            ClearLogs();
         }
 
         ImGui::SameLine();
