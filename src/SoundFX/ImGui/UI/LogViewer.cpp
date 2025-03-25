@@ -12,6 +12,7 @@ namespace SoundFX {
     size_t                  LogViewer::lastReadSize = 0;
     std::ifstream           LogViewer::logFile;
     std::string             LogViewer::filterType = "All";
+    std::string             LogViewer::searchText;
 
     const std::unordered_map<std::string, ImVec4> logTypeToColor = {
         {"[All]", ImVec4(0.9f, 0.9f, 0.9f, 1.0f)},        // All (White in Combobox)
@@ -104,30 +105,48 @@ namespace SoundFX {
 
     void
         LogViewer::ReloadLogFile() {
-        if (logFile.is_open()) {
-            logFile.close();
+        if (!logFile.is_open()) {
+            const std::string errorMessage = "Error: Log file is not open during reload.";
+            logLines.emplace_back(errorMessage);
+            spdlog::error(errorMessage);
+            return;
         }
 
-        if (const auto logDirectoryOpt = Logger::GetLogDirectory(); logDirectoryOpt.has_value()) {
-            const auto logFilePath = logDirectoryOpt.value() / "SoundFXFramework.log";
-
-            if (const size_t currentSize = file_size(logFilePath); currentSize == lastReadSize) {
-                return;
-            }
-
-            logFile.open(logFilePath, std::ios::in);
-            if (logFile.is_open()) {
-                logLines.clear();
-                lastReadSize = 0;
-                ReadLogFile();
-            } else {
-                logLines.emplace_back("Error: Could not open log file during reload.");
-                spdlog::error("Could not open log file during reload.");
-            }
-        } else {
-            logLines.emplace_back("Error: Log directory not found during reload.");
-            spdlog::error("Log directory not found during reload.");
+        const auto logDirectoryOpt = Logger::GetLogDirectory();
+        if (!logDirectoryOpt.has_value()) {
+            const std::string errorMessage = "Error: Log directory not found during reload.";
+            logLines.emplace_back(errorMessage);
+            spdlog::error(errorMessage);
+            return;
         }
+
+        const auto logFilePath = logDirectoryOpt.value() / "SoundFXFramework.log";
+
+        if (!is_regular_file(logFilePath)) {
+            const std::string errorMessage =
+                "Error: Log file does not exist or is not a regular file.";
+            logLines.emplace_back(errorMessage);
+            spdlog::error(errorMessage);
+            return;
+        }
+
+        const size_t currentSize = file_size(logFilePath);
+        if (currentSize == lastReadSize) {
+            return;
+        }
+
+        logFile.close();
+        logFile.open(logFilePath, std::ios::in);
+        if (!logFile.is_open()) {
+            const std::string errorMessage = "Error: Could not open log file during reload.";
+            logLines.emplace_back(errorMessage);
+            spdlog::error(errorMessage);
+            return;
+        }
+
+        logLines.clear();
+        lastReadSize = 0;
+        ReadLogFile();
     }
 
     ImVec4
@@ -194,7 +213,7 @@ namespace SoundFX {
         LogViewer::CopyLogsToClipboard() {
         std::string filteredLogText;
         for (const auto &line : logLines) {
-            if (!line.empty() && ShouldDisplayLine(line)) {
+            if (!line.empty() && ShouldDisplayLine(line) && MatchesSearch(line)) {
                 filteredLogText += line + "\n";
             }
         }
@@ -206,9 +225,12 @@ namespace SoundFX {
         const size_t startIdx =
             logLines.size() > MAX_LOG_LINES ? logLines.size() - MAX_LOG_LINES : 0;
 
+        static size_t previousLogSize = 0;
+        const bool    newLogsAdded    = logLines.size() > previousLogSize;
+
         for (size_t i = startIdx; i < logLines.size(); ++i) {
             const std::string &line = logLines[i];
-            if (!line.empty() && ShouldDisplayLine(line)) {
+            if (!line.empty() && ShouldDisplayLine(line) && MatchesSearch(line)) {
                 ImVec4 color = GetLogLineColor(line);
                 ImGui::PushStyleColor(ImGuiCol_Text, color);
                 ImGui::TextUnformatted(line.c_str());
@@ -216,8 +238,36 @@ namespace SoundFX {
             }
         }
 
-        if (autoUpdate) {
+        if (autoUpdate && newLogsAdded) {
             ImGui::SetScrollHereY(1.0f);
+        }
+
+        previousLogSize = logLines.size();
+    }
+
+    bool
+        LogViewer::MatchesSearch(const std::string &line) {
+        if (searchText.empty()) {
+            return true;
+        }
+        return line.find(searchText) != std::string::npos;
+    }
+
+    void
+        LogViewer::RenderSearchBox() {
+        char searchBuffer[256];
+        strncpy_s(searchBuffer, sizeof(searchBuffer), searchText.c_str(), _TRUNCATE);
+
+        if (ImGui::InputTextWithHint(
+                "##SearchBox", "Search...", searchBuffer, sizeof(searchBuffer))) {
+            searchText = searchBuffer;
+        }
+
+        if (!searchText.empty()) {
+            ImGui::SameLine();
+            if (ImGui::Button(ICON_FA_XMARK)) {
+                searchText.clear();
+            }
         }
     }
 
@@ -286,6 +336,9 @@ namespace SoundFX {
         }
 
         ImGui::Separator();
+
+        ImGui::SetNextItemWidth(400);
+        RenderSearchBox();
 
         ImGui::BeginChild(
             "LogScroll", ImVec2(0, 0), true, ImGuiWindowFlags_AlwaysVerticalScrollbar);

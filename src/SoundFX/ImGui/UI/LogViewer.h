@@ -6,6 +6,7 @@
 
 constexpr auto ICON_FA_RELOAD = "\xef\x8b\xb1";  // Unicode: f2f1 / fa-rotate
 constexpr auto ICON_FA_COPY   = "\xef\x83\x85";  // Unicode: f0c5 / fa-copy
+constexpr auto ICON_FA_XMARK  = "\xef\x80\x8d";  // Unicode: f00d / fa-xmark
 
 namespace SoundFX {
     class LogViewer {
@@ -32,6 +33,7 @@ namespace SoundFX {
         static size_t                  lastReadSize;
         static std::ifstream           logFile;
         static std::string             filterType;
+        static std::string             searchText;
 
         static constexpr size_t MAX_LOG_LINES = 1000;
 
@@ -45,6 +47,8 @@ namespace SoundFX {
             GetLogLineColor(const std::string &line);
         static bool
             ShouldDisplayLine(const std::string &line);
+        static bool
+            MatchesSearch(const std::string &line);
         static void
             RenderLogTypeComboBox(
                 const std::unordered_map<std::string, ImVec4> &logTypeToColorParam,
@@ -53,5 +57,7 @@ namespace SoundFX {
             CopyLogsToClipboard();
         static void
             DisplayLogLines();
+        static void
+            RenderSearchBox();
     };
 }
