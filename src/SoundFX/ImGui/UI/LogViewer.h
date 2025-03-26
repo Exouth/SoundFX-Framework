@@ -8,6 +8,7 @@ constexpr auto ICON_FA_RELOAD = "\xef\x8b\xb1";  // Unicode: f2f1 / fa-rotate
 constexpr auto ICON_FA_COPY   = "\xef\x83\x85";  // Unicode: f0c5 / fa-copy
 constexpr auto ICON_FA_XMARK  = "\xef\x80\x8d";  // Unicode: f00d / fa-xmark
 constexpr auto ICON_FA_ERASER = "\xef\x84\xad";  // Unicode: f12d / fa-eraser
+constexpr auto ICON_FA_MGLASS = "\xef\x80\x82";  // Unicode: f002 / fa-magnifying-glass
 
 namespace SoundFX {
     class LogViewer {
