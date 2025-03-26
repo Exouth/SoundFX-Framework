@@ -2,13 +2,6 @@
 #include <ranges>
 #include <sndfile.h>
 
-namespace {
-    ALCdevice  *sharedDevice  = nullptr;
-    ALCcontext *sharedContext = nullptr;
-
-    std::unordered_map<std::string, ALuint> bufferCache;
-}
-
 namespace SoundFX {
 
     bool
@@ -27,7 +20,7 @@ namespace SoundFX {
             return {0.0f, 0.0f, 1.0f};  // Fallback
         }
 
-        auto rotationMatrix = object->world.rotate;
+        const auto rotationMatrix = object->world.rotate;
 
         return {
             rotationMatrix.entry[0][1],  // x
@@ -64,15 +57,18 @@ namespace SoundFX {
 
     ALuint
         Sound3DUtil::LoadAudioBuffer(const std::string &filePath) {
-
-        if (bufferCache.contains(filePath)) {
-            return bufferCache[filePath];
+        {
+            std::lock_guard lock(bufferCacheMutex);
+            const auto      it = bufferCache.find(filePath);
+            if (it != bufferCache.end()) {
+                return it->second;
+            }
         }
 
-        const std::string fullPath = "Data/" + filePath;
+        const std::filesystem::path fullPath = std::filesystem::path("Data") / filePath;
 
         SF_INFO  fileInfo {};
-        SNDFILE *sndFile = sf_open(fullPath.c_str(), SFM_READ, &fileInfo);
+        SNDFILE *sndFile = sf_open(fullPath.string().c_str(), SFM_READ, &fileInfo);
         if (!sndFile) {
             spdlog::error("Failed to open audio file: {}", filePath);
             return 0;
@@ -85,33 +81,22 @@ namespace SoundFX {
         }
 
         std::vector<short> samples(fileInfo.frames * fileInfo.channels);
-
-        if (samples.size() > static_cast<size_t>(std::numeric_limits<sf_count_t>::max())) {
-            spdlog::error("Sample size exceeds the allowed range for sf_count_t!");
-            return 0;
-        }
-
         sf_read_short(sndFile, samples.data(), static_cast<sf_count_t>(samples.size()));
         sf_close(sndFile);
 
         ALuint buffer;
         alGenBuffers(1, &buffer);
-
         const ALenum format = fileInfo.channels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16;
-
-        if (samples.size() * sizeof(short)
-            > static_cast<size_t>(std::numeric_limits<ALsizei>::max())) {
-            spdlog::error("Audio buffer size exceeds the allowed range for OpenAL!");
-            return 0;
-        }
-
         alBufferData(buffer,
                      format,
                      samples.data(),
                      static_cast<ALsizei>(samples.size() * sizeof(short)),
                      fileInfo.samplerate);
 
-        bufferCache[filePath] = buffer;
+        {
+            std::lock_guard lock(bufferCacheMutex);
+            bufferCache[filePath] = buffer;
+        }
 
         return buffer;
     }
@@ -163,11 +148,10 @@ namespace SoundFX {
 
         alSourcePlay(source);
 
-        std::thread([source, worldSourcePos] {
+        std::thread([source, worldSourcePos, maxDistance, gain] {
             ALint state = AL_PLAYING;
 
-            RE::NiPoint3 initialPlayerPosition;
-            bool         isInitialized = false;
+            bool isInitialized = false;
 
             while (state == AL_PLAYING) {
                 if (const auto *player = RE::PlayerCharacter::GetSingleton();
@@ -175,14 +159,18 @@ namespace SoundFX {
                     const RE::NiPoint3 currentPlayerPosition = player->GetPosition();
 
                     if (!isInitialized) {
-                        initialPlayerPosition = currentPlayerPosition;
-                        isInitialized         = true;
+                        isInitialized = true;
                     }
 
                     const RE::NiPoint3 relativeSourcePos = {
-                        worldSourcePos.x - (currentPlayerPosition.x - initialPlayerPosition.x),
-                        worldSourcePos.y - (currentPlayerPosition.y - initialPlayerPosition.y),
-                        worldSourcePos.z - (currentPlayerPosition.z - initialPlayerPosition.z)};
+                        worldSourcePos.x - currentPlayerPosition.x,
+                        worldSourcePos.y - currentPlayerPosition.y,
+                        worldSourcePos.z - currentPlayerPosition.z};
+
+                    const float distance = relativeSourcePos.Length();
+                    float       volume   = 1.0f - distance / maxDistance;
+                    volume               = std::clamp(volume, 0.0f, 1.0f);
+                    alSourcef(source, AL_GAIN, volume * gain);
 
                     const RE::NiPoint3     forwardVector = GetForwardVector(player->Get3D());
                     constexpr RE::NiPoint3 upVector      = {0.0f, 0.0f, 1.0f};
