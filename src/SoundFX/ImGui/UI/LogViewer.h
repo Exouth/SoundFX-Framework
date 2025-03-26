@@ -65,5 +65,9 @@ namespace SoundFX {
             RenderSearchBox();
         static void
             ClearLogs();
+        static size_t
+            CountFilteredLines();
+        static void
+            RenderCountLines();
     };
 }

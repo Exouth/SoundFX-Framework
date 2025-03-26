@@ -301,6 +301,29 @@ namespace SoundFX {
         }
     }
 
+    size_t
+        LogViewer::CountFilteredLines() {
+        size_t count = 0;
+        for (const auto &line : logLines) {
+            if (!line.empty() && ShouldDisplayLine(line) && MatchesSearch(line)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    void
+        LogViewer::RenderCountLines() {
+        size_t filteredCount = CountFilteredLines();
+        size_t totalCount    = logLines.size();
+
+        float windowWidth = ImGui::GetWindowSize().x;
+        float textWidth   = ImGui::CalcTextSize(" 9999/9999 Lines").x;
+
+        ImGui::SameLine(windowWidth - textWidth);
+        ImGui::Text("%zu/%zu Lines", filteredCount, totalCount);
+    }
+
     void
         LogViewer::Render() {
         if (!IsVisible()) {
@@ -373,6 +396,8 @@ namespace SoundFX {
         ImGui::Separator();
 
         RenderSearchBox();
+
+        RenderCountLines();
 
         ImGui::BeginChild(
             "LogScroll", ImVec2(0, 0), true, ImGuiWindowFlags_AlwaysVerticalScrollbar);
