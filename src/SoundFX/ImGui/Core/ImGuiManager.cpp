@@ -31,8 +31,9 @@ namespace SoundFX {
         io.Fonts->AddFontDefault();
         static constexpr ImWchar icons_ranges[] = {0xf000, 0xf3ff, 0};
         ImFontConfig             icons_config;
-        icons_config.MergeMode  = true;
-        icons_config.PixelSnapH = true;
+        icons_config.MergeMode     = true;
+        icons_config.PixelSnapH    = true;
+        icons_config.GlyphOffset.y = 3.0f;
         io.Fonts->AddFontFromMemoryTTF(FontAwesome6Free_Solid_Edited_otf,
                                        sizeof(FontAwesome6Free_Solid_Edited_otf),
                                        16.0f,

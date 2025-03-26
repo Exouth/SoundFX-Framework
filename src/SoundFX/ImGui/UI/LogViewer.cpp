@@ -258,18 +258,11 @@ namespace SoundFX {
         char searchBuffer[256];
         strncpy_s(searchBuffer, sizeof(searchBuffer), searchText.c_str(), _TRUNCATE);
 
-        ImGui::BeginGroup();
-
-        float currentY = ImGui::GetCursorPosY();
-        ImGui::SetCursorPosY(currentY + 8);
-        ImGui::TextUnformatted(ICON_FA_MGLASS);
-        ImGui::SameLine();
-
-        ImGui::SetCursorPosY(currentY);
-
         ImGui::SetNextItemWidth(400);
-        if (ImGui::InputTextWithHint(
-                "##SearchBox", "Search...", searchBuffer, sizeof(searchBuffer))) {
+        if (ImGui::InputTextWithHint("##SearchBox",
+                                     (std::string(ICON_FA_MGLASS) + " Search...").c_str(),
+                                     searchBuffer,
+                                     sizeof(searchBuffer))) {
             searchText = searchBuffer;
         }
 
@@ -279,8 +272,6 @@ namespace SoundFX {
                 searchText.clear();
             }
         }
-
-        ImGui::EndGroup();
     }
 
     void
