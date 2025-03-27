@@ -7,6 +7,14 @@
 namespace SoundFX {
 
     void
+        SoundMarkerListWindow::RenderActiveSoundCount(size_t count) {
+        float windowWidth = ImGui::GetWindowSize().x;
+        float textWidth   = ImGui::CalcTextSize("9999 Active Sound Markers").x;
+        ImGui::SameLine(windowWidth - textWidth - 10);
+        ImGui::Text("%zu Active Sound Markers", count);
+    }
+
+    void
         SoundMarkerListWindow::Render() {
         if (!ImGuiManager::showSoundMarkerList) {
             return;
@@ -64,6 +72,8 @@ namespace SoundFX {
             break;
         default: break;
         }
+
+        RenderActiveSoundCount(activeSounds.size());
 
         if (activeSounds.empty()) {
             ImGui::Text("No active sound markers.");

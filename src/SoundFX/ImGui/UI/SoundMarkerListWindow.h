@@ -5,5 +5,9 @@ namespace SoundFX {
       public:
         static void
             Render();
+
+      private:
+        static void
+            RenderActiveSoundCount(size_t count);
     };
 }
