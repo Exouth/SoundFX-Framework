@@ -35,11 +35,14 @@ namespace SoundFX {
 
         static bool
             InitializeSharedContext();
+        static float
+            GetIngameVolumeFactor();
 
         static inline ALCdevice                              *sharedDevice  = nullptr;
         static inline ALCcontext                             *sharedContext = nullptr;
         static inline std::unordered_map<std::string, ALuint> bufferCache;
         static inline std::mutex                              bufferCacheMutex;
+        static inline std::atomic<float>                      cachedVolume = 1.0f;
     };
 
 }

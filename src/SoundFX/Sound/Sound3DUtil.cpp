@@ -7,7 +7,7 @@ namespace SoundFX {
     bool
         Sound3DUtil::InitializeOpenAL() {
         if (!InitializeSharedContext()) {
-            spdlog::error("OpenAL could not be initialized.");
+            spdlog::critical("OpenAL could not be initialized.");
             return false;
         }
         return true;
@@ -33,7 +33,7 @@ namespace SoundFX {
         Sound3DUtil::InitializeDevice() {
         ALCdevice *device = alcOpenDevice(nullptr);
         if (!device) {
-            spdlog::error("Failed to open OpenAL device.");
+            spdlog::critical("Failed to open OpenAL device.");
         }
         return device;
     }
@@ -44,9 +44,15 @@ namespace SoundFX {
             return nullptr;
         }
 
-        ALCcontext *context = alcCreateContext(device, nullptr);
+        const ALCint attributes[] = {ALC_MONO_SOURCES,
+                                     4000,  // Maximum number of mono sources
+                                     ALC_STEREO_SOURCES,
+                                     4000,  // Maximum number of stereo sources
+                                     0};
+
+        ALCcontext *context = alcCreateContext(device, attributes);
         if (!context || alcMakeContextCurrent(context) == ALC_FALSE) {
-            spdlog::error("Failed to create or set OpenAL context.");
+            spdlog::critical("Failed to create or set OpenAL context.");
             alcDestroyContext(context);
             alcCloseDevice(device);
             return nullptr;
@@ -81,7 +87,12 @@ namespace SoundFX {
         }
 
         std::vector<short> samples(fileInfo.frames * fileInfo.channels);
-        sf_read_short(sndFile, samples.data(), static_cast<sf_count_t>(samples.size()));
+        if (sf_read_short(sndFile, samples.data(), static_cast<sf_count_t>(samples.size()))
+            < samples.size()) {
+            spdlog::error("Failed to read audio samples from file: {}", filePath);
+            sf_close(sndFile);
+            return 0;
+        }
         sf_close(sndFile);
 
         ALuint buffer;
@@ -92,6 +103,11 @@ namespace SoundFX {
                      samples.data(),
                      static_cast<ALsizei>(samples.size() * sizeof(short)),
                      fileInfo.samplerate);
+        if (alGetError() != AL_NO_ERROR) {
+            spdlog::error("Failed to fill OpenAL buffer with audio data.");
+            alDeleteBuffers(1, &buffer);
+            return 0;
+        }
 
         {
             std::lock_guard lock(bufferCacheMutex);
@@ -139,14 +155,23 @@ namespace SoundFX {
 
         ALuint source;
         alGenSources(1, &source);
+        if (alGetError() != AL_NO_ERROR) {
+            spdlog::error("Failed to generate OpenAL source.");
+            return 0;
+        }
+
         alSourcei(source, AL_BUFFER, static_cast<ALint>(buffer));
         alSourcef(source, AL_REFERENCE_DISTANCE, referenceDistance);
         alSourcef(source, AL_MAX_DISTANCE, maxDistance);
         alSourcef(source, AL_ROLLOFF_FACTOR, rolloffFactor);
-        alSourcef(source, AL_GAIN, gain);
         alSourcef(source, AL_MIN_GAIN, minGain);
 
         alSourcePlay(source);
+        if (alGetError() != AL_NO_ERROR) {
+            spdlog::error("Failed to play OpenAL source.");
+            alDeleteSources(1, &source);
+            return 0;
+        }
 
         std::thread([source, worldSourcePos, maxDistance, gain] {
             ALint state = AL_PLAYING;
@@ -170,7 +195,15 @@ namespace SoundFX {
                     const float distance = relativeSourcePos.Length();
                     float       volume   = 1.0f - distance / maxDistance;
                     volume               = std::clamp(volume, 0.0f, 1.0f);
-                    alSourcef(source, AL_GAIN, volume * gain);
+
+                    const float ingameVolume = GetIngameVolumeFactor();
+                    const float finalVolume  = volume * gain * ingameVolume;
+
+                    float currentGain;
+                    alGetSourcef(source, AL_GAIN, &currentGain);
+                    if (std::abs(currentGain - finalVolume) > 0.01f) {
+                        alSourcef(source, AL_GAIN, finalVolume);
+                    }
 
                     const RE::NiPoint3     forwardVector = GetForwardVector(player->Get3D());
                     constexpr RE::NiPoint3 upVector      = {0.0f, 0.0f, 1.0f};
@@ -191,10 +224,13 @@ namespace SoundFX {
                 }
 
                 alGetSourcei(source, AL_SOURCE_STATE, &state);
-                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                std::this_thread::sleep_for(std::chrono::milliseconds(50));
             }
 
             alDeleteSources(1, &source);
+            if (alGetError() != AL_NO_ERROR) {
+                spdlog::critical("Failed to delete OpenAL source: {}", source);
+            }
         }).detach();
 
         return source;
@@ -218,4 +254,18 @@ namespace SoundFX {
         }
     }
 
+    float
+        Sound3DUtil::GetIngameVolumeFactor() {
+        if (auto *settings = RE::INIPrefSettingCollection::GetSingleton()) {
+            if (const auto *volumeSetting = settings->GetSetting("fAudioMasterVolume:AudioMenu")) {
+                const float     newVolume = volumeSetting->data.f;
+                constexpr float epsilon   = 0.0001f;
+                if (std::abs(newVolume - cachedVolume.load()) > epsilon) {
+                    cachedVolume.store(newVolume);
+                }
+                return cachedVolume.load();
+            }
+        }
+        return 1.0f;
+    }
 }
