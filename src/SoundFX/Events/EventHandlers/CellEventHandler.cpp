@@ -1,5 +1,5 @@
 #include "CellEventHandler.h"
-#include "Sound/SoundUtil.h"
+#include "Sound/SoundManager.h"
 #include "Utility.h"
 
 namespace SoundFX {
@@ -49,7 +49,15 @@ namespace SoundFX {
                         if (jsonEvent.type == "Enter") {
                             if (const float randomValue = GenerateRandomFloat();
                                 randomValue <= jsonEvent.chance) {
-                                PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
+                                SoundManager::PlaySound(cellEvents.name,
+                                                        jsonEvent.type,
+                                                        jsonEvent.soundEffect,
+                                                        {8029.8643f, -69089.37f, 4815.15f},
+                                                        100.0f,
+                                                        1000.0f,
+                                                        jsonEvent.volume,
+                                                        jsonEvent.isAbsoluteVolume,
+                                                        true);
                             }
                             return;
                         }
@@ -90,7 +98,15 @@ namespace SoundFX {
                         if (jsonEvent.type == "Ambience") {
                             if (const float randomValue = GenerateRandomFloat();
                                 randomValue <= jsonEvent.chance) {
-                                PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
+                                SoundManager::PlaySound(cellEvents.name,
+                                                        jsonEvent.type,
+                                                        jsonEvent.soundEffect,
+                                                        {8029.8643f, -69089.37f, 4815.15f},
+                                                        100.0f,
+                                                        1000.0f,
+                                                        jsonEvent.volume,
+                                                        jsonEvent.isAbsoluteVolume,
+                                                        true);
                             }
                             return;
                         }

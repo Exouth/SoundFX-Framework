@@ -5,7 +5,7 @@
 
 namespace SoundFX {
 
-    class Sound3DUtil {
+    class Sound3D {
       public:
         static bool
             InitializeOpenAL();
@@ -15,8 +15,9 @@ namespace SoundFX {
                         const RE::NiPoint3 &worldSourcePos,
                         float               referenceDistance = 100.0f,
                         float               maxDistance       = 1000.0f,
-                        float               rolloffFactor     = 1.0f,
                         float               gain              = 1.0f,
+                        bool                isAbsoluteVolume  = true,
+                        float               rolloffFactor     = 1.0f,
                         float               minGain           = 0.0f);
 
         static void
@@ -35,8 +36,6 @@ namespace SoundFX {
 
         static bool
             InitializeSharedContext();
-        static float
-            GetIngameVolumeFactor();
 
         static inline ALCdevice                              *sharedDevice  = nullptr;
         static inline ALCcontext                             *sharedContext = nullptr;

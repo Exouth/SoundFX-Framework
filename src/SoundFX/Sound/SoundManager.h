@@ -49,6 +49,8 @@ namespace SoundFX {
                       const RE::NiPoint3 &position,
                       float               referenceDistance,
                       float               maxDistance,
+                      float               gain,
+                      bool                isAbsoluteVolume,
                       bool                is3D);
         static bool
             IsSoundPlaying(std::size_t soundID);

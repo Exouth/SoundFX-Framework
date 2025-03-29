@@ -1,6 +1,6 @@
 #include "QuestEventHandler.h"
 #include "Events/EventHandlerManager.h"
-#include "Sound/SoundUtil.h"
+#include "Sound/SoundManager.h"
 #include "Utility.h"
 
 namespace SoundFX {
@@ -60,7 +60,15 @@ namespace SoundFX {
                     if (jsonEvent.type == "Start" && event->stage == startStage) {
                         if (const float randomValue = GenerateRandomFloat();
                             randomValue <= jsonEvent.chance) {
-                            PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
+                            SoundManager::PlaySound(questEvents.name,
+                                                    jsonEvent.type,
+                                                    jsonEvent.soundEffect,
+                                                    {8029.8643f, -69089.37f, 4815.15f},
+                                                    100.0f,
+                                                    1000.0f,
+                                                    jsonEvent.volume,
+                                                    jsonEvent.isAbsoluteVolume,
+                                                    true);
                         }
                         return RE::BSEventNotifyControl::kContinue;
                     }
@@ -92,7 +100,15 @@ namespace SoundFX {
                     if (jsonEvent.type == "End" && quest->IsCompleted()) {
                         if (const float randomValue = GenerateRandomFloat();
                             randomValue <= jsonEvent.chance) {
-                            PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
+                            SoundManager::PlaySound(questEvents.name,
+                                                    jsonEvent.type,
+                                                    jsonEvent.soundEffect,
+                                                    {8029.8643f, -69089.37f, 4815.15f},
+                                                    100.0f,
+                                                    1000.0f,
+                                                    jsonEvent.volume,
+                                                    jsonEvent.isAbsoluteVolume,
+                                                    true);
                         }
                         return RE::BSEventNotifyControl::kContinue;
                     }

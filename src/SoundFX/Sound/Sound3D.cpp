@@ -1,11 +1,12 @@
-#include "Sound3DUtil.h"
+#include "Sound3D.h"
+#include "SoundUtil.h"
 #include <ranges>
 #include <sndfile.h>
 
 namespace SoundFX {
 
     bool
-        Sound3DUtil::InitializeOpenAL() {
+        Sound3D::InitializeOpenAL() {
         if (!InitializeSharedContext()) {
             spdlog::critical("OpenAL could not be initialized.");
             return false;
@@ -14,7 +15,7 @@ namespace SoundFX {
     }
 
     RE::NiPoint3
-        Sound3DUtil::GetForwardVector(const RE::NiAVObject *object) {
+        Sound3D::GetForwardVector(const RE::NiAVObject *object) {
         if (!object) {
             spdlog::error("GetForwardVector: object is null");
             return {0.0f, 0.0f, 1.0f};  // Fallback
@@ -30,7 +31,7 @@ namespace SoundFX {
     }
 
     ALCdevice *
-        Sound3DUtil::InitializeDevice() {
+        Sound3D::InitializeDevice() {
         ALCdevice *device = alcOpenDevice(nullptr);
         if (!device) {
             spdlog::critical("Failed to open OpenAL device.");
@@ -39,7 +40,7 @@ namespace SoundFX {
     }
 
     ALCcontext *
-        Sound3DUtil::InitializeContext(ALCdevice *device) {
+        Sound3D::InitializeContext(ALCdevice *device) {
         if (!device) {
             return nullptr;
         }
@@ -62,7 +63,7 @@ namespace SoundFX {
     }
 
     ALuint
-        Sound3DUtil::LoadAudioBuffer(const std::string &filePath) {
+        Sound3D::LoadAudioBuffer(const std::string &filePath) {
         {
             std::lock_guard lock(bufferCacheMutex);
             const auto      it = bufferCache.find(filePath);
@@ -87,8 +88,10 @@ namespace SoundFX {
         }
 
         std::vector<short> samples(fileInfo.frames * fileInfo.channels);
-        if (sf_read_short(sndFile, samples.data(), static_cast<sf_count_t>(samples.size()))
-            < samples.size()) {
+        sf_count_t         samplesRead =
+            sf_read_short(sndFile, samples.data(), static_cast<sf_count_t>(samples.size()));
+
+        if (samplesRead < static_cast<sf_count_t>(samples.size())) {
             spdlog::error("Failed to read audio samples from file: {}", filePath);
             sf_close(sndFile);
             return 0;
@@ -118,7 +121,7 @@ namespace SoundFX {
     }
 
     bool
-        Sound3DUtil::InitializeSharedContext() {
+        Sound3D::InitializeSharedContext() {
         if (!sharedDevice) {
             sharedDevice = InitializeDevice();
             if (!sharedDevice) {
@@ -139,13 +142,14 @@ namespace SoundFX {
     }
 
     ALuint
-        Sound3DUtil::Play3DSound(const std::string  &filePath,
-                                 const RE::NiPoint3 &worldSourcePos,
-                                 float               referenceDistance,
-                                 float               maxDistance,
-                                 float               rolloffFactor,
-                                 float               gain,
-                                 float               minGain) {
+        Sound3D::Play3DSound(const std::string  &filePath,
+                             const RE::NiPoint3 &worldSourcePos,
+                             float               referenceDistance,
+                             float               maxDistance,
+                             float               gain,
+                             bool                isAbsoluteVolume,
+                             float               rolloffFactor,
+                             float               minGain) {
 
         const ALuint buffer = LoadAudioBuffer(filePath);
         if (buffer == 0) {
@@ -173,7 +177,7 @@ namespace SoundFX {
             return 0;
         }
 
-        std::thread([source, worldSourcePos, maxDistance, gain] {
+        std::thread([source, worldSourcePos, maxDistance, gain, isAbsoluteVolume] {
             ALint state = AL_PLAYING;
 
             bool isInitialized = false;
@@ -196,8 +200,8 @@ namespace SoundFX {
                     float       volume   = 1.0f - distance / maxDistance;
                     volume               = std::clamp(volume, 0.0f, 1.0f);
 
-                    const float ingameVolume = GetIngameVolumeFactor();
-                    const float finalVolume  = volume * gain * ingameVolume;
+                    const float finalVolume =
+                        SoundUtil::CalculateFinalVolume(gain, volume, isAbsoluteVolume);
 
                     float currentGain;
                     alGetSourcef(source, AL_GAIN, &currentGain);
@@ -237,7 +241,7 @@ namespace SoundFX {
     }
 
     void
-        Sound3DUtil::Shutdown() {
+        Sound3D::Shutdown() {
         for (auto &buffer : bufferCache | std::views::values) {
             alDeleteBuffers(1, &buffer);
         }
@@ -252,20 +256,5 @@ namespace SoundFX {
             alcCloseDevice(sharedDevice);
             sharedDevice = nullptr;
         }
-    }
-
-    float
-        Sound3DUtil::GetIngameVolumeFactor() {
-        if (auto *settings = RE::INIPrefSettingCollection::GetSingleton()) {
-            if (const auto *volumeSetting = settings->GetSetting("fAudioMasterVolume:AudioMenu")) {
-                const float     newVolume = volumeSetting->data.f;
-                constexpr float epsilon   = 0.0001f;
-                if (std::abs(newVolume - cachedVolume.load()) > epsilon) {
-                    cachedVolume.store(newVolume);
-                }
-                return cachedVolume.load();
-            }
-        }
-        return 1.0f;
     }
 }

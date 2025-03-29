@@ -1,5 +1,5 @@
 #include "NpcInteractionEventHandler.h"
-#include "Sound/SoundUtil.h"
+#include "Sound/SoundManager.h"
 #include "Utility.h"
 #include <numbers>
 
@@ -13,14 +13,11 @@ namespace SoundFX {
         actionMap["All"] = [](const std::string &soundEffect,
                               const std::string &editorid,
                               const std::string &selectedDialogue) {
-            PlayCustomSoundAsDescriptor(soundEffect);
         };
         actionMap["EditorID"] = [](const std::string &soundEffect,
                                    const std::string &editorid,
                                    const std::string &selectedDialogue) {
-            if (editorid == selectedDialogue) {
-                PlayCustomSoundAsDescriptor(soundEffect);
-            }
+            if (editorid == selectedDialogue) { }
         };
     }
 
@@ -70,7 +67,15 @@ namespace SoundFX {
                                 if (jsonEvent.type == "DialogOpen") {
                                     if (const float randomValue = GenerateRandomFloat();
                                         randomValue <= jsonEvent.chance) {
-                                        PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
+                                        SoundManager::PlaySound(npcInteractionEvents.name,
+                                                                jsonEvent.type,
+                                                                jsonEvent.soundEffect,
+                                                                {8029.8643f, -69089.37f, 4815.15f},
+                                                                100.0f,
+                                                                1000.0f,
+                                                                jsonEvent.volume,
+                                                                jsonEvent.isAbsoluteVolume,
+                                                                true);
                                     }
                                     return RE::BSEventNotifyControl::kContinue;
                                 }

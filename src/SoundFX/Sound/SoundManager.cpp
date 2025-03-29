@@ -1,5 +1,5 @@
 #include "SoundManager.h"
-#include "Sound3DUtil.h"
+#include "Sound3D.h"
 
 namespace SoundFX {
 
@@ -15,7 +15,7 @@ namespace SoundFX {
 
     void
         SoundManager::Initialize() {
-        if (!Sound3DUtil::InitializeOpenAL()) {
+        if (!Sound3D::InitializeOpenAL()) {
             is3DSoundEnabled = false;
             spdlog::error("3D sound has been deactivated due to an error.");
 
@@ -46,12 +46,18 @@ namespace SoundFX {
                                 const RE::NiPoint3 &position,
                                 float               referenceDistance,
                                 float               maxDistance,
+                                float               gain,
+                                bool                isAbsoluteVolume,
                                 bool                is3D) {
         const std::size_t soundID = GenerateSoundID(name, eventType, soundEffect, position);
 
         if (is3D && is3DSoundEnabled) {
-            if (const ALuint sourceID = Sound3DUtil::Play3DSound(
-                    soundEffect, position, referenceDistance, maxDistance)) {
+            if (const ALuint sourceID = Sound3D::Play3DSound(soundEffect,
+                                                             position,
+                                                             referenceDistance,
+                                                             maxDistance,
+                                                             gain,
+                                                             isAbsoluteVolume)) {
                 activeSounds.push_back({.id                = soundID,
                                         .name              = name,
                                         .eventType         = eventType,

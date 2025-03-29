@@ -1,6 +1,6 @@
 #include "CombatEventHandler.h"
 #include "Events/EventHandlerManager.h"
-#include "Sound/SoundUtil.h"
+#include "Sound/SoundManager.h"
 #include "Utility.h"
 
 namespace SoundFX {
@@ -53,7 +53,15 @@ namespace SoundFX {
                         && event->newState.any(RE::ACTOR_COMBAT_STATE::kCombat)) {
                         if (const float randomValue = GenerateRandomFloat();
                             randomValue <= jsonEvent.chance) {
-                            PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
+                            SoundManager::PlaySound(combatEvents.name,
+                                                    jsonEvent.type,
+                                                    jsonEvent.soundEffect,
+                                                    {8029.8643f, -69089.37f, 4815.15f},
+                                                    100.0f,
+                                                    1000.0f,
+                                                    jsonEvent.volume,
+                                                    jsonEvent.isAbsoluteVolume,
+                                                    true);
                         }
                         return RE::BSEventNotifyControl::kContinue;
                     }
@@ -96,7 +104,15 @@ namespace SoundFX {
                         && event->newState.any(RE::ACTOR_COMBAT_STATE::kSearching)) {
                         if (const float randomValue = GenerateRandomFloat();
                             randomValue <= jsonEvent.chance) {
-                            PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
+                            SoundManager::PlaySound(combatEvents.name,
+                                                    jsonEvent.type,
+                                                    jsonEvent.soundEffect,
+                                                    {8029.8643f, -69089.37f, 4815.15f},
+                                                    100.0f,
+                                                    1000.0f,
+                                                    jsonEvent.volume,
+                                                    jsonEvent.isAbsoluteVolume,
+                                                    true);
                         }
                         return RE::BSEventNotifyControl::kContinue;
                     }
@@ -139,7 +155,15 @@ namespace SoundFX {
                         && event->newState == RE::ACTOR_COMBAT_STATE::kNone) {
                         if (const float randomValue = GenerateRandomFloat();
                             randomValue <= jsonEvent.chance) {
-                            PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
+                            SoundManager::PlaySound(combatEvents.name,
+                                                    jsonEvent.type,
+                                                    jsonEvent.soundEffect,
+                                                    {8029.8643f, -69089.37f, 4815.15f},
+                                                    100.0f,
+                                                    1000.0f,
+                                                    jsonEvent.volume,
+                                                    jsonEvent.isAbsoluteVolume,
+                                                    true);
                         }
                         return RE::BSEventNotifyControl::kContinue;
                     }
@@ -190,7 +214,15 @@ namespace SoundFX {
                         && event->newState == RE::ACTOR_COMBAT_STATE::kNone) {
                         if (const float randomValue = GenerateRandomFloat();
                             randomValue <= jsonEvent.chance) {
-                            PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
+                            SoundManager::PlaySound(combatEvents.name,
+                                                    jsonEvent.type,
+                                                    jsonEvent.soundEffect,
+                                                    {8029.8643f, -69089.37f, 4815.15f},
+                                                    100.0f,
+                                                    1000.0f,
+                                                    jsonEvent.volume,
+                                                    jsonEvent.isAbsoluteVolume,
+                                                    true);
                         }
                         return RE::BSEventNotifyControl::kContinue;
                     }
@@ -231,7 +263,15 @@ namespace SoundFX {
                         if (jsonEvent.type == "Flee") {
                             if (const float randomValue = GenerateRandomFloat();
                                 randomValue <= jsonEvent.chance) {
-                                PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
+                                SoundManager::PlaySound(combatEvents.name,
+                                                        jsonEvent.type,
+                                                        jsonEvent.soundEffect,
+                                                        {8029.8643f, -69089.37f, 4815.15f},
+                                                        100.0f,
+                                                        1000.0f,
+                                                        jsonEvent.volume,
+                                                        jsonEvent.isAbsoluteVolume,
+                                                        true);
                             }
                             return;
                         }
@@ -275,7 +315,15 @@ namespace SoundFX {
                                 if (const float randomValue = GenerateRandomFloat();
                                     randomValue <= jsonEvent.chance) {
                                     wasInKillMove = true;
-                                    PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
+                                    SoundManager::PlaySound(combatEvents.name,
+                                                            jsonEvent.type,
+                                                            jsonEvent.soundEffect,
+                                                            {8029.8643f, -69089.37f, 4815.15f},
+                                                            100.0f,
+                                                            1000.0f,
+                                                            jsonEvent.volume,
+                                                            jsonEvent.isAbsoluteVolume,
+                                                            true);
                                 }
                             }
                         }
