@@ -21,6 +21,10 @@ namespace SoundFX {
             SortActiveSounds(std::vector<std::shared_ptr<SoundManager::ActiveSound>> &activeSounds,
                              int                                                      sortMode);
 
+        static void
+            RenderStopAllSounds(
+                const std::vector<std::shared_ptr<SoundManager::ActiveSound>> &activeSounds);
+
         enum class SoundAction : std::uint8_t {
             None,
             Stop,

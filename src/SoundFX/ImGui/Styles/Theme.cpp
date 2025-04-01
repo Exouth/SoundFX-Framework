@@ -62,4 +62,18 @@ namespace SoundFX {
 
         drawList->AddLine(startPoint, endPoint, ImGui::GetColorU32(resizeGripColor), 8.0f);
     }
+
+    void
+        Theme::DrawVerticalSeparator(float height) {
+        const auto  cursorPos = ImGui::GetCursorScreenPos();
+        ImDrawList *drawList  = ImGui::GetWindowDrawList();
+        ImU32       color     = ImGui::GetColorU32(ImGuiCol_Separator);
+
+        drawList->AddLine(ImVec2(cursorPos.x + 4.0f, cursorPos.y),
+                          ImVec2(cursorPos.x + 4.0f, cursorPos.y + height),
+                          color,
+                          1.0f);
+
+        ImGui::InvisibleButton("##vseparator", ImVec2(8.0f, height));
+    }
 }

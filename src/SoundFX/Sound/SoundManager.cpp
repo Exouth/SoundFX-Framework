@@ -252,6 +252,26 @@ namespace SoundFX {
     }
 
     void
+        SoundManager::StopAllSounds() {
+        std::lock_guard lock(activeSoundsMutex);
+
+        for (auto &sound : activeSounds) {
+            if (!sound)
+                continue;
+
+            if (sound->is3D && alIsSource(sound->sourceID)) {
+                alSourceStop(sound->sourceID);
+                alDeleteSources(1, &sound->sourceID);
+            } else if (sound->descriptor) {
+                sound->descriptor->Stop();
+            }
+        }
+
+        spdlog::info("Stopped all active sounds ({} total)", activeSounds.size());
+        activeSounds.clear();
+    }
+
+    void
         SoundManager::ReloadSound(std::size_t index) {
         if (index >= activeSounds.size()) {
             spdlog::warn("Invalid index {} passed to ReloadSound", index);

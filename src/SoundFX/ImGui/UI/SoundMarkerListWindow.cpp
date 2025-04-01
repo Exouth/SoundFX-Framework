@@ -174,6 +174,22 @@ namespace SoundFX {
     }
 
     void
+        SoundMarkerListWindow::RenderStopAllSounds(
+            const std::vector<std::shared_ptr<SoundManager::ActiveSound>> &activeSounds) {
+        if (!activeSounds.empty()) {
+            ImGui::SameLine();
+
+            Theme::DrawVerticalSeparator(ImGui::GetFrameHeight());
+
+            ImGui::SameLine();
+
+            if (ImGui::Button("Stop all Sounds")) {
+                SoundManager::StopAllSounds();
+            }
+        }
+    }
+
+    void
         SoundMarkerListWindow::Render() {
         if (!ImGuiManager::showSoundMarkerList)
             return;
@@ -196,7 +212,10 @@ namespace SoundFX {
         static int sortMode = 0;
         RenderSortOptions(sortMode);
         SortActiveSounds(activeSounds, sortMode);
+        RenderStopAllSounds(activeSounds);
         RenderActiveSoundCount(activeSounds.size());
+
+        ImGui::Spacing();
 
         if (activeSounds.empty()) {
             ImGui::Text("No active sound markers.");

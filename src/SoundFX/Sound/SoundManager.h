@@ -65,6 +65,8 @@ namespace SoundFX {
         static void
             StopSound(std::size_t index);
         static void
+            StopAllSounds();
+        static void
             ReloadSound(std::size_t index);
 
       private:

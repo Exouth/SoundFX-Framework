@@ -7,5 +7,7 @@ namespace SoundFX {
             ApplyTheme();
         static void
             RenderFooterLine();
+        static void
+            DrawVerticalSeparator(float height = 20.0f);
     };
 }
