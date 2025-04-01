@@ -251,4 +251,28 @@ namespace SoundFX {
             + static_cast<std::vector<std::shared_ptr<ActiveSound>>::difference_type>(index));
     }
 
+    void
+        SoundManager::ReloadSound(std::size_t index) {
+        if (index >= activeSounds.size()) {
+            spdlog::warn("Invalid index {} passed to ReloadSound", index);
+            return;
+        }
+
+        const auto &sound = activeSounds[index];
+
+        StopSound(index);
+
+        PlaySound(sound->name,
+                  sound->eventType,
+                  sound->soundEffect,
+                  sound->GetPosition(),
+                  sound->referenceDistance,
+                  sound->maxDistance,
+                  sound->gain,
+                  sound->isAbsoluteVolume,
+                  sound->is3D);
+
+        spdlog::info("Reloaded sound '{}' : '{}'", sound->name, sound->eventType);
+    }
+
 }

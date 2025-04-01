@@ -64,6 +64,8 @@ namespace SoundFX {
             Is3DSoundEnabled();
         static void
             StopSound(std::size_t index);
+        static void
+            ReloadSound(std::size_t index);
 
       private:
         SoundManager()  = default;

@@ -19,77 +19,27 @@ namespace SoundFX {
     }
 
     void
-        SoundMarkerListWindow::Render() {
-        if (!ImGuiManager::showSoundMarkerList) {
-            return;
-        }
-
-        ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiCond_FirstUseEver);
-        if (!ImGui::Begin("Active Sound Markers", &ImGuiManager::showSoundMarkerList)) {
-            ImGui::End();
-            return;
-        }
-
-        const auto *player = RE::PlayerCharacter::GetSingleton();
-        if (!player) {
-            ImGui::Text("No player found.");
-            ImGui::End();
-            return;
-        }
-
-        auto activeSounds = SoundManager::GetSortedActiveSounds();
-
-        static int sortMode = 0;
+        SoundMarkerListWindow::RenderSortOptions(int &sortMode) {
         ImGui::Text("Sort by: ");
         ImGui::SameLine();
-        if (ImGui::RadioButton("Distance", sortMode == 0)) {
+        if (ImGui::RadioButton("Distance", sortMode == 0))
             sortMode = 0;
-        }
         ImGui::SameLine();
-        if (ImGui::RadioButton("Name", sortMode == 1)) {
+        if (ImGui::RadioButton("Name", sortMode == 1))
             sortMode = 1;
-        }
         ImGui::SameLine();
-        if (ImGui::RadioButton("Event Type", sortMode == 2)) {
+        if (ImGui::RadioButton("Event Type", sortMode == 2))
             sortMode = 2;
-        }
         ImGui::SameLine();
-        if (ImGui::RadioButton("Sound Effect", sortMode == 3)) {
+        if (ImGui::RadioButton("Sound Effect", sortMode == 3))
             sortMode = 3;
-        }
+    }
 
-        switch (sortMode) {
-        case 1:
-            std::ranges::sort(activeSounds, [](const auto &a, const auto &b) {
-                return NaturalStringCompare(a->name, b->name);
-            });
-            break;
-        case 2:
-            std::ranges::sort(activeSounds, [](const auto &a, const auto &b) {
-                return NaturalStringCompare(a->eventType, b->eventType);
-            });
-            break;
-        case 3:
-            std::ranges::sort(activeSounds, [](const auto &a, const auto &b) {
-                return NaturalStringCompare(a->soundEffect, b->soundEffect);
-            });
-            break;
-        default: break;
-        }
-
-        RenderActiveSoundCount(activeSounds.size());
-
-        if (activeSounds.empty()) {
-            ImGui::Text("No active sound markers.");
-
-            ImGui::Spacing();
-            Theme::RenderFooterLine();
-            ImGui::End();
-            return;
-        }
-
-        ImGui::Separator();
-
+    void
+        SoundMarkerListWindow::RenderSoundTable(
+            const std::vector<std::shared_ptr<SoundManager::ActiveSound>> &activeSounds,
+            const RE::PlayerCharacter                                     *player,
+            std::optional<std::pair<std::size_t, SoundAction>>            &selectedAction) {
         if (ImGui::BeginTable(
                 "SoundMarkersTable", 9, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg)) {
             ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthStretch);
@@ -102,8 +52,6 @@ namespace SoundFX {
             ImGui::TableSetupColumn("3D", ImGuiTableColumnFlags_WidthStretch);
             ImGui::TableSetupColumn("Actions", ImGuiTableColumnFlags_WidthFixed, 60.0f);
             ImGui::TableHeadersRow();
-
-            std::optional<std::size_t> indexToStop;
 
             for (size_t i = 0; i < activeSounds.size(); ++i) {
                 const auto        &sound            = activeSounds[i];
@@ -141,7 +89,10 @@ namespace SoundFX {
 
                 if (ImGui::BeginPopup("SoundActionPopup")) {
                     if (ImGui::MenuItem("Stop Sound")) {
-                        indexToStop = i;
+                        selectedAction = {i, SoundAction::Stop};
+                    }
+                    if (ImGui::MenuItem("Reload Sound")) {
+                        selectedAction = {i, SoundAction::Reload};
                     }
                     ImGui::EndPopup();
                 }
@@ -150,9 +101,75 @@ namespace SoundFX {
             }
 
             ImGui::EndTable();
+        }
+    }
 
-            if (indexToStop.has_value()) {
-                SoundManager::StopSound(indexToStop.value());
+    void
+        SoundMarkerListWindow::SortActiveSounds(
+            std::vector<std::shared_ptr<SoundManager::ActiveSound>> &activeSounds,
+            int                                                      sortMode) {
+        switch (sortMode) {
+        case 1:
+            std::ranges::sort(activeSounds, [](const auto &a, const auto &b) {
+                return NaturalStringCompare(a->name, b->name);
+            });
+            break;
+        case 2:
+            std::ranges::sort(activeSounds, [](const auto &a, const auto &b) {
+                return NaturalStringCompare(a->eventType, b->eventType);
+            });
+            break;
+        case 3:
+            std::ranges::sort(activeSounds, [](const auto &a, const auto &b) {
+                return NaturalStringCompare(a->soundEffect, b->soundEffect);
+            });
+            break;
+        default: break;
+        }
+    }
+
+    void
+        SoundMarkerListWindow::Render() {
+        if (!ImGuiManager::showSoundMarkerList)
+            return;
+
+        ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiCond_FirstUseEver);
+        if (!ImGui::Begin("Active Sound Markers", &ImGuiManager::showSoundMarkerList)) {
+            ImGui::End();
+            return;
+        }
+
+        const auto *player = RE::PlayerCharacter::GetSingleton();
+        if (!player) {
+            ImGui::Text("No player found.");
+            ImGui::End();
+            return;
+        }
+
+        auto activeSounds = SoundManager::GetSortedActiveSounds();
+
+        static int sortMode = 0;
+        RenderSortOptions(sortMode);
+        SortActiveSounds(activeSounds, sortMode);
+        RenderActiveSoundCount(activeSounds.size());
+
+        if (activeSounds.empty()) {
+            ImGui::Text("No active sound markers.");
+            ImGui::Spacing();
+            Theme::RenderFooterLine();
+            ImGui::End();
+            return;
+        }
+
+        ImGui::Separator();
+        std::optional<std::pair<std::size_t, SoundAction>> selectedAction;
+        RenderSoundTable(activeSounds, player, selectedAction);
+
+        if (selectedAction.has_value()) {
+            switch (const auto [index, action] = selectedAction.value(); action) {
+            case SoundAction::Stop: SoundManager::StopSound(index); break;
+            case SoundAction::Reload: SoundManager::ReloadSound(index); break;
+            case SoundAction::None: break;
             }
         }
 
@@ -160,5 +177,4 @@ namespace SoundFX {
         Theme::RenderFooterLine();
         ImGui::End();
     }
-
 }
