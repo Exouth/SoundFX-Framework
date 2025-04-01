@@ -8,11 +8,11 @@ namespace SoundFX {
 
     void
         SoundMarkerListWindow::RenderActiveSoundCount(size_t count) {
-        float windowWidth = ImGui::GetWindowSize().x;
+        const float windowWidth = ImGui::GetWindowSize().x;
 
-        std::string text = fmt::format("{} Active Sound Markers", count);
+        const std::string text = fmt::format("{} Active Sound Markers", count);
 
-        float textWidth = ImGui::CalcTextSize(text.c_str()).x;
+        const float textWidth = ImGui::CalcTextSize(text.c_str()).x;
 
         ImGui::SameLine(windowWidth - textWidth - 20.0f);
         ImGui::Text("%s", text.c_str());
@@ -89,8 +89,7 @@ namespace SoundFX {
         }
 
         ImGui::Separator();
-#
-        std::optional<std::size_t> indexToStop;
+
         if (ImGui::BeginTable(
                 "SoundMarkersTable", 9, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg)) {
             ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthStretch);
@@ -103,6 +102,8 @@ namespace SoundFX {
             ImGui::TableSetupColumn("3D", ImGuiTableColumnFlags_WidthStretch);
             ImGui::TableSetupColumn("Actions", ImGuiTableColumnFlags_WidthFixed, 60.0f);
             ImGui::TableHeadersRow();
+
+            std::optional<std::size_t> indexToStop;
 
             for (size_t i = 0; i < activeSounds.size(); ++i) {
                 const auto        &sound            = activeSounds[i];
@@ -130,9 +131,13 @@ namespace SoundFX {
                 ImGui::Text("%s", sound->is3D ? "Yes" : "No");
 
                 ImGui::TableNextColumn();
+
+                ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
                 if (ImGui::Button(ICON_FA_ELLIPSIS)) {
                     ImGui::OpenPopup("SoundActionPopup");
                 }
+
+                ImGui::PopStyleVar();
 
                 if (ImGui::BeginPopup("SoundActionPopup")) {
                     if (ImGui::MenuItem("Stop Sound")) {
