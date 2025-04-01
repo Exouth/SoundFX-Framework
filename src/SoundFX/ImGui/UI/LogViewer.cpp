@@ -317,11 +317,13 @@ namespace SoundFX {
         size_t filteredCount = CountFilteredLines();
         size_t totalCount    = logLines.size();
 
-        float windowWidth = ImGui::GetWindowSize().x;
-        float textWidth   = ImGui::CalcTextSize(" 9999/9999 Lines").x;
+        std::string text = fmt::format("{} / {} Lines", filteredCount, totalCount);
 
-        ImGui::SameLine(windowWidth - textWidth);
-        ImGui::Text("%zu/%zu Lines", filteredCount, totalCount);
+        float windowWidth = ImGui::GetWindowSize().x;
+        float textWidth   = ImGui::CalcTextSize(text.c_str()).x;
+
+        ImGui::SameLine(windowWidth - textWidth - 20.0f);
+        ImGui::Text("%s", text.c_str());
     }
 
     void

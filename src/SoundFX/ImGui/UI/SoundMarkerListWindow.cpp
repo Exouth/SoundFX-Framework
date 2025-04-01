@@ -9,9 +9,13 @@ namespace SoundFX {
     void
         SoundMarkerListWindow::RenderActiveSoundCount(size_t count) {
         float windowWidth = ImGui::GetWindowSize().x;
-        float textWidth   = ImGui::CalcTextSize("9999 Active Sound Markers").x;
-        ImGui::SameLine(windowWidth - textWidth - 10);
-        ImGui::Text("%zu Active Sound Markers", count);
+
+        std::string text = fmt::format("{} Active Sound Markers", count);
+
+        float textWidth = ImGui::CalcTextSize(text.c_str()).x;
+
+        ImGui::SameLine(windowWidth - textWidth - 20.0f);
+        ImGui::Text("%s", text.c_str());
     }
 
     void
@@ -57,17 +61,17 @@ namespace SoundFX {
         switch (sortMode) {
         case 1:
             std::ranges::sort(activeSounds, [](const auto &a, const auto &b) {
-                return NaturalStringCompare(a.name, b.name);
+                return NaturalStringCompare(a->name, b->name);
             });
             break;
         case 2:
             std::ranges::sort(activeSounds, [](const auto &a, const auto &b) {
-                return NaturalStringCompare(a.eventType, b.eventType);
+                return NaturalStringCompare(a->eventType, b->eventType);
             });
             break;
         case 3:
             std::ranges::sort(activeSounds, [](const auto &a, const auto &b) {
-                return NaturalStringCompare(a.soundEffect, b.soundEffect);
+                return NaturalStringCompare(a->soundEffect, b->soundEffect);
             });
             break;
         default: break;
@@ -85,9 +89,10 @@ namespace SoundFX {
         }
 
         ImGui::Separator();
-
+#
+        std::optional<std::size_t> indexToStop;
         if (ImGui::BeginTable(
-                "SoundMarkersTable", 8, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg)) {
+                "SoundMarkersTable", 9, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg)) {
             ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthStretch);
             ImGui::TableSetupColumn("EventType", ImGuiTableColumnFlags_WidthStretch);
             ImGui::TableSetupColumn("Effect", ImGuiTableColumnFlags_WidthStretch);
@@ -96,32 +101,54 @@ namespace SoundFX {
             ImGui::TableSetupColumn("Ref. Distance", ImGuiTableColumnFlags_WidthStretch);
             ImGui::TableSetupColumn("Distance to Player", ImGuiTableColumnFlags_WidthStretch);
             ImGui::TableSetupColumn("3D", ImGuiTableColumnFlags_WidthStretch);
+            ImGui::TableSetupColumn("Actions", ImGuiTableColumnFlags_WidthFixed, 60.0f);
             ImGui::TableHeadersRow();
 
-            for (const auto &sound : activeSounds) {
-                RE::NiPoint3 pos              = sound.GetPosition();
-                const float  distanceToPlayer = player->GetPosition().GetDistance(pos);
+            for (size_t i = 0; i < activeSounds.size(); ++i) {
+                const auto        &sound            = activeSounds[i];
+                const RE::NiPoint3 pos              = sound->GetPosition();
+                const float        distanceToPlayer = player->GetPosition().GetDistance(pos);
+
+                ImGui::PushID(static_cast<int>(i));
 
                 ImGui::TableNextRow();
                 ImGui::TableNextColumn();
-                ImGui::Text("%s", sound.name.c_str());
+                ImGui::Text("%s", sound->name.c_str());
                 ImGui::TableNextColumn();
-                ImGui::Text("%s", sound.eventType.c_str());
+                ImGui::Text("%s", sound->eventType.c_str());
                 ImGui::TableNextColumn();
-                ImGui::Text("%s", sound.soundEffect.c_str());
+                ImGui::Text("%s", sound->soundEffect.c_str());
                 ImGui::TableNextColumn();
                 ImGui::Text("(%.1f, %.1f, %.1f)", pos.x, pos.y, pos.z);
                 ImGui::TableNextColumn();
-                ImGui::Text("%.1f", sound.maxDistance);
+                ImGui::Text("%.1f", sound->maxDistance);
                 ImGui::TableNextColumn();
-                ImGui::Text("%.1f", sound.referenceDistance);
+                ImGui::Text("%.1f", sound->referenceDistance);
                 ImGui::TableNextColumn();
                 ImGui::Text("%.1f", distanceToPlayer);
                 ImGui::TableNextColumn();
-                ImGui::Text("%s", sound.is3D ? "Yes" : "No");
+                ImGui::Text("%s", sound->is3D ? "Yes" : "No");
+
+                ImGui::TableNextColumn();
+                if (ImGui::Button(ICON_FA_ELLIPSIS)) {
+                    ImGui::OpenPopup("SoundActionPopup");
+                }
+
+                if (ImGui::BeginPopup("SoundActionPopup")) {
+                    if (ImGui::MenuItem("Stop Sound")) {
+                        indexToStop = i;
+                    }
+                    ImGui::EndPopup();
+                }
+
+                ImGui::PopID();
             }
 
             ImGui::EndTable();
+
+            if (indexToStop.has_value()) {
+                SoundManager::StopSound(indexToStop.value());
+            }
         }
 
         ImGui::Spacing();

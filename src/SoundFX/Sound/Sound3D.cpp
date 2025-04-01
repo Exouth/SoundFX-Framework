@@ -1,4 +1,5 @@
 #include "Sound3D.h"
+#include "SoundManager.h"
 #include "SoundUtil.h"
 #include <ranges>
 #include <sndfile.h>
@@ -88,7 +89,7 @@ namespace SoundFX {
         }
 
         std::vector<short> samples(fileInfo.frames * fileInfo.channels);
-        sf_count_t         samplesRead =
+        const sf_count_t   samplesRead =
             sf_read_short(sndFile, samples.data(), static_cast<sf_count_t>(samples.size()));
 
         if (samplesRead < static_cast<sf_count_t>(samples.size())) {
@@ -142,16 +143,8 @@ namespace SoundFX {
     }
 
     ALuint
-        Sound3D::Play3DSound(const std::string  &filePath,
-                             const RE::NiPoint3 &worldSourcePos,
-                             float               referenceDistance,
-                             float               maxDistance,
-                             float               gain,
-                             bool                isAbsoluteVolume,
-                             float               rolloffFactor,
-                             float               minGain) {
-
-        const ALuint buffer = LoadAudioBuffer(filePath);
+        Sound3D::Create3DSoundSource(const std::shared_ptr<SoundManager::ActiveSound> &sound) {
+        const ALuint buffer = LoadAudioBuffer(sound->soundEffect);
         if (buffer == 0) {
             spdlog::error("Failed to load audio buffer.");
             return 0;
@@ -165,10 +158,19 @@ namespace SoundFX {
         }
 
         alSourcei(source, AL_BUFFER, static_cast<ALint>(buffer));
-        alSourcef(source, AL_REFERENCE_DISTANCE, referenceDistance);
-        alSourcef(source, AL_MAX_DISTANCE, maxDistance);
-        alSourcef(source, AL_ROLLOFF_FACTOR, rolloffFactor);
-        alSourcef(source, AL_MIN_GAIN, minGain);
+        alSourcef(source, AL_REFERENCE_DISTANCE, sound->referenceDistance);
+        alSourcef(source, AL_MAX_DISTANCE, sound->maxDistance);
+        alSourcef(source, AL_ROLLOFF_FACTOR, 1.0f);
+        alSourcef(source, AL_MIN_GAIN, 0.0f);
+
+        const float initialFinalGain =
+            SoundUtil::CalculateFinalVolume(sound->gain, 1.0f, sound->isAbsoluteVolume);
+
+        alSourcef(source, AL_GAIN, initialFinalGain);
+
+        const RE::NiPoint3 pos          = sound->GetPosition();
+        const ALfloat      sourcePos[3] = {pos.x, pos.y, pos.z};
+        alSourcefv(source, AL_POSITION, sourcePos);
 
         alSourcePlay(source);
         if (alGetError() != AL_NO_ERROR) {
@@ -177,67 +179,47 @@ namespace SoundFX {
             return 0;
         }
 
-        std::thread([source, worldSourcePos, maxDistance, gain, isAbsoluteVolume] {
-            ALint state = AL_PLAYING;
-
-            bool isInitialized = false;
-
-            while (state == AL_PLAYING) {
-                if (const auto *player = RE::PlayerCharacter::GetSingleton();
-                    player && player->Get3D()) {
-                    const RE::NiPoint3 currentPlayerPosition = player->GetPosition();
-
-                    if (!isInitialized) {
-                        isInitialized = true;
-                    }
-
-                    const RE::NiPoint3 relativeSourcePos = {
-                        worldSourcePos.x - currentPlayerPosition.x,
-                        worldSourcePos.y - currentPlayerPosition.y,
-                        worldSourcePos.z - currentPlayerPosition.z};
-
-                    const float distance = relativeSourcePos.Length();
-                    float       volume   = 1.0f - distance / maxDistance;
-                    volume               = std::clamp(volume, 0.0f, 1.0f);
-
-                    const float finalVolume =
-                        SoundUtil::CalculateFinalVolume(gain, volume, isAbsoluteVolume);
-
-                    float currentGain;
-                    alGetSourcef(source, AL_GAIN, &currentGain);
-                    if (std::abs(currentGain - finalVolume) > 0.01f) {
-                        alSourcef(source, AL_GAIN, finalVolume);
-                    }
-
-                    const RE::NiPoint3     forwardVector = GetForwardVector(player->Get3D());
-                    constexpr RE::NiPoint3 upVector      = {0.0f, 0.0f, 1.0f};
-
-                    constexpr ALfloat listenerPos[3] = {0.0f, 0.0f, 0.0f};
-                    const ALfloat     listenerOri[6] = {forwardVector.x,
-                                                        forwardVector.y,
-                                                        forwardVector.z,
-                                                        upVector.x,
-                                                        upVector.y,
-                                                        upVector.z};
-
-                    const ALfloat sourcePos[3] = {
-                        relativeSourcePos.x, relativeSourcePos.y, relativeSourcePos.z};
-                    alSourcefv(source, AL_POSITION, sourcePos);
-                    alListenerfv(AL_POSITION, listenerPos);
-                    alListenerfv(AL_ORIENTATION, listenerOri);
-                }
-
-                alGetSourcei(source, AL_SOURCE_STATE, &state);
-                std::this_thread::sleep_for(std::chrono::milliseconds(50));
-            }
-
-            alDeleteSources(1, &source);
-            if (alGetError() != AL_NO_ERROR) {
-                spdlog::critical("Failed to delete OpenAL source: {}", source);
-            }
-        }).detach();
-
         return source;
+    }
+
+    void
+        Sound3D::Update3DSound(const std::shared_ptr<SoundManager::ActiveSound> &sound,
+                               const RE::NiPoint3                               &listenerPos,
+                               const RE::NiAVObject                             *listenerObj) {
+        if (!sound || !sound->is3D || sound->sourceID == 0 || !alIsSource(sound->sourceID)) {
+            return;
+        }
+
+        const RE::NiPoint3 worldSourcePos = sound->GetPosition();
+        const RE::NiPoint3 relPos         = {worldSourcePos.x - listenerPos.x,
+                                             worldSourcePos.y - listenerPos.y,
+                                             worldSourcePos.z - listenerPos.z};
+
+        const float distance = relPos.Length();
+        float       volume   = 1.0f - distance / sound->maxDistance;
+        volume               = std::clamp(volume, 0.0f, 1.0f);
+
+        const float finalGain =
+            SoundUtil::CalculateFinalVolume(sound->gain, volume, sound->isAbsoluteVolume);
+
+        float currentGain = 0.0f;
+        alGetSourcef(sound->sourceID, AL_GAIN, &currentGain);
+        if (std::abs(currentGain - finalGain) > 0.01f) {
+            alSourcef(sound->sourceID, AL_GAIN, finalGain);
+        }
+
+        const ALfloat sourcePos[3] = {relPos.x, relPos.y, relPos.z};
+        alSourcefv(sound->sourceID, AL_POSITION, sourcePos);
+
+        if (listenerObj) {
+            const RE::NiPoint3     forward = GetForwardVector(listenerObj);
+            constexpr RE::NiPoint3 up      = {0.0f, 0.0f, 1.0f};
+            const ALfloat listenerOri[6]   = {forward.x, forward.y, forward.z, up.x, up.y, up.z};
+
+            constexpr ALfloat zeroListenerPos[3] = {0.0f, 0.0f, 0.0f};
+            alListenerfv(AL_POSITION, zeroListenerPos);
+            alListenerfv(AL_ORIENTATION, listenerOri);
+        }
     }
 
     void

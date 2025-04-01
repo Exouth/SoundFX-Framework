@@ -47,13 +47,13 @@ namespace SoundFX {
         }
 
         for (const auto &sound : activeSounds) {
-            ProcessSoundMarker(sound.GetPosition(),
+            ProcessSoundMarker(sound->GetPosition(),
                                player->GetPosition(),
                                drawList,
-                               sound.name,
-                               sound.eventType,
-                               sound.soundEffect,
-                               sound.maxDistance);
+                               sound->name,
+                               sound->eventType,
+                               sound->soundEffect,
+                               sound->maxDistance);
         }
     }
 

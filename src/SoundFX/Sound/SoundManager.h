@@ -23,6 +23,8 @@ namespace SoundFX {
             std::variant<RE::NiPoint3, std::function<RE::NiPoint3()>> position;
             float                                                     referenceDistance;
             float                                                     maxDistance;
+            float                                                     gain;
+            bool                                                      isAbsoluteVolume;
             bool                                                      is3D;
             std::shared_ptr<CustomSoundDescriptor>                    descriptor;
             ALuint                                                    sourceID = 0;
@@ -56,12 +58,12 @@ namespace SoundFX {
             IsSoundPlaying(std::size_t soundID);
         static void
             Update();
-        static const std::vector<ActiveSound> &
-            GetActiveSounds();
-        static std::vector<ActiveSound>
+        static std::vector<std::shared_ptr<ActiveSound>>
             GetSortedActiveSounds();
         static bool
             Is3DSoundEnabled();
+        static void
+            StopSound(std::size_t index);
 
       private:
         SoundManager()  = default;
@@ -73,8 +75,26 @@ namespace SoundFX {
                             const std::string  &soundEffect,
                             const RE::NiPoint3 &position);
 
-        static std::vector<ActiveSound> activeSounds;
-        static std::atomic<bool>        is3DSoundEnabled;
-        static TaskScheduler            scheduler;
+        static void
+            Register3DSound(const std::string  &name,
+                            const std::string  &eventType,
+                            const std::string  &soundEffect,
+                            const RE::NiPoint3 &position,
+                            float               referenceDistance,
+                            float               maxDistance,
+                            float               gain,
+                            bool                isAbsoluteVolume);
+
+        static void
+            Register2DSound(const std::string &name,
+                            const std::string &eventType,
+                            const std::string &soundEffect,
+                            float              gain,
+                            bool               isAbsoluteVolume);
+
+        static std::vector<std::shared_ptr<ActiveSound>> activeSounds;
+        static std::atomic<bool>                         is3DSoundEnabled;
+        static TaskScheduler                             scheduler;
+        static std::mutex                                activeSoundsMutex;
     };
 }

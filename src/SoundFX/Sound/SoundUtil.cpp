@@ -20,7 +20,7 @@ namespace SoundFX {
     bool
         SoundUtil::CheckAndUpdateMasterVolume() {
         std::lock_guard lock(volumeMutex);
-        float           newMasterVolume = GetIngameVolumeFactor();
+        const float     newMasterVolume = GetIngameVolumeFactor();
         if (std::abs(newMasterVolume - masterVolume.load()) > EPSILON) {
             masterVolume.store(newMasterVolume);
             return true;

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "SoundManager.h"
 #include <AL/al.h>
 #include <AL/alc.h>
 
@@ -11,14 +12,12 @@ namespace SoundFX {
             InitializeOpenAL();
 
         static ALuint
-            Play3DSound(const std::string  &filePath,
-                        const RE::NiPoint3 &worldSourcePos,
-                        float               referenceDistance = 100.0f,
-                        float               maxDistance       = 1000.0f,
-                        float               gain              = 1.0f,
-                        bool                isAbsoluteVolume  = true,
-                        float               rolloffFactor     = 1.0f,
-                        float               minGain           = 0.0f);
+            Create3DSoundSource(const std::shared_ptr<SoundManager::ActiveSound> &sound);
+
+        static void
+            Update3DSound(const std::shared_ptr<SoundManager::ActiveSound> &sound,
+                          const RE::NiPoint3                               &listenerPos,
+                          const RE::NiAVObject                             *listenerObj);
 
         static void
             Shutdown();

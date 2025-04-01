@@ -255,7 +255,6 @@ namespace SoundFX {
                             && event->type == SKSE::ActionEvent::Type::kSpellCast) {
                             if (const float randomValue = GenerateRandomFloat();
                                 randomValue <= jsonEvent.chance) {
-                                spdlog::info("volume: {}", jsonEvent.volume);
                                 SoundManager::PlaySound(magicEvents.name,
                                                         jsonEvent.type,
                                                         jsonEvent.soundEffect,
