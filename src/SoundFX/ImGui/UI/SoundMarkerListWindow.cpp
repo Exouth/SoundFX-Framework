@@ -4,6 +4,15 @@
 #include "Sound/SoundManager.h"
 #include "Utility.h"
 
+namespace {
+    void
+        CopyMenuItem(const char *label, const std::string &value) {
+        if (ImGui::MenuItem(label)) {
+            ImGui::SetClipboardText(value.c_str());
+        }
+    }
+}
+
 namespace SoundFX {
 
     void
@@ -94,6 +103,42 @@ namespace SoundFX {
                     if (ImGui::MenuItem("Reload Sound")) {
                         selectedAction = {i, SoundAction::Reload};
                     }
+                    if (ImGui::BeginMenu("Copy Value")) {
+                        const std::string allText = fmt::format(
+                            "{} | {} | {} | {:.1f}, {:.1f}, {:.1f} | Max: {:.1f} | Ref: {:.1f} | "
+                            "Dist: {:.1f} | 3D: {}",
+                            sound->name,
+                            sound->eventType,
+                            sound->soundEffect,
+                            pos.x,
+                            pos.y,
+                            pos.z,
+                            sound->maxDistance,
+                            sound->referenceDistance,
+                            distanceToPlayer,
+                            sound->is3D ? "Yes" : "No");
+                        CopyMenuItem("All", allText);
+
+                        ImGui::Spacing();
+                        ImGui::Separator();
+                        ImGui::Spacing();
+
+                        CopyMenuItem("Name", sound->name);
+                        CopyMenuItem("Event Type", sound->eventType);
+                        CopyMenuItem("Sound Effect", sound->soundEffect);
+
+                        const std::string posStr =
+                            fmt::format("{:.1f}, {:.1f}, {:.1f}", pos.x, pos.y, pos.z);
+                        CopyMenuItem("Position", posStr);
+                        CopyMenuItem("Max Distance", fmt::format("{:.1f}", sound->maxDistance));
+                        CopyMenuItem("Reference Distance",
+                                     fmt::format("{:.1f}", sound->referenceDistance));
+                        CopyMenuItem("Distance to Player", fmt::format("{:.1f}", distanceToPlayer));
+                        CopyMenuItem("Is 3D", sound->is3D ? "Yes" : "No");
+
+                        ImGui::EndMenu();
+                    }
+
                     ImGui::EndPopup();
                 }
 
