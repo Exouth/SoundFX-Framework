@@ -8,11 +8,14 @@
 #include "ImGui/UI/SoundMarkerListWindow.h"
 #include <imgui.h>
 #include <imgui_impl_win32.h>
+#include <imgui_internal.h>
 
 namespace SoundFX {
-    bool ImGuiManager::showDebugUI         = false;
-    bool ImGuiManager::showSoundMarkerList = true;
-    int  ImGuiManager::debugUIKey          = VK_F1;
+    bool        ImGuiManager::showDebugUI         = false;
+    bool        ImGuiManager::showSoundMarkerList = true;
+    int         ImGuiManager::debugUIKey          = VK_F1;
+    std::string ImGuiManager::lastFocusedWindow   = "SoundFX-Framework Debug";
+    bool        ImGuiManager::justActivatedUI     = false;
 
     void
         ImGuiManager::Initialize(HWND hwnd, ID3D11Device *device, ID3D11DeviceContext *context) {
@@ -71,6 +74,11 @@ namespace SoundFX {
             LogViewer::Render();
         }
 
+        if (justActivatedUI) {
+            ImGui::SetWindowFocus(lastFocusedWindow.c_str());
+            justActivatedUI = false;
+        }
+
         RenderForeground();
 
         ImGui::Render();
@@ -124,6 +132,7 @@ namespace SoundFX {
 
         if (showDebugUI) {
             showSoundMarkerList = true;
+            justActivatedUI     = true;
         }
 
         spdlog::debug("ImGui UI {}", showDebugUI ? "activated" : "disabled");
@@ -132,5 +141,20 @@ namespace SoundFX {
     bool
         ImGuiManager::IsUIVisible() {
         return showDebugUI;
+    }
+
+    void
+        ImGuiManager::SetLastFocusedWindow(const std::string &name) {
+        lastFocusedWindow = name;
+    }
+
+    void
+        ImGuiManager::TrackFocusOnClick() {
+        if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)
+            && ImGui::IsMouseDown(ImGuiMouseButton_Left)) {
+            if (const auto *window = ImGui::GetCurrentWindow(); window && window->Name) {
+                SetLastFocusedWindow(window->Name);
+            }
+        }
     }
 }

@@ -1,5 +1,6 @@
 #include "LogViewer.h"
 #include "Config/ConfigManager.h"
+#include "ImGui/Core/ImGuiManager.h"
 #include "ImGui/Styles/Theme.h"
 #include "Logger.h"
 #include <algorithm>
@@ -338,6 +339,8 @@ namespace SoundFX {
             ImGui::End();
             return;
         }
+
+        ImGuiManager::TrackFocusOnClick();
 
         if (!open) {
             ToggleVisibility();

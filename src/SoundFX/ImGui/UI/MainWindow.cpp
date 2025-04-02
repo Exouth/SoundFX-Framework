@@ -14,6 +14,8 @@ namespace SoundFX {
 
         ImGui::Begin("SoundFX-Framework Debug", &open);
 
+        ImGuiManager::TrackFocusOnClick();
+
         ImGui::SeparatorText("Settings");
         ImGui::Spacing();
 

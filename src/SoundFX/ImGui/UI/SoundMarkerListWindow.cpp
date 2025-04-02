@@ -200,6 +200,8 @@ namespace SoundFX {
             return;
         }
 
+        ImGuiManager::TrackFocusOnClick();
+
         const auto *player = RE::PlayerCharacter::GetSingleton();
         if (!player) {
             ImGui::Text("No player found.");
