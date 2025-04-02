@@ -49,7 +49,6 @@ namespace SoundFX {
                       const std::string  &eventType,
                       const std::string  &soundEffect,
                       const RE::NiPoint3 &position,
-                      float               referenceDistance,
                       float               maxDistance,
                       float               gain,
                       bool                isAbsoluteVolume,
@@ -84,7 +83,6 @@ namespace SoundFX {
                             const std::string  &eventType,
                             const std::string  &soundEffect,
                             const RE::NiPoint3 &position,
-                            float               referenceDistance,
                             float               maxDistance,
                             float               gain,
                             bool                isAbsoluteVolume);

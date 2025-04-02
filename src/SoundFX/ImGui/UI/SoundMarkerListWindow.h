@@ -35,6 +35,7 @@ namespace SoundFX {
             RenderSoundTable(
                 const std::vector<std::shared_ptr<SoundManager::ActiveSound>> &activeSounds,
                 const RE::PlayerCharacter                                     *player,
+                const RE::PlayerCamera                                        *playerCamera,
                 std::optional<std::pair<std::size_t, SoundAction>>            &selectedAction);
     };
 }

@@ -45,21 +45,14 @@ namespace SoundFX {
                                 const std::string  &eventType,
                                 const std::string  &soundEffect,
                                 const RE::NiPoint3 &position,
-                                float               referenceDistance,
                                 float               maxDistance,
                                 float               gain,
                                 bool                isAbsoluteVolume,
                                 bool                is3D) {
 
         if (is3D && is3DSoundEnabled) {
-            Register3DSound(name,
-                            eventType,
-                            soundEffect,
-                            position,
-                            referenceDistance,
-                            maxDistance,
-                            gain,
-                            isAbsoluteVolume);
+            Register3DSound(
+                name, eventType, soundEffect, position, maxDistance, gain, isAbsoluteVolume);
         } else {
             Register2DSound(name, eventType, soundEffect, gain, isAbsoluteVolume);
         }
@@ -78,7 +71,6 @@ namespace SoundFX {
                                       const std::string  &eventType,
                                       const std::string  &soundEffect,
                                       const RE::NiPoint3 &position,
-                                      float               referenceDistance,
                                       float               maxDistance,
                                       float               gain,
                                       bool                isAbsoluteVolume) {
@@ -91,7 +83,7 @@ namespace SoundFX {
         sound->eventType         = eventType;
         sound->soundEffect       = soundEffect;
         sound->position          = position;
-        sound->referenceDistance = referenceDistance;
+        sound->referenceDistance = std::clamp(maxDistance * 0.3f, 1.0f, maxDistance);
         sound->maxDistance       = maxDistance;
         sound->gain              = gain;
         sound->isAbsoluteVolume  = isAbsoluteVolume;
@@ -152,10 +144,6 @@ namespace SoundFX {
         const auto     now         = std::chrono::steady_clock::now();
         constexpr auto minLifetime = std::chrono::milliseconds(300);
 
-        const auto        *player      = RE::PlayerCharacter::GetSingleton();
-        const auto        *playerObj   = player ? player->Get3D() : nullptr;
-        const RE::NiPoint3 listenerPos = player ? player->GetPosition() : RE::NiPoint3 {};
-
         std::lock_guard lock(activeSoundsMutex);
         std::erase_if(activeSounds, [&](const std::shared_ptr<ActiveSound> &sound) {
             const bool isPlaying        = sound->IsPlaying();
@@ -170,7 +158,7 @@ namespace SoundFX {
             }
 
             if (sound->is3D && isPlaying) {
-                Sound3D::Update3DSound(sound, listenerPos, playerObj);
+                Sound3D::Update3DSound(sound);
             }
 
             return false;
@@ -286,7 +274,6 @@ namespace SoundFX {
                   sound->eventType,
                   sound->soundEffect,
                   sound->GetPosition(),
-                  sound->referenceDistance,
                   sound->maxDistance,
                   sound->gain,
                   sound->isAbsoluteVolume,

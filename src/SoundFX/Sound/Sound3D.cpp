@@ -16,19 +16,17 @@ namespace SoundFX {
     }
 
     RE::NiPoint3
-        Sound3D::GetForwardVector(const RE::NiAVObject *object) {
-        if (!object) {
-            spdlog::error("GetForwardVector: object is null");
-            return {0.0f, 0.0f, 1.0f};  // Fallback
+        Sound3D::GetCameraForwardVector() {
+        const auto  *camera        = RE::PlayerCamera::GetSingleton();
+        RE::NiPoint3 forwardVector = {0.0f, 1.0f, 0.0f};  // Fallback
+
+        if (camera && camera->cameraRoot) {
+            const auto &rotation = camera->cameraRoot->world.rotate;
+
+            forwardVector = {rotation.entry[0][1], rotation.entry[1][1], rotation.entry[2][1]};
         }
 
-        const auto rotationMatrix = object->world.rotate;
-
-        return {
-            rotationMatrix.entry[0][1],  // x
-            rotationMatrix.entry[1][1],  // y
-            rotationMatrix.entry[2][1]   // z
-        };
+        return forwardVector;
     }
 
     ALCdevice *
@@ -183,22 +181,18 @@ namespace SoundFX {
     }
 
     void
-        Sound3D::Update3DSound(const std::shared_ptr<SoundManager::ActiveSound> &sound,
-                               const RE::NiPoint3                               &listenerPos,
-                               const RE::NiAVObject                             *listenerObj) {
+        Sound3D::Update3DSound(const std::shared_ptr<SoundManager::ActiveSound> &sound) {
         if (!sound || !sound->is3D || sound->sourceID == 0 || !alIsSource(sound->sourceID)) {
             return;
         }
 
-        const RE::NiPoint3 worldSourcePos = sound->GetPosition();
-        const RE::NiPoint3 relPos         = {worldSourcePos.x - listenerPos.x,
-                                             worldSourcePos.y - listenerPos.y,
-                                             worldSourcePos.z - listenerPos.z};
+        const RE::NiPoint3 listenerPos = GetCameraPosition();
+        const RE::NiPoint3 sourcePos   = sound->GetPosition();
+        const RE::NiPoint3 relPos      = {
+            sourcePos.x - listenerPos.x, sourcePos.y - listenerPos.y, sourcePos.z - listenerPos.z};
 
         const float distance = relPos.Length();
-        float       volume   = 1.0f - distance / sound->maxDistance;
-        volume               = std::clamp(volume, 0.0f, 1.0f);
-
+        const float volume   = std::clamp(1.0f - distance / sound->maxDistance, 0.0f, 1.0f);
         const float finalGain =
             SoundUtil::CalculateFinalVolume(sound->gain, volume, sound->isAbsoluteVolume);
 
@@ -208,18 +202,17 @@ namespace SoundFX {
             alSourcef(sound->sourceID, AL_GAIN, finalGain);
         }
 
-        const ALfloat sourcePos[3] = {relPos.x, relPos.y, relPos.z};
-        alSourcefv(sound->sourceID, AL_POSITION, sourcePos);
+        const ALfloat alSourcePos[3] = {relPos.x, relPos.y, relPos.z};
+        alSourcefv(sound->sourceID, AL_POSITION, alSourcePos);
 
-        if (listenerObj) {
-            const RE::NiPoint3     forward = GetForwardVector(listenerObj);
-            constexpr RE::NiPoint3 up      = {0.0f, 0.0f, 1.0f};
-            const ALfloat listenerOri[6]   = {forward.x, forward.y, forward.z, up.x, up.y, up.z};
+        const RE::NiPoint3     forward = GetCameraForwardVector();
+        constexpr RE::NiPoint3 up      = {0.0f, 0.0f, 1.0f};
 
-            constexpr ALfloat zeroListenerPos[3] = {0.0f, 0.0f, 0.0f};
-            alListenerfv(AL_POSITION, zeroListenerPos);
-            alListenerfv(AL_ORIENTATION, listenerOri);
-        }
+        const ALfloat listenerOri[6] = {forward.x, forward.y, forward.z, up.x, up.y, up.z};
+
+        constexpr ALfloat listenerZeroPos[3] = {0.0f, 0.0f, 0.0f};
+        alListenerfv(AL_POSITION, listenerZeroPos);
+        alListenerfv(AL_ORIENTATION, listenerOri);
     }
 
     void
@@ -238,5 +231,18 @@ namespace SoundFX {
             alcCloseDevice(sharedDevice);
             sharedDevice = nullptr;
         }
+    }
+
+    RE::NiPoint3
+        Sound3D::GetCameraPosition() {
+        if (const auto *playerCamera = RE::PlayerCamera::GetSingleton()) {
+            return playerCamera->pos;
+        }
+
+        // Fallback: Playerposition
+        if (const auto *player = RE::PlayerCharacter::GetSingleton()) {
+            return player->GetPosition();
+        }
+        return {0.0f, 0.0f, 0.0f};
     }
 }

@@ -15,16 +15,14 @@ namespace SoundFX {
             Create3DSoundSource(const std::shared_ptr<SoundManager::ActiveSound> &sound);
 
         static void
-            Update3DSound(const std::shared_ptr<SoundManager::ActiveSound> &sound,
-                          const RE::NiPoint3                               &listenerPos,
-                          const RE::NiAVObject                             *listenerObj);
+            Update3DSound(const std::shared_ptr<SoundManager::ActiveSound> &sound);
 
         static void
             Shutdown();
 
       private:
         static RE::NiPoint3
-            GetForwardVector(const RE::NiAVObject *object);
+            GetCameraForwardVector();
 
         static ALCdevice *
             InitializeDevice();
@@ -35,6 +33,9 @@ namespace SoundFX {
 
         static bool
             InitializeSharedContext();
+
+        static RE::NiPoint3
+            GetCameraPosition();
 
         static inline ALCdevice                              *sharedDevice  = nullptr;
         static inline ALCcontext                             *sharedContext = nullptr;

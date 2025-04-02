@@ -48,9 +48,10 @@ namespace SoundFX {
         SoundMarkerListWindow::RenderSoundTable(
             const std::vector<std::shared_ptr<SoundManager::ActiveSound>> &activeSounds,
             const RE::PlayerCharacter                                     *player,
+            const RE::PlayerCamera                                        *playerCamera,
             std::optional<std::pair<std::size_t, SoundAction>>            &selectedAction) {
         if (ImGui::BeginTable(
-                "SoundMarkersTable", 9, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg)) {
+                "SoundMarkersTable", 10, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg)) {
             ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthStretch);
             ImGui::TableSetupColumn("EventType", ImGuiTableColumnFlags_WidthStretch);
             ImGui::TableSetupColumn("Effect", ImGuiTableColumnFlags_WidthStretch);
@@ -58,14 +59,16 @@ namespace SoundFX {
             ImGui::TableSetupColumn("Max Distance", ImGuiTableColumnFlags_WidthStretch);
             ImGui::TableSetupColumn("Ref. Distance", ImGuiTableColumnFlags_WidthStretch);
             ImGui::TableSetupColumn("Distance to Player", ImGuiTableColumnFlags_WidthStretch);
+            ImGui::TableSetupColumn("Distance to PlayerCamera", ImGuiTableColumnFlags_WidthStretch);
             ImGui::TableSetupColumn("3D", ImGuiTableColumnFlags_WidthStretch);
             ImGui::TableSetupColumn("Actions", ImGuiTableColumnFlags_WidthFixed, 60.0f);
             ImGui::TableHeadersRow();
 
             for (size_t i = 0; i < activeSounds.size(); ++i) {
-                const auto        &sound            = activeSounds[i];
-                const RE::NiPoint3 pos              = sound->GetPosition();
-                const float        distanceToPlayer = player->GetPosition().GetDistance(pos);
+                const auto        &sound                  = activeSounds[i];
+                const RE::NiPoint3 pos                    = sound->GetPosition();
+                const float        distanceToPlayer       = player->GetPosition().GetDistance(pos);
+                const float        distanceToPlayerCamera = playerCamera->pos.GetDistance(pos);
 
                 ImGui::PushID(static_cast<int>(i));
 
@@ -84,6 +87,8 @@ namespace SoundFX {
                 ImGui::Text("%.1f", sound->referenceDistance);
                 ImGui::TableNextColumn();
                 ImGui::Text("%.1f", distanceToPlayer);
+                ImGui::TableNextColumn();
+                ImGui::Text("%.1f", distanceToPlayerCamera);
                 ImGui::TableNextColumn();
                 ImGui::Text("%s", sound->is3D ? "Yes" : "No");
 
@@ -106,7 +111,7 @@ namespace SoundFX {
                     if (ImGui::BeginMenu("Copy Value")) {
                         const std::string allText = fmt::format(
                             "{} | {} | {} | {:.1f}, {:.1f}, {:.1f} | Max: {:.1f} | Ref: {:.1f} | "
-                            "Dist: {:.1f} | 3D: {}",
+                            "DistPlayer: {:.1f} | DistPlayerCamera: {:.1f} | 3D: {}",
                             sound->name,
                             sound->eventType,
                             sound->soundEffect,
@@ -116,6 +121,7 @@ namespace SoundFX {
                             sound->maxDistance,
                             sound->referenceDistance,
                             distanceToPlayer,
+                            distanceToPlayerCamera,
                             sound->is3D ? "Yes" : "No");
                         CopyMenuItem("All", allText);
 
@@ -134,6 +140,8 @@ namespace SoundFX {
                         CopyMenuItem("Reference Distance",
                                      fmt::format("{:.1f}", sound->referenceDistance));
                         CopyMenuItem("Distance to Player", fmt::format("{:.1f}", distanceToPlayer));
+                        CopyMenuItem("Distance to PlayerCamera",
+                                     fmt::format("{:.1f}", distanceToPlayerCamera));
                         CopyMenuItem("Is 3D", sound->is3D ? "Yes" : "No");
 
                         ImGui::EndMenu();
@@ -209,6 +217,13 @@ namespace SoundFX {
             return;
         }
 
+        const auto *playerCamera = RE::PlayerCamera::GetSingleton();
+        if (!playerCamera) {
+            ImGui::Text("No playerCamera found.");
+            ImGui::End();
+            return;
+        }
+
         auto activeSounds = SoundManager::GetSortedActiveSounds();
 
         static int sortMode = 0;
@@ -229,7 +244,7 @@ namespace SoundFX {
 
         ImGui::Separator();
         std::optional<std::pair<std::size_t, SoundAction>> selectedAction;
-        RenderSoundTable(activeSounds, player, selectedAction);
+        RenderSoundTable(activeSounds, player, playerCamera, selectedAction);
 
         if (selectedAction.has_value()) {
             switch (const auto [index, action] = selectedAction.value(); action) {
