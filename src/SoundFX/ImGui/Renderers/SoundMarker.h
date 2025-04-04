@@ -66,6 +66,10 @@ namespace SoundFX {
         static ImVec4
             GetRadiusIndicatorColor();
         static void
+            SetRefRadiusIndicatorColor(ImVec4 color);
+        static ImVec4
+            GetRefRadiusIndicatorColor();
+        static void
             SetTextHoverColor(ImVec4 color);
         static ImVec4
             GetTextHoverColor();
@@ -88,7 +92,8 @@ namespace SoundFX {
                                const std::string  &name,
                                const std::string  &eventType,
                                const std::string  &soundEffect,
-                               float               maxDistance);
+                               float               maxDistance,
+                               float               referenceDistance);
         static void
             DrawSoundMarker(const RE::NiPoint3 &soundPos,
                             const RE::NiPoint3 &playerPos,
@@ -96,11 +101,13 @@ namespace SoundFX {
                             ImDrawList         *drawList,
                             ImU32               localMarkerColor,
                             ImU32               localRadiusIndicatorColor,
+                            ImU32               localRefRadiusIndicatorColor,
                             ImU32               localTextColor,
                             const std::string  &name,
                             const std::string  &eventType,
                             const std::string  &soundEffect,
                             float               maxDistance,
+                            float               referenceDistance,
                             bool                isObstructed);
 
         static bool
@@ -122,6 +129,7 @@ namespace SoundFX {
         static bool   textHover;
         static ImVec4 markerColor;
         static ImVec4 radiusIndicatorColor;
+        static ImVec4 refRadiusIndicatorColor;
         static ImVec4 tracerColor;
         static ImVec4 textHoverColor;
         static bool   enableRadiusOutlineColorChange;
