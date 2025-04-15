@@ -18,6 +18,7 @@
         "openal-soft",
         "libsndfile",
         "simpleini",
+        "rapidcsv",
         {
           "name": "imgui",
           "features": [

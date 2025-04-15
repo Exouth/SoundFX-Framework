@@ -82,7 +82,9 @@ namespace SoundFX {
             }
 
             for (const auto &jsonEvent : itemData["events"]) {
-                item.events.push_back(parseEvent(jsonEvent));
+                if (auto parsed = parseEvent(jsonEvent, itemName); parsed.has_value()) {
+                    item.events.push_back(*parsed);
+                }
             }
 
             allItems[category][itemName] = std::move(item);
@@ -90,28 +92,48 @@ namespace SoundFX {
         }
     }
 
-    Event
-        JSONLoader::parseEvent(const nlohmann::json &jsonEvent) {
-        Event event {.chance = 1.0f, .repeatFrequency = 1, .volume = 1.0f};
+    std::optional<Event>
+        JSONLoader::parseEvent(const nlohmann::json &jsonEvent, const std::string &itemName) {
+        Event event {
+            .chance = 1.0f, .repeatFrequency = 1, .volume = -1.0f, .isAbsoluteVolume = true};
 
         try {
             if (jsonEvent.contains("type")) {
                 event.type = jsonEvent["type"].get<std::string>();
             } else {
                 spdlog::warn("Event missing 'type' key. Skipping event.");
-                return event;
+                return std::nullopt;
             }
 
             if (jsonEvent.contains("soundEffect")) {
                 event.soundEffect = jsonEvent["soundEffect"].get<std::string>();
             } else {
                 spdlog::warn("Event missing 'soundEffect' key. Skipping event.");
-                return event;
+                return std::nullopt;
             }
 
             event.chance          = jsonEvent.value("chance", 0.0f);
             event.repeatFrequency = jsonEvent.value("repeatFrequency", 1);
-            event.volume          = jsonEvent.value("volume", 1.0f);
+
+            const bool hasAbsolute = jsonEvent.contains("volumeAbsolute");
+            const bool hasRelative = jsonEvent.contains("volumeRelativeToMaster");
+
+            if (hasAbsolute && hasRelative) {
+                spdlog::error(
+                    "Both 'volumeAbsolute' and 'volumeRelativeToMaster' are set for event '{}' in "
+                    "item '{}'. Skipping Event Type.",
+                    event.type,
+                    itemName);
+                return std::nullopt;
+            }
+
+            if (hasAbsolute) {
+                event.volume           = jsonEvent["volumeAbsolute"].get<float>();
+                event.isAbsoluteVolume = true;
+            } else if (hasRelative) {
+                event.volume           = jsonEvent["volumeRelativeToMaster"].get<float>() / 100.0f;
+                event.isAbsoluteVolume = false;
+            }
 
             if (jsonEvent.contains("details")) {
                 const auto &details = jsonEvent["details"];
@@ -130,6 +152,7 @@ namespace SoundFX {
             }
         } catch (const std::exception &e) {
             spdlog::error("Failed to parse event: {}", e.what());
+            return std::nullopt;
         }
 
         return event;

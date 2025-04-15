@@ -1,6 +1,6 @@
 #include "ArmorEventHandler.h"
 #include "Events/EventHandlerManager.h"
-#include "Sound/SoundUtil.h"
+#include "Sound/SoundManager.h"
 #include "Utility.h"
 
 namespace SoundFX {
@@ -41,7 +41,14 @@ namespace SoundFX {
                     if (jsonEvent.type == "PickUp") {
                         if (const float randomValue = GenerateRandomFloat();
                             randomValue <= jsonEvent.chance) {
-                            PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
+                            SoundManager::PlaySound(armorEvents.name,
+                                                    jsonEvent.type,
+                                                    jsonEvent.soundEffect,
+                                                    {8029.8643f, -69089.37f, 4815.15f},
+                                                    1000.0f,
+                                                    jsonEvent.volume,
+                                                    jsonEvent.isAbsoluteVolume,
+                                                    true);
                         }
                         return RE::BSEventNotifyControl::kContinue;
                     }
@@ -80,7 +87,14 @@ namespace SoundFX {
                         if (jsonEvent.type == "Equip") {
                             if (const float randomValue = GenerateRandomFloat();
                                 randomValue <= jsonEvent.chance) {
-                                PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
+                                SoundManager::PlaySound(armorEvents.name,
+                                                        jsonEvent.type,
+                                                        jsonEvent.soundEffect,
+                                                        {8029.8643f, -69089.37f, 4815.15f},
+                                                        1000.0f,
+                                                        jsonEvent.volume,
+                                                        jsonEvent.isAbsoluteVolume,
+                                                        true);
                             }
                             return RE::BSEventNotifyControl::kContinue;
                         }
@@ -122,7 +136,14 @@ namespace SoundFX {
                         if (jsonEvent.type == "Unequip") {
                             if (const float randomValue = GenerateRandomFloat();
                                 randomValue <= jsonEvent.chance) {
-                                PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
+                                SoundManager::PlaySound(armorEvents.name,
+                                                        jsonEvent.type,
+                                                        jsonEvent.soundEffect,
+                                                        {8029.8643f, -69089.37f, 4815.15f},
+                                                        1000.0f,
+                                                        jsonEvent.volume,
+                                                        jsonEvent.isAbsoluteVolume,
+                                                        true);
                             }
                             return RE::BSEventNotifyControl::kContinue;
                         }

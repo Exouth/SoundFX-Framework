@@ -17,6 +17,7 @@ namespace SoundFX {
         float        chance;
         int          repeatFrequency;
         float        volume;
+        bool         isAbsoluteVolume;
         EventDetails details;
     };
 
@@ -59,8 +60,8 @@ namespace SoundFX {
 
         void
             parseCategory(const std::string &category);
-        static Event
-            parseEvent(const nlohmann::json &jsonEvent);
+        static std::optional<Event>
+            parseEvent(const nlohmann::json &jsonEvent, const std::string &itemName);
     };
 
 }

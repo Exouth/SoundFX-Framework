@@ -149,6 +149,14 @@ namespace SoundFX {
             "Sets the color of the radius indicator visualizing sound area."));
 
         colorSettings.push_back(std::make_unique<ColorSetting>(
+            "ReferenceDistance Radius Indicator Color",
+            "RefRadiusIndicatorColor",
+            DefaultSettings::GetRefRadiusIndicatorColor(),
+            [](const ImVec4 &color) { SoundMarker::SetRefRadiusIndicatorColor(color); },
+            "Sets the color of the radius indicator that visualizes the reference distance. "
+            "Outside this radius, the volume decreases based on the distance of the SoundMarker."));
+
+        colorSettings.push_back(std::make_unique<ColorSetting>(
             "Radius Outline Color",
             "RadiusOutlineColor",
             DefaultSettings::GetRadiusOutlineColor(),

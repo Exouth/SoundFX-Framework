@@ -2,22 +2,20 @@
 #include "ImGui/Core/ImGuiManager.h"
 
 namespace {
-    constexpr ImGuiKey
-        VirtualKeyToImGuiKey(const WPARAM wParam) {
+    ImGuiKey constexpr VirtualKeyToImGuiKey(const WPARAM wParam) {
         switch (wParam) {
-        case VK_TAB: return ImGuiKey_Tab;
-        case VK_LEFT: return ImGuiKey_LeftArrow;
-        case VK_RIGHT: return ImGuiKey_RightArrow;
-        case VK_UP: return ImGuiKey_UpArrow;
-        case VK_DOWN: return ImGuiKey_DownArrow;
-        case VK_RETURN: return ImGuiKey_Enter;
-        case VK_SPACE: return ImGuiKey_Space;
-        case VK_BACK: return ImGuiKey_Backspace;
-        case VK_DELETE: return ImGuiKey_Delete;
-        default:
-            return (wParam >= 'A' && wParam <= 'Z')
-                     ? static_cast<ImGuiKey>(ImGuiKey_A + (wParam - 'A'))
-                     : ImGuiKey_None;
+        case 200: return ImGuiKey_UpArrow;
+        case 208: return ImGuiKey_DownArrow;
+        case 203: return ImGuiKey_LeftArrow;
+        case 205: return ImGuiKey_RightArrow;
+        case 199: return ImGuiKey_Home;
+        case 207: return ImGuiKey_End;
+        case 201: return ImGuiKey_PageUp;
+        case 209: return ImGuiKey_PageDown;
+        case 211: return ImGuiKey_Delete;
+        case 57: return ImGuiKey_Space;
+        case 14: return ImGuiKey_Backspace;
+        default: return ImGuiKey_None;
         }
     }
 }
@@ -38,38 +36,44 @@ namespace SoundFX {
         auto &io = ImGui::GetIO();
 
         for (auto e = *event; e; e = e->next) {
-            if (e->eventType != RE::INPUT_EVENT_TYPE::kButton) {
-                continue;
-            }
-
-            const auto *button = static_cast<RE::ButtonEvent *>(e);
-            if (!button || (!button->IsPressed() && button->IsDown())) {
-                continue;
-            }
-
-            // I dont really know at the Moment whether there are very large values returned (Maybe
-            // Look more into it later)
-            const int scanCode = std::clamp(static_cast<int>(button->GetIDCode()), 0, 255);
-
-            const auto buttonDevice = button->device.get();
-
-            // Deactive UI for ESC
-            if (buttonDevice == RE::INPUT_DEVICE::kKeyboard && scanCode == 1
-                && ImGuiManager::IsUIVisible()) {
-                ImGuiManager::ToggleUI();
-                return;
-            }
-
-            switch (buttonDevice) {
-            case RE::INPUT_DEVICE::kMouse:
-                if (scanCode <= 5) {
-                    io.AddMouseButtonEvent(scanCode, button->IsPressed());
+            if (e->eventType == RE::INPUT_EVENT_TYPE::kButton) {
+                const auto *button = static_cast<RE::ButtonEvent *>(e);
+                if (!button) {
+                    continue;
                 }
-                break;
-            case RE::INPUT_DEVICE::kKeyboard:
-                io.AddKeyEvent(VirtualKeyToImGuiKey(scanCode), button->IsPressed());
-                break;
-            default: break;
+
+                // I dont really know at the Moment whether there are very large values returned
+                // (Maybe Look more into it later)
+                const int scanCode = std::clamp(static_cast<int>(button->GetIDCode()), 0, 255);
+
+                const auto buttonDevice = button->device.get();
+
+                // Deactive UI for ESC
+                if (buttonDevice == RE::INPUT_DEVICE::kKeyboard && scanCode == 1
+                    && ImGuiManager::IsUIVisible()) {
+                    ImGuiManager::ToggleUI();
+                    return;
+                }
+
+                switch (buttonDevice) {
+                case RE::INPUT_DEVICE::kMouse:
+                    if (scanCode <= 5) {
+                        io.AddMouseButtonEvent(scanCode, button->IsPressed());
+                    }
+                    break;
+
+                case RE::INPUT_DEVICE::kKeyboard:
+                    {
+                        io.AddKeyEvent(VirtualKeyToImGuiKey(scanCode), button->IsPressed());
+                        break;
+                    }
+
+                default: break;
+                }
+            } else if (e->eventType == RE::INPUT_EVENT_TYPE::kChar) {
+                if (const auto *charEvent = static_cast<RE::CharEvent *>(e)) {
+                    io.AddInputCharacter(charEvent->keycode);
+                }
             }
         }
     }
