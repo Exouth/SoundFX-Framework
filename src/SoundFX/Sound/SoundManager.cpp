@@ -1,11 +1,12 @@
 #include "SoundManager.h"
-#include "Sound3DUtil.h"
+#include "Sound3D.h"
 
 namespace SoundFX {
 
-    std::vector<SoundManager::ActiveSound> SoundManager::activeSounds;
-    std::atomic<bool>                      SoundManager::is3DSoundEnabled = true;
-    TaskScheduler                          SoundManager::scheduler;
+    std::vector<std::shared_ptr<SoundManager::ActiveSound>> SoundManager::activeSounds;
+    std::atomic<bool>                                       SoundManager::is3DSoundEnabled = true;
+    TaskScheduler                                           SoundManager::scheduler;
+    std::mutex                                              SoundManager::activeSoundsMutex;
 
     SoundManager &
         SoundManager::GetInstance() {
@@ -15,14 +16,14 @@ namespace SoundFX {
 
     void
         SoundManager::Initialize() {
-        if (!Sound3DUtil::InitializeOpenAL()) {
+        if (!Sound3D::InitializeOpenAL()) {
             is3DSoundEnabled = false;
             spdlog::error("3D sound has been deactivated due to an error.");
 
             return;
         }
 
-        scheduler.Start(500);
+        scheduler.Start(50);
         scheduler.AddTask([] { Update(); }, true);
     }
 
@@ -44,69 +45,122 @@ namespace SoundFX {
                                 const std::string  &eventType,
                                 const std::string  &soundEffect,
                                 const RE::NiPoint3 &position,
-                                float               referenceDistance,
                                 float               maxDistance,
+                                float               gain,
+                                bool                isAbsoluteVolume,
                                 bool                is3D) {
-        const std::size_t soundID = GenerateSoundID(name, eventType, soundEffect, position);
 
         if (is3D && is3DSoundEnabled) {
-            if (const ALuint sourceID = Sound3DUtil::Play3DSound(
-                    soundEffect, position, referenceDistance, maxDistance)) {
-                activeSounds.push_back({.id                = soundID,
-                                        .name              = name,
-                                        .eventType         = eventType,
-                                        .soundEffect       = soundEffect,
-                                        .position          = position,
-                                        .referenceDistance = referenceDistance,
-                                        .maxDistance       = maxDistance,
-                                        .is3D              = true,
-                                        .descriptor        = nullptr,
-                                        .sourceID          = sourceID,
-                                        .startTime         = std::chrono::steady_clock::now()});
-            }
+            Register3DSound(
+                name, eventType, soundEffect, position, maxDistance, gain, isAbsoluteVolume);
         } else {
-            if (const auto descriptor = std::make_shared<CustomSoundDescriptor>(soundEffect);
-                descriptor->Play()) {
-                activeSounds.push_back({.id          = soundID,
-                                        .name        = name,
-                                        .eventType   = eventType,
-                                        .soundEffect = soundEffect,
-                                        .position =
-                                            [] {
-                                                const auto *player =
-                                                    RE::PlayerCharacter::GetSingleton();
-                                                return player ? player->GetPosition()
-                                                              : RE::NiPoint3 {0.0f, 0.0f, 0.0f};
-                                            },
-                                        .referenceDistance = 0,
-                                        .maxDistance       = 0,
-                                        .is3D              = false,
-                                        .descriptor        = descriptor,
-                                        .startTime         = std::chrono::steady_clock::now()});
-            }
+            Register2DSound(name, eventType, soundEffect, gain, isAbsoluteVolume);
         }
     }
 
     bool
         SoundManager::IsSoundPlaying(std::size_t soundID) {
-        return std::ranges::any_of(activeSounds, [&](const ActiveSound &sound) {
-            return sound.id == soundID && sound.IsPlaying();
+        std::lock_guard lock(activeSoundsMutex);
+        return std::ranges::any_of(activeSounds, [&](const auto &sound) {
+            return sound && sound->id == soundID && sound->IsPlaying();
         });
+    }
+
+    void
+        SoundManager::Register3DSound(const std::string  &name,
+                                      const std::string  &eventType,
+                                      const std::string  &soundEffect,
+                                      const RE::NiPoint3 &position,
+                                      float               maxDistance,
+                                      float               gain,
+                                      bool                isAbsoluteVolume) {
+
+        const std::size_t soundID = GenerateSoundID(name, eventType, soundEffect, position);
+
+        auto sound               = std::make_shared<ActiveSound>();
+        sound->id                = soundID;
+        sound->name              = name;
+        sound->eventType         = eventType;
+        sound->soundEffect       = soundEffect;
+        sound->position          = position;
+        sound->referenceDistance = std::clamp(maxDistance * 0.3f, 1.0f, maxDistance);
+        sound->maxDistance       = maxDistance;
+        sound->gain              = gain;
+        sound->isAbsoluteVolume  = isAbsoluteVolume;
+        sound->is3D              = true;
+        sound->startTime         = std::chrono::steady_clock::now();
+
+        sound->sourceID = Sound3D::Create3DSoundSource(sound);
+
+        if (sound->sourceID != 0) {
+            std::lock_guard lock(activeSoundsMutex);
+            activeSounds.push_back(std::move(sound));
+        } else {
+            spdlog::error("3D sound '{}' : '{}' : '{}' failed to play",
+                          sound->name,
+                          sound->eventType,
+                          sound->soundEffect);
+        }
+    }
+
+    void
+        SoundManager::Register2DSound(const std::string &name,
+                                      const std::string &eventType,
+                                      const std::string &soundEffect,
+                                      float              gain,
+                                      bool               isAbsoluteVolume) {
+        const std::size_t soundID = GenerateSoundID(name, eventType, soundEffect, {});
+
+        const auto descriptor = std::make_shared<CustomSoundDescriptor>(soundEffect);
+        if (!descriptor->Play()) {
+            spdlog::error(
+                "2D sound '{}' : '{}' : '{}' failed to play", name, eventType, soundEffect);
+            return;
+        }
+
+        auto sound         = std::make_shared<ActiveSound>();
+        sound->id          = soundID;
+        sound->name        = name;
+        sound->eventType   = eventType;
+        sound->soundEffect = soundEffect;
+        sound->position    = [] {
+            const auto *player = RE::PlayerCharacter::GetSingleton();
+            return player ? player->GetPosition() : RE::NiPoint3 {0.0f, 0.0f, 0.0f};
+        };
+        sound->referenceDistance = 0.0f;
+        sound->maxDistance       = 0.0f;
+        sound->gain              = gain;
+        sound->isAbsoluteVolume  = isAbsoluteVolume;
+        sound->is3D              = false;
+        sound->descriptor        = descriptor;
+        sound->startTime         = std::chrono::steady_clock::now();
+
+        std::lock_guard lock(activeSoundsMutex);
+        activeSounds.push_back(std::move(sound));
     }
 
     void
         SoundManager::Update() {
         const auto     now         = std::chrono::steady_clock::now();
         constexpr auto minLifetime = std::chrono::milliseconds(300);
-        // Ensures sounds are not removed immediately after being played.
 
-        std::erase_if(activeSounds, [&](const ActiveSound &sound) {
-            const bool isPlaying = sound.IsPlaying();
+        std::lock_guard lock(activeSoundsMutex);
+        std::erase_if(activeSounds, [&](const std::shared_ptr<ActiveSound> &sound) {
+            const bool isPlaying        = sound->IsPlaying();
+            const bool tooEarlyToRemove = now - sound->startTime < minLifetime;
 
-            if (const bool tooEarlyToRemove = now - sound.startTime < minLifetime;
-                !isPlaying && !tooEarlyToRemove) {
+            if (!isPlaying && !tooEarlyToRemove) {
+                if (sound->is3D && sound->sourceID != 0) {
+                    alSourceStop(sound->sourceID);
+                    alDeleteSources(1, &sound->sourceID);
+                }
                 return true;
             }
+
+            if (sound->is3D && isPlaying) {
+                Sound3D::Update3DSound(sound);
+            }
+
             return false;
         });
     }
@@ -126,14 +180,10 @@ namespace SoundFX {
         return descriptor && descriptor->IsPlaying();
     }
 
-    const std::vector<SoundManager::ActiveSound> &
-        SoundManager::GetActiveSounds() {
-        return activeSounds;
-    }
-
-    std::vector<SoundManager::ActiveSound>
+    std::vector<std::shared_ptr<SoundManager::ActiveSound>>
         SoundManager::GetSortedActiveSounds() {
-        auto sounds = GetActiveSounds();
+        std::lock_guard lock(activeSoundsMutex);
+        auto            sounds = activeSounds;
 
         const auto *player = RE::PlayerCharacter::GetSingleton();
         if (!player) {
@@ -141,8 +191,8 @@ namespace SoundFX {
         }
 
         std::ranges::sort(sounds, [player](const auto &a, const auto &b) {
-            return player->GetPosition().GetDistance(a.GetPosition())
-                 < player->GetPosition().GetDistance(b.GetPosition());
+            return player->GetPosition().GetDistance(a->GetPosition())
+                 < player->GetPosition().GetDistance(b->GetPosition());
         });
 
         return sounds;
@@ -162,6 +212,74 @@ namespace SoundFX {
                 }
             },
             position);
+    }
+
+    void
+        SoundManager::StopSound(std::size_t index) {
+        std::lock_guard lock(activeSoundsMutex);
+
+        if (index >= activeSounds.size()) {
+            spdlog::warn("Invalid index {} passed to StopSound", index);
+            return;
+        }
+
+        const auto &sound = activeSounds[index];
+
+        if (sound->is3D && alIsSource(sound->sourceID)) {
+            alSourceStop(sound->sourceID);
+            alDeleteSources(1, &sound->sourceID);
+            spdlog::info("Manually stopped 3D sound '{}' : '{}'", sound->name, sound->eventType);
+        } else if (sound->descriptor) {
+            sound->descriptor->Stop();
+            spdlog::info("Manually stopped 2D sound '{}' : '{}'", sound->name, sound->eventType);
+        }
+
+        activeSounds.erase(
+            activeSounds.begin()
+            + static_cast<std::vector<std::shared_ptr<ActiveSound>>::difference_type>(index));
+    }
+
+    void
+        SoundManager::StopAllSounds() {
+        std::lock_guard lock(activeSoundsMutex);
+
+        for (auto &sound : activeSounds) {
+            if (!sound)
+                continue;
+
+            if (sound->is3D && alIsSource(sound->sourceID)) {
+                alSourceStop(sound->sourceID);
+                alDeleteSources(1, &sound->sourceID);
+            } else if (sound->descriptor) {
+                sound->descriptor->Stop();
+            }
+        }
+
+        spdlog::info("Stopped all active sounds ({} total)", activeSounds.size());
+        activeSounds.clear();
+    }
+
+    void
+        SoundManager::ReloadSound(std::size_t index) {
+        if (index >= activeSounds.size()) {
+            spdlog::warn("Invalid index {} passed to ReloadSound", index);
+            return;
+        }
+
+        const auto &sound = activeSounds[index];
+
+        StopSound(index);
+
+        PlaySound(sound->name,
+                  sound->eventType,
+                  sound->soundEffect,
+                  sound->GetPosition(),
+                  sound->maxDistance,
+                  sound->gain,
+                  sound->isAbsoluteVolume,
+                  sound->is3D);
+
+        spdlog::info("Reloaded sound '{}' : '{}'", sound->name, sound->eventType);
     }
 
 }

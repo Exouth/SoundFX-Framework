@@ -19,6 +19,7 @@ namespace SoundFX {
     bool   SoundMarker::textHover                = DefaultSettings::GetTextHover();
     ImVec4 SoundMarker::markerColor              = DefaultSettings::GetMarkerColor();
     ImVec4 SoundMarker::radiusIndicatorColor     = DefaultSettings::GetRadiusIndicatorColor();
+    ImVec4 SoundMarker::refRadiusIndicatorColor  = DefaultSettings::GetRefRadiusIndicatorColor();
     ImVec4 SoundMarker::tracerColor              = DefaultSettings::GetTracerColor();
     ImVec4 SoundMarker::textHoverColor           = DefaultSettings::GetTextHoverColor();
     bool   SoundMarker::enableRadiusOutlineColorChange =
@@ -47,13 +48,14 @@ namespace SoundFX {
         }
 
         for (const auto &sound : activeSounds) {
-            ProcessSoundMarker(sound.GetPosition(),
+            ProcessSoundMarker(sound->GetPosition(),
                                player->GetPosition(),
                                drawList,
-                               sound.name,
-                               sound.eventType,
-                               sound.soundEffect,
-                               sound.maxDistance);
+                               sound->name,
+                               sound->eventType,
+                               sound->soundEffect,
+                               sound->maxDistance,
+                               sound->referenceDistance);
         }
     }
 
@@ -86,7 +88,8 @@ namespace SoundFX {
                                         const std::string  &name,
                                         const std::string  &eventType,
                                         const std::string  &soundEffect,
-                                        float               maxDistance) {
+                                        float               maxDistance,
+                                        float               referenceDistance) {
         if (!drawList) {
             return;
         }
@@ -104,6 +107,8 @@ namespace SoundFX {
             isObstructed ? IM_COL32(128, 128, 128, 255) : ConvertColor(markerColor);
         const ImU32 radiusIndicatorColorConv =
             isObstructed ? IM_COL32(64, 64, 64, 128) : ConvertColor(radiusIndicatorColor);
+        const ImU32 refRadiusIndicatorColorConv =
+            isObstructed ? IM_COL32(80, 80, 80, 128) : ConvertColor(refRadiusIndicatorColor);
         const ImU32 tracerColorConv =
             isObstructed ? IM_COL32(64, 64, 64, 128) : ConvertColor(tracerColor);
         const ImU32 textColorConv =
@@ -119,11 +124,13 @@ namespace SoundFX {
                         drawList,
                         markerColorConv,
                         radiusIndicatorColorConv,
+                        refRadiusIndicatorColorConv,
                         textColorConv,
                         name,
                         eventType,
                         soundEffect,
                         maxDistance,
+                        referenceDistance,
                         isObstructed);
     }
 
@@ -134,11 +141,13 @@ namespace SoundFX {
                                      ImDrawList         *drawList,
                                      ImU32               localMarkerColor,
                                      ImU32               localRadiusIndicatorColor,
+                                     ImU32               localRefRadiusIndicatorColor,
                                      ImU32               localTextColor,
                                      const std::string  &name,
                                      const std::string  &eventType,
                                      const std::string  &soundEffect,
                                      float               maxDistance,
+                                     float               referenceDistance,
                                      bool                isObstructed) {
         if (!drawList) {
             return;
@@ -161,6 +170,12 @@ namespace SoundFX {
                                               numSegmentsCircle);
             RenderObject::Draw3DCircle(
                 soundPos, maxDistance, drawList, localRadiusIndicatorColor, numSegmentsCircle);
+
+            RenderObject::Draw3DCircle(soundPos,
+                                       referenceDistance,
+                                       drawList,
+                                       localRefRadiusIndicatorColor,
+                                       numSegmentsCircle);
         }
 
         RenderObject::Draw3DSphere(
@@ -324,6 +339,16 @@ namespace SoundFX {
     ImVec4
         SoundMarker::GetRadiusIndicatorColor() {
         return radiusIndicatorColor;
+    }
+
+    void
+        SoundMarker::SetRefRadiusIndicatorColor(const ImVec4 color) {
+        refRadiusIndicatorColor = color;
+    }
+
+    ImVec4
+        SoundMarker::GetRefRadiusIndicatorColor() {
+        return refRadiusIndicatorColor;
     }
 
     void

@@ -18,6 +18,10 @@ namespace SoundFX {
             IsUIVisible();
         static void
             UpdateInputState();
+        static void
+            SetLastFocusedWindow(const std::string &name);
+        static void
+            TrackFocusOnClick();
 
         static bool showSoundMarkerList;
 
@@ -25,8 +29,10 @@ namespace SoundFX {
         static void
             RenderBackground();
         static void
-                    RenderForeground();
-        static bool showDebugUI;
-        static int  debugUIKey;
+                           RenderForeground();
+        static bool        showDebugUI;
+        static int         debugUIKey;
+        static std::string lastFocusedWindow;
+        static bool        justActivatedUI;
     };
 }

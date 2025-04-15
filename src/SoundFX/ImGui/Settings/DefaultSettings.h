@@ -74,6 +74,11 @@ namespace SoundFX {
         }
 
         static ImVec4
+            GetRefRadiusIndicatorColor() {
+            return {0.6f, 0.6f, 1.0f, 0.5f};
+        }
+
+        static ImVec4
             GetTracerColor() {
             return {1.0f, 1.0f, 0.0f, 1.0f};
         }

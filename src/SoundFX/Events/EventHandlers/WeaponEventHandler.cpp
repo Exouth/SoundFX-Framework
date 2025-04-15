@@ -1,6 +1,6 @@
 #include "WeaponEventHandler.h"
 #include "Events/EventHandlerManager.h"
-#include "Sound/SoundUtil.h"
+#include "Sound/SoundManager.h"
 #include "Utility.h"
 
 namespace SoundFX {
@@ -12,9 +12,7 @@ namespace SoundFX {
                                               const std::string          &soundEffect,
                                               const RE::TESHitEvent::Flag flag) {
         if (const auto hitEvent = std::get_if<const RE::TESHitEvent *>(&event)) {
-            if ((*hitEvent)->flags.any(flag)) {
-                PlayCustomSoundAsDescriptor(soundEffect);
-            }
+            if ((*hitEvent)->flags.any(flag)) { }
         }
     }
 
@@ -36,9 +34,7 @@ namespace SoundFX {
                 && !(*hitEvent)->flags.any(RE::TESHitEvent::Flag::kBashAttack,
                                            RE::TESHitEvent::Flag::kHitBlocked,
                                            RE::TESHitEvent::Flag::kPowerAttack,
-                                           RE::TESHitEvent::Flag::kSneakAttack)) {
-                PlayCustomSoundAsDescriptor(soundEffect);
-            }
+                                           RE::TESHitEvent::Flag::kSneakAttack)) { }
         }
     }
 
@@ -121,7 +117,14 @@ namespace SoundFX {
                         if (jsonEvent.type == "Equip") {
                             if (const float randomValue = GenerateRandomFloat();
                                 randomValue <= jsonEvent.chance) {
-                                PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
+                                SoundManager::PlaySound(weaponEvents.name,
+                                                        jsonEvent.type,
+                                                        jsonEvent.soundEffect,
+                                                        {8029.8643f, -69089.37f, 4815.15f},
+                                                        1000.0f,
+                                                        jsonEvent.volume,
+                                                        jsonEvent.isAbsoluteVolume,
+                                                        true);
                             }
                             return RE::BSEventNotifyControl::kContinue;
                         }
@@ -157,7 +160,14 @@ namespace SoundFX {
                     if (jsonEvent.type == "PickUp") {
                         if (const float randomValue = GenerateRandomFloat();
                             randomValue <= jsonEvent.chance) {
-                            PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
+                            SoundManager::PlaySound(weaponEvents.name,
+                                                    jsonEvent.type,
+                                                    jsonEvent.soundEffect,
+                                                    {8029.8643f, -69089.37f, 4815.15f},
+                                                    1000.0f,
+                                                    jsonEvent.volume,
+                                                    jsonEvent.isAbsoluteVolume,
+                                                    true);
                         }
                         return RE::BSEventNotifyControl::kContinue;
                     }
@@ -243,7 +253,14 @@ namespace SoundFX {
                         if (jsonEvent.type == "Idle" && player->AsActorState()->IsWeaponDrawn()) {
                             if (const float randomValue = GenerateRandomFloat();
                                 randomValue <= jsonEvent.chance) {
-                                PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
+                                SoundManager::PlaySound(weaponEvents.name,
+                                                        jsonEvent.type,
+                                                        jsonEvent.soundEffect,
+                                                        {8029.8643f, -69089.37f, 4815.15f},
+                                                        1000.0f,
+                                                        jsonEvent.volume,
+                                                        jsonEvent.isAbsoluteVolume,
+                                                        true);
                             }
                             return;
                         }
@@ -300,7 +317,14 @@ namespace SoundFX {
                             && event->type == SKSE::ActionEvent::Type::kWeaponSwing) {
                             if (const float randomValue = GenerateRandomFloat();
                                 randomValue <= jsonEvent.chance) {
-                                PlayCustomSoundAsDescriptor(jsonEvent.soundEffect);
+                                SoundManager::PlaySound(weaponEvents.name,
+                                                        jsonEvent.type,
+                                                        jsonEvent.soundEffect,
+                                                        {8029.8643f, -69089.37f, 4815.15f},
+                                                        1000.0f,
+                                                        jsonEvent.volume,
+                                                        jsonEvent.isAbsoluteVolume,
+                                                        true);
                             }
                             return RE::BSEventNotifyControl::kContinue;
                         }
