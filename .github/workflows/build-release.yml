@@ -63,6 +63,20 @@ jobs:
          }
        shell: pwsh
 
+     - name: Generate SHA256 Hashes of DLL and PDB
+       id: hash
+       run: |
+         $paths = Get-Item "build/output/SKSE/Plugins/*.dll", "build/output/SKSE/Plugins/*.pdb"
+
+         foreach ($file in $paths) {
+           $ext = $file.Extension.Replace(".", "")
+           $hash = Get-FileHash -Algorithm SHA256 -Path $file.FullName
+
+           Add-Content -Path $env:GITHUB_OUTPUT -Value "$ext`Name=$($file.Name)"
+           Add-Content -Path $env:GITHUB_OUTPUT -Value "$ext`Hash=$($hash.Hash)"
+         }
+       shell: pwsh
+
      - name: Clean and Create Blank JSON Configuration
        run: |
          $configFile = "build/output/SKSE/Plugins/JSON_FILE_FOR_CONFIGURATION"
@@ -90,7 +104,16 @@ jobs:
        with:
          tag: ${{ github.ref_name }}
          name: "SoundFX Framework ${{ github.ref_name }}"
-         body: "**Automated Release for SoundFX Framework**\n\nVersion: **${{ github.ref_name }}**\n\nThis release was automatically created and includes the latest build of SoundFX Framework."
+         body: |
+           **Automated Release for SoundFX Framework**
+
+           Version: **${{ github.ref_name }}**
+
+           SHA256 Hashes for Verification:
+           ```
+           ${{ steps.hash.outputs.dllName }}, ${{ steps.hash.outputs.dllHash }}
+           ${{ steps.hash.outputs.pdbName }}, ${{ steps.hash.outputs.pdbHash }}
+           ```
          draft: false
          prerelease: false
          artifacts: "SoundFXFramework-${{ github.ref_name }}.zip"
